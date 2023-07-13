@@ -77,7 +77,7 @@ function run() {
         }) `${serveScript}`;
         yield (0, wait_1.wait)(Number.parseInt(sleepTime));
         // TODO: Also pipe to logs
-        const params = ['scan', '--url', url, '--min-score', minScore];
+        const params = ['stark-accessibility', '--url', url, '--min-score', minScore];
         if (token) {
             // TODO: change this to be 2 separate things
             params.push('--stark-token', token);
