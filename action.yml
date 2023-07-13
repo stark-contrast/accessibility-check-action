@@ -34,6 +34,9 @@ inputs:
     description: "Minimum score for the action to pass. A number from 0 to 100"
     required: true
     default: 0
+  token:
+    description: "Stark token required to send data back to stark web. The cli doesn't post data if token is not provided"
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -46,3 +49,4 @@ runs:
     - ${{ inputs.url }}
     - ${{ inputs.min_score }}
     - ${{ inputs.wait_time }}
+    - ${{ inputs.token }}

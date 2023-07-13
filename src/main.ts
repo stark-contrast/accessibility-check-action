@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import core from '@actions/core'
+import github from '@actions/github'
 import exec from '@actions/exec'
 import {execa, $} from 'execa'
 import {wait} from './wait'
@@ -13,6 +14,7 @@ const cleanupScript = core.getInput('cleanup', {required: true})
 const url = core.getInput('url', {required: true})
 const minScore = core.getInput('min_score', {required: true})
 const sleepTime = core.getInput('wait_time', {required: true})
+const token = core.getInput('token', {required: false})
 // TODO: Need a validator for scripts.
 
 async function run() {
@@ -29,7 +31,9 @@ async function run() {
   core.endGroup()
 
   core.startGroup('Stark Accessibility Checker: Serve & Scan')
-  core.info(`Sleeping for ${sleepTime} ms. Giving the start command time to complete!`)
+  core.info(
+    `Sleeping for ${sleepTime} ms. Giving the start command time to complete!`
+  )
   // TODO: Pipe stdio to file stream.
   const childProcess = $({
     shell: true,
@@ -37,10 +41,17 @@ async function run() {
     stdio: 'inherit'
   })`${serveScript}`
 
-  
   await wait(Number.parseInt(sleepTime))
   // TODO: Also pipe to logs
-  await execa('slay', ['scan', '--url', url, '--min-score', minScore], {
+  const params = ['scan', '--url', url, '--min-score', minScore]
+  if(token) {
+    // TODO: change this to be 2 separate things
+    params.push('--stark-token', token)
+    params.push('--run-id', token)
+  }
+  params.push('--metadata', JSON.stringify(github.context))
+  // TODO: Check run id
+  await execa('slay', params, {
     stdio: 'inherit'
   })
 
