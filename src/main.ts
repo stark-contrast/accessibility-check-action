@@ -1,8 +1,8 @@
-import fs from 'fs'
-import path from 'path'
-import core from '@actions/core'
-import github from '@actions/github'
-import exec from '@actions/exec'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as core from '@actions/core'
+import * as github from '@actions/github'
+import * as exec from '@actions/exec'
 import {execa, $} from 'execa'
 import {wait} from './wait'
 

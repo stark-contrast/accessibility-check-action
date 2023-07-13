@@ -6,6 +6,29 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,40 +38,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const fs_1 = __importDefault(__nccwpck_require__(7147));
-const path_1 = __importDefault(__nccwpck_require__(1017));
-const core_1 = __importDefault(__nccwpck_require__(2186));
-const github_1 = __importDefault(__nccwpck_require__(5438));
-const exec_1 = __importDefault(__nccwpck_require__(1514));
+const fs = __importStar(__nccwpck_require__(7147));
+const path = __importStar(__nccwpck_require__(1017));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const exec = __importStar(__nccwpck_require__(1514));
 const execa_1 = __nccwpck_require__(9956);
 const wait_1 = __nccwpck_require__(5817);
-const setupScript = core_1.default.getInput('setup', { required: true });
-const preBuildScript = core_1.default.getInput('prebuild', { required: true });
-const buildScript = core_1.default.getInput('build', { required: true });
-const serveScript = core_1.default.getInput('serve', { required: true });
-const cleanupScript = core_1.default.getInput('cleanup', { required: true });
-const url = core_1.default.getInput('url', { required: true });
-const minScore = core_1.default.getInput('min_score', { required: true });
-const sleepTime = core_1.default.getInput('wait_time', { required: true });
-const token = core_1.default.getInput('token', { required: false });
+const setupScript = core.getInput('setup', { required: true });
+const preBuildScript = core.getInput('prebuild', { required: true });
+const buildScript = core.getInput('build', { required: true });
+const serveScript = core.getInput('serve', { required: true });
+const cleanupScript = core.getInput('cleanup', { required: true });
+const url = core.getInput('url', { required: true });
+const minScore = core.getInput('min_score', { required: true });
+const sleepTime = core.getInput('wait_time', { required: true });
+const token = core.getInput('token', { required: false });
 // TODO: Need a validator for scripts.
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        core_1.default.startGroup('Stark Accessibility Checker: Setup');
-        yield exec_1.default.exec(setupScript);
-        core_1.default.endGroup();
-        core_1.default.startGroup('Stark Accessibility Checker: Prebuild');
-        yield exec_1.default.exec(preBuildScript);
-        core_1.default.endGroup();
-        core_1.default.startGroup('Stark Accessibility Checker: Build');
-        yield exec_1.default.exec(buildScript);
-        core_1.default.endGroup();
-        core_1.default.startGroup('Stark Accessibility Checker: Serve & Scan');
-        core_1.default.info(`Sleeping for ${sleepTime} ms. Giving the start command time to complete!`);
+        core.startGroup('Stark Accessibility Checker: Setup');
+        yield exec.exec(setupScript);
+        core.endGroup();
+        core.startGroup('Stark Accessibility Checker: Prebuild');
+        yield exec.exec(preBuildScript);
+        core.endGroup();
+        core.startGroup('Stark Accessibility Checker: Build');
+        yield exec.exec(buildScript);
+        core.endGroup();
+        core.startGroup('Stark Accessibility Checker: Serve & Scan');
+        core.info(`Sleeping for ${sleepTime} ms. Giving the start command time to complete!`);
         // TODO: Pipe stdio to file stream.
         const childProcess = (0, execa_1.$)({
             shell: true,
@@ -63,20 +83,20 @@ function run() {
             params.push('--stark-token', token);
             params.push('--run-id', token);
         }
-        params.push('--metadata', JSON.stringify(github_1.default.context));
+        params.push('--metadata', JSON.stringify(github.context));
         // TODO: Check run id
         yield (0, execa_1.execa)('slay', params, {
             stdio: 'inherit'
         });
-        core_1.default.info('Shutting down server. Scanning done.');
+        core.info('Shutting down server. Scanning done.');
         childProcess.unref();
-        const cliOutDir = path_1.default.resolve(process.cwd(), './.stark-contrast/');
-        const files = fs_1.default.readdirSync(cliOutDir);
+        const cliOutDir = path.resolve(process.cwd(), './.stark-contrast/');
+        const files = fs.readdirSync(cliOutDir);
         const results = [];
         for (const i in files) {
-            if (path_1.default.basename(files[i]) === 'summary.json') {
-                const filePath = path_1.default.resolve(cliOutDir, files[i]);
-                const json = JSON.parse(fs_1.default.readFileSync(filePath, 'utf8'));
+            if (path.basename(files[i]) === 'summary.json') {
+                const filePath = path.resolve(cliOutDir, files[i]);
+                const json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
                 results.push(json);
             }
         }
@@ -85,17 +105,17 @@ function run() {
         for (let data of results[0].data) {
             tableData.push([data.name, data.value + '']);
         }
-        yield core_1.default.summary
+        yield core.summary
             .addHeading(`Accessibility results Summary`)
             .addHeading(url, 4)
             .addTable(tableData)
             .addLink('View the full results', 'https://getstark.co') // TODO: Get link
             .addSeparator()
             .write();
-        core_1.default.endGroup();
-        core_1.default.startGroup('Stark Accessibility Checker: Cleanup');
-        yield exec_1.default.exec(cleanupScript);
-        core_1.default.endGroup();
+        core.endGroup();
+        core.startGroup('Stark Accessibility Checker: Cleanup');
+        yield exec.exec(cleanupScript);
+        core.endGroup();
     });
 }
 run();
