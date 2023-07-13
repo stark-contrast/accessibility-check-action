@@ -45,4 +45,4 @@ runs:
     - ${{ inputs.cleanup }}
     - ${{ inputs.url }}
     - ${{ inputs.min_score }}
-    - ${{inputs.wait_time}}
+    - ${{ inputs.wait_time }}
