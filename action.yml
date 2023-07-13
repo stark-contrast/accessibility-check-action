@@ -8,6 +8,6 @@ inputs:
     default: 'default value if applicable'
 runs:
   using: 'docker'
-  main: 'Dockerfile'
+  image: 'Dockerfile'
   args:
     - ${{inputs.milliseconds}}
