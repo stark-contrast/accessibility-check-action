@@ -77,7 +77,7 @@ function run() {
         }) `${serveScript}`;
         yield (0, wait_1.wait)(Number.parseInt(sleepTime));
         // TODO: Also pipe to logs
-        const params = ['stark-accessibility', '--url', url, '--min-score', minScore];
+        const params = ['scan', '--url', url, '--min-score', minScore];
         if (token) {
             // TODO: change this to be 2 separate things
             params.push('--stark-token', token);
@@ -85,7 +85,7 @@ function run() {
         }
         params.push('--metadata', JSON.stringify(github.context.workflow));
         // TODO: Check run id
-        yield (0, execa_1.execa)('slay', params, {
+        yield (0, execa_1.execa)('stark-accessibility', params, {
             stdio: 'inherit'
         });
         core.info('Shutting down server. Scanning done.');

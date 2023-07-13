@@ -43,7 +43,7 @@ async function run() {
 
   await wait(Number.parseInt(sleepTime))
   // TODO: Also pipe to logs
-  const params = ['stark-accessibility', '--url', url, '--min-score', minScore]
+  const params = ['scan', '--url', url, '--min-score', minScore]
   if(token) {
     // TODO: change this to be 2 separate things
     params.push('--stark-token', token)
@@ -51,7 +51,7 @@ async function run() {
   }
   params.push('--metadata', JSON.stringify(github.context.workflow))
   // TODO: Check run id
-  await execa('slay', params, {
+  await execa('stark-accessibility', params, {
     stdio: 'inherit'
   })
 
