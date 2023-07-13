@@ -21,9 +21,9 @@ COPY blobs/stark-accessibility-cli-0.1.0-beta.0.tgz /stark_ga/stark-accessibilit
 RUN npm i -g /stark_ga/stark-accessibility-cli-0.1.0-beta.0.tgz \
     && stark-accessibility --version
 
-# Get entry script ready
-RUN cd /stark_ga \
-    && npm install
+# # Get entry script ready
+# RUN cd /stark_ga \
+#     && npm install
 
 # TODO: symlink /root/.local-chromium to $GITHUB_HOME/.local-chromium to avoid double install or remove install from this step.
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
