@@ -83,7 +83,7 @@ function run() {
             params.push('--stark-token', token);
             params.push('--run-id', token);
         }
-        params.push('--metadata', JSON.stringify(github.context));
+        params.push('--metadata', JSON.stringify(github.context.workflow));
         // TODO: Check run id
         yield (0, execa_1.execa)('slay', params, {
             stdio: 'inherit'

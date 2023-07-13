@@ -49,7 +49,7 @@ async function run() {
     params.push('--stark-token', token)
     params.push('--run-id', token)
   }
-  params.push('--metadata', JSON.stringify(github.context))
+  params.push('--metadata', JSON.stringify(github.context.workflow))
   // TODO: Check run id
   await execa('slay', params, {
     stdio: 'inherit'
