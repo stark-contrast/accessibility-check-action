@@ -1,10 +1,10 @@
-import * as fs from 'fs'
 import * as path from 'path'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as exec from '@actions/exec'
 import {execa, $} from 'execa'
 import {wait} from './wait'
+import {readResults} from './read-results'
 
 const setupScript = core.getInput('setup', {required: true})
 const preBuildScript = core.getInput('prebuild', {required: true})
@@ -17,7 +17,7 @@ const sleepTime = core.getInput('wait_time', {required: true})
 const token = core.getInput('token', {required: false})
 // TODO: Need a validator for scripts.
 
-async function run() {
+async function run(): Promise<void> {
   core.startGroup('Stark Accessibility Checker: Setup')
   await exec.exec(setupScript)
   core.endGroup()
@@ -44,7 +44,7 @@ async function run() {
   await wait(Number.parseInt(sleepTime))
   // TODO: Also pipe to logs
   const params = ['scan', '--url', url, '--min-score', minScore]
-  if(token) {
+  if (token) {
     // TODO: change this to be 2 separate things
     params.push('--stark-token', token)
     params.push('--run-id', token)
@@ -59,21 +59,13 @@ async function run() {
   childProcess.unref()
 
   const cliOutDir = path.resolve(process.cwd(), './.stark-contrast/')
-  const files = fs.readdirSync(cliOutDir)
-  const results = []
-
-  for (const i in files) {
-    if (path.basename(files[i]) === 'summary.json') {
-      const filePath = path.resolve(cliOutDir, files[i])
-      const json = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-      results.push(json)
-    }
-  }
+  const results = await readResults(cliOutDir)
 
   //TODO: Format better. Add error checking
   const tableData = []
-  for (let data of results[0].data) {
-    tableData.push([data.name, data.value + ''])
+  //TODO: Handling if results = []
+  for (const data of results[0].data) {
+    tableData.push([data.name, `${data.value}  `])
   }
 
   await core.summary
@@ -89,6 +81,7 @@ async function run() {
   core.startGroup('Stark Accessibility Checker: Cleanup')
   await exec.exec(cleanupScript)
   core.endGroup()
+  return
 }
 
 run()
