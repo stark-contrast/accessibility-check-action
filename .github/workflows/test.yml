@@ -21,4 +21,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./
         with:
-          milliseconds: 1000
+          url: 'http://localhost:3000'
+          prebuild: 'npx --yes create-next-app@latest test-app --use-npm --example "https://github.com/vercel/next-learn/tree/master/basics/learn-starter"'
+          serve: 'cd test-app && npm run dev'

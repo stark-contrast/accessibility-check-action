@@ -39,13 +39,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const fs = __importStar(__nccwpck_require__(7147));
 const path = __importStar(__nccwpck_require__(1017));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const exec = __importStar(__nccwpck_require__(1514));
 const execa_1 = __nccwpck_require__(9956);
 const wait_1 = __nccwpck_require__(5817);
+const read_results_1 = __nccwpck_require__(3987);
 const setupScript = core.getInput('setup', { required: true });
 const preBuildScript = core.getInput('prebuild', { required: true });
 const buildScript = core.getInput('build', { required: true });
@@ -91,19 +91,12 @@ function run() {
         core.info('Shutting down server. Scanning done.');
         childProcess.unref();
         const cliOutDir = path.resolve(process.cwd(), './.stark-contrast/');
-        const files = fs.readdirSync(cliOutDir);
-        const results = [];
-        for (const i in files) {
-            if (path.basename(files[i]) === 'summary.json') {
-                const filePath = path.resolve(cliOutDir, files[i]);
-                const json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-                results.push(json);
-            }
-        }
+        const results = yield (0, read_results_1.readResults)(cliOutDir);
         //TODO: Format better. Add error checking
         const tableData = [];
-        for (let data of results[0].data) {
-            tableData.push([data.name, data.value + '']);
+        //TODO: Handling if results = []
+        for (const data of results[0].data) {
+            tableData.push([data.name, `${data.value}  `]);
         }
         yield core.summary
             .addHeading(`Accessibility results Summary`)
@@ -116,9 +109,73 @@ function run() {
         core.startGroup('Stark Accessibility Checker: Cleanup');
         yield exec.exec(cleanupScript);
         core.endGroup();
+        return;
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 3987:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readResults = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+const path_1 = __importDefault(__nccwpck_require__(1017));
+function readResults(cliOutDir) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const files = yield fs.promises.readdir(cliOutDir);
+        const results = [];
+        for (const file of files) {
+            if (path_1.default.basename(file) === 'summary.json') {
+                const filePath = path_1.default.resolve(cliOutDir, file);
+                const json = JSON.parse(yield fs.promises.readFile(filePath, 'utf8'));
+                results.push(json);
+            }
+        }
+        return results;
+    });
+}
+exports.readResults = readResults;
 
 
 /***/ }),
