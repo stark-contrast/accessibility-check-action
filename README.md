@@ -1,105 +1,53 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# Accessibility Check Action
 
-# Create a JavaScript Action using TypeScript
+In order for Stark to scan your GitHub web repository, you’ll need to set up a custom workflow. This workflow enables Stark to scan your web repository for accessibility issues.
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
+## Setting up your repository
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+First, create a Github workflow file at `.github/workflows/starkflow.yml`. (The file name is important: that’s how Stark finds the correct workflow to run.)
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+Next, copy and paste  the following template:
+```yml
+name: Stark Web Audit
 
-## Create an action from this template
+on:
+  workflow_dispatch:
+    inputs:
+      token:
+        description: 'Stark Token'
+        required: true
 
-Click the `Use this Template` and provide the new repo details for your action
+jobs:
+  accessibility-audit:
+    runs-on: ubuntu-latest
 
-## Code in Main
+    name: Accessibility Audit
+    steps:
+      - name: Checkout code
+        id: code-checkout
+        uses: actions/checkout@v3
 
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
-
-Install the dependencies  
-```bash
-$ npm install
+      - name: Audit
+        id: stark
+        uses: stark-contrast/accessibility-check-action@0.1.0-beta.0
+        with:
+            # Most of the following values are simply shell commands. You can use these to set up the container as needed for your app
+            token: ${{ github.event.inputs.token }} # The action will use this to send an audit report back to Stark.
+            setup: '' # [Optional] Set up the container. Install some tools, export variables, etc.  
+            prebuild: '' # [Optional] Run any prebuild steps, cd into subdirectories, etc.
+            build: '' # [Optional] Build steps. Use && for multiple steps. 
+            serve: '' # [Optional] Tell us how to serve your app. 
+            wait_time: 5000 # [Required, default 5000] Milliseconds to wait before your app can start serving
+            url: '' # [Required] Where does your app run? e.g. http://localhost:3000.
+            cleanup: '' # [Optional] After scanning, the command running in serve step is auto terminated. Use this to run any cleanup commands.
 ```
 
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
+The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `url`. At a minimum, you’ll want to configure `url` and `wait_time`.
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
+As with any GitHub workflow, you have all the power — all the action needs is the URL to scan. You’re free to configure your workflow however else you want.
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+Once you’ve configured and committed your workflow to the default branch of your repository, you’re all set, and can now [return to your Stark project](https://account.getstark.co/projects) and run accessibility scans.
 
-...
-```
+## Implementation Details
 
-## Change action.yml
-
-The action.yml defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
-
-```yaml
-uses: ./
-with:
-  milliseconds: 1000
-```
-
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
-
-## Usage:
-
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+Internally, the Stark Github action runs its code inside a `node-16` process. The process passes everything written within the `setup`, `prebuild`, `build`, `serve`, and `cleanup` parameters to the default shell on the image. That gives you the ability to run any kind of script you would like within these commands. The `serve` argument is slightly different: it starts a detached process that is killed automatically when our step ends. If you would like to explicitly kill the process (for instance, to safely close some database connections), use the `cleanup` script.
