@@ -1,5 +1,6 @@
 name: 'test-gh-data'
 on: 
+    pull_request:
     push:
       branches:
         - develop
