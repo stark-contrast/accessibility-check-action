@@ -1,10 +1,6 @@
-name: 'build-test'
+name: 'test-gh-data'
 on: # rebuild any PRs and main branch changes
-  pull_request:
-  push:
-    branches:
-      - main
-      - 'releases/*'
+  workflow_dispatch:
 
 jobs:
   build: # make sure build/ci work properly
