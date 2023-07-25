@@ -84,4 +84,6 @@ async function run(): Promise<void> {
   return
 }
 
-run()
+//run()
+
+console.log(JSON.stringify(github))

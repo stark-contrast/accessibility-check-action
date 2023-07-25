@@ -1,52 +1,6 @@
-# action.yml
-name: 'Stark Accessibility Checker'
-description: "Run your server on github's infra and scan for accessibility issues with Stark's tooling"
-inputs:
-  setup: # set up the container
-    description: 'Set up the current container. Here you can install dependencies related to the container. Eg install a node version. Use the node version.'
-    required: true
-    default: 'echo "Nothing to setup"'
-  prebuild: # install project dependencies
-    description: 'Install project dependencies. Eg npm install'
-    required: true
-    default: 'echo "Nothing to prebuild"'
-  build:  # build the project
-    description: 'Build the project. E.g npm build'
-    required: true
-    default: 'echo "Nothing to build"'
-  serve:  # serve the project on localhost
-    description: 'Serve the project. E.g npm start'
-    required: true
-    default: 'echo "Nothing to serve"'
-  cleanup:
-    description: 'Run a cleanup if needed.'
-    required: true
-    default: 'echo "Nothing to cleanup"'
-  url:
-    description: 'Url that needs to be scanned. http:localhost:1337/'
-    required: true
-    default: 'https://getstark.co'
-  wait_time:
-    description: "Time in milliseconds to wait before running the scanner. A rough time delay for your server to start"
-    required: true
-    default: 5000
-  min_score:
-    description: "Minimum score for the action to pass. A number from 0 to 100"
-    required: true
-    default: 0
-  token:
-    description: "Stark token required to send data back to stark web. The cli doesn't post data if token is not provided"
-    required: false
+name: 'Your name here'
+description: 'Provide a description here'
+author: 'Your name or organization here'
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.setup }}
-    - ${{ inputs.prebuild }}
-    - ${{ inputs.build }}
-    - ${{ inputs.serve }}
-    - ${{ inputs.cleanup }}
-    - ${{ inputs.url }}
-    - ${{ inputs.min_score }}
-    - ${{ inputs.wait_time }}
-    - ${{ inputs.token }}
+  using: 'node16'
+  main: 'dist/index.js'
