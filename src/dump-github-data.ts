@@ -2,7 +2,7 @@ import * as fs from 'fs/promises'
 import {pick} from 'lodash'
 import * as path from 'path'
 
-export async function dumpGithubData(github: any) {
+export async function dumpGithubData(github: object): Promise<string> {
   const dirName = '.stark-metadata'
   const fileName = 'github.json'
   const fullDirPath = path.join(dirName)
@@ -23,6 +23,9 @@ export async function dumpGithubData(github: any) {
   ]
   const githubData = pick(github, ...requiredProps)
   await fs.mkdir(dirName)
-  await fs.writeFile(path.join(fullDirPath, fileName), JSON.stringify(githubData))
+  await fs.writeFile(
+    path.join(fullDirPath, fileName),
+    JSON.stringify(githubData)
+  )
   return fullDirPath
 }

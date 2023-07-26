@@ -5,7 +5,7 @@ import * as exec from '@actions/exec'
 import {execa, $} from 'execa'
 import {wait} from './wait'
 import {readResults} from './read-results'
-import { dumpGithubData } from './dump-github-data'
+import {dumpGithubData} from './dump-github-data'
 
 const setupScript = core.getInput('setup', {required: true})
 const preBuildScript = core.getInput('prebuild', {required: true})
@@ -52,10 +52,11 @@ async function run(): Promise<void> {
   }
   try {
     const metadataDir = await dumpGithubData(github)
-    if(!!metadataDir)
-        params.push('--metadata', metadataDir)
+    if (metadataDir) params.push('--metadata', metadataDir)
   } catch (error) {
-    core.info('Could not dump github metadata to file. Continuing without metadata')
+    core.info(
+      'Could not dump github metadata to file. Continuing without metadata'
+    )
   }
   // TODO: Check run id
   await execa('stark-accessibility', params, {
@@ -92,4 +93,3 @@ async function run(): Promise<void> {
 }
 
 run()
-
