@@ -5,7 +5,7 @@ import * as exec from '@actions/exec'
 import {execa, $} from 'execa'
 import {wait} from './wait'
 import {readResults} from './read-results'
-import {dumpGithubData} from './dump-github-data'
+import {dumpMetadata} from './metadata'
 
 const setupScript = core.getInput('setup', {required: true})
 const preBuildScript = core.getInput('prebuild', {required: true})
@@ -51,7 +51,7 @@ async function run(): Promise<void> {
     params.push('--run-id', token)
   }
   try {
-    const metadataDir = await dumpGithubData(github)
+    const metadataDir = await dumpMetadata(github, 'github')
     if (metadataDir) params.push('--metadata', metadataDir)
   } catch (error) {
     core.info(
