@@ -7,11 +7,14 @@ const DIRNAME = '.stark-metadata'
 type MetadataType = 'github'
 type Metadata = Partial<Record<MetadataType, object>>
 
-export async function dumpMetadata(data: object, type: MetadataType): Promise<string> {
-  const metadata:Metadata  = {}
+export async function dumpMetadata(
+  data: object,
+  type: MetadataType
+): Promise<string> {
+  const metadata: Metadata = {}
   let extractedData = {}
-  switch(type) {
-    case 'github': 
+  switch (type) {
+    case 'github':
       extractedData = extractGithubData(data)
       break
     default:
@@ -42,13 +45,13 @@ export function extractGithubData(github: object): object {
 }
 
 export async function dumpDataToFile(data: Metadata): Promise<string> {
-  try { 
+  try {
     await fs.access(DIRNAME)
   } catch {
     await fs.mkdir(DIRNAME)
   }
   const fullDirPath = path.join(DIRNAME)
-  for(const key of Object.keys(data)) {
+  for (const key of Object.keys(data)) {
     const fileName = `${key}.json`
     const fileData = data[key as keyof Metadata]
     await fs.writeFile(

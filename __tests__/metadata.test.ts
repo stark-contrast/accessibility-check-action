@@ -1,12 +1,11 @@
 import {dumpDataToFile, dumpMetadata, extractGithubData} from '../src/metadata'
 import {expect, test} from '@jest/globals'
 import * as fs from 'fs/promises'
-import {  pick } from 'lodash'
-import { describe } from 'node:test'
+import {pick} from 'lodash'
+import {describe} from 'node:test'
 
 describe('extractGithubData', () => {
-
-  test('should extract correct data for github',async () => {
+  test('should extract correct data for github', async () => {
     const testData = JSON.parse(
       await fs.readFile('__tests__/mocks/github.json', 'utf-8')
     )
@@ -61,24 +60,31 @@ describe('extractGithubData', () => {
         graphqlUrl: 'https://api.github.com/graphql'
       }
     }
-    const modifiedData = pick(testData, ...['context.eventName', 'context.sha','context.ref','context.graphqlUrl'])
+    const modifiedData = pick(
+      testData,
+      ...[
+        'context.eventName',
+        'context.sha',
+        'context.ref',
+        'context.graphqlUrl'
+      ]
+    )
     const extractedData = extractGithubData(modifiedData)
     expect(extractedData).toEqual(expectedData)
   })
 })
 
 describe('dumpDataToFile', () => {
-
-  test('should create .stark-metadata/file.json even if directory doesn\'t exist', async () => {
+  test("should create .stark-metadata/file.json even if directory doesn't exist", async () => {
     // @ts-ignore
-    const dirPath = await dumpDataToFile({'file': { 'test': 'test'}  })
+    const dirPath = await dumpDataToFile({file: {test: 'test'}})
     const files = await fs.readdir(dirPath)
     await fs.rm('.stark-metadata', {recursive: true, force: true})
     expect(files).toContain('file.json')
   })
   test('should create .stark-metadata/github.json even if directory already exists', async () => {
     await fs.mkdir('.stark-metadata')
-    const dirPath = await dumpDataToFile({github: { 'test': 'test'}  })
+    const dirPath = await dumpDataToFile({github: {test: 'test'}})
     const files = await fs.readdir(dirPath)
     await fs.rm('.stark-metadata', {recursive: true, force: true})
     expect(files).toContain('github.json')
@@ -126,7 +132,9 @@ describe('dumpMetadata', () => {
       }
     }
     const dirPath = await dumpMetadata(testData, 'github')
-    const outData = JSON.parse( await fs.readFile(`${dirPath}/github.json`, 'utf-8'))
+    const outData = JSON.parse(
+      await fs.readFile(`${dirPath}/github.json`, 'utf-8')
+    )
     await fs.rm('.stark-metadata', {recursive: true, force: true})
     expect(outData).toEqual(expectedData)
   })
