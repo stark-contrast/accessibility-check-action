@@ -5,6 +5,7 @@ import * as exec from '@actions/exec'
 import {execa, $} from 'execa'
 import {wait} from './wait'
 import {readResults} from './read-results'
+import {dumpMetadata} from './metadata'
 
 const setupScript = core.getInput('setup', {required: true})
 const preBuildScript = core.getInput('prebuild', {required: true})
@@ -49,7 +50,14 @@ async function run(): Promise<void> {
     params.push('--stark-token', token)
     params.push('--run-id', token)
   }
-  params.push('--metadata', JSON.stringify(github.context.workflow))
+  try {
+    const metadataDir = await dumpMetadata(github, 'github')
+    if (metadataDir) params.push('--metadata', metadataDir)
+  } catch (error) {
+    core.info(
+      'Could not dump github metadata to file. Continuing without metadata'
+    )
+  }
   // TODO: Check run id
   await execa('stark-accessibility', params, {
     stdio: 'inherit'

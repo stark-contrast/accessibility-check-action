@@ -15,10 +15,10 @@ RUN apt-get update \
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /stark_ga/entrypoint.sh
 COPY dist /stark_ga/dist
-COPY blobs/stark-accessibility-cli-0.1.0-beta.0.tgz /stark_ga/stark-accessibility-cli-0.1.0-beta.0.tgz
+COPY blobs/stark-accessibility-cli-0.2.0-beta.0.tgz /stark_ga/stark-accessibility-cli-0.2.0-beta.0.tgz
 
 # Install stark accessibility cli
-RUN npm i -g /stark_ga/stark-accessibility-cli-0.1.0-beta.0.tgz \
+RUN npm i -g /stark_ga/stark-accessibility-cli-0.2.0-beta.0.tgz \
     && stark-accessibility --version
 
 # TODO: symlink /root/.local-chromium to $GITHUB_HOME/.local-chromium to avoid double install or remove install from this step.
