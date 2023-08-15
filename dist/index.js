@@ -30310,6 +30310,7 @@ const signalsByNumber=getSignalsByNumber();
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/error.js
 
 
+
 const getErrorPrefix = ({timedOut, timeout, errorCode, signal, signalDescription, exitCode, isCanceled}) => {
 	if (timedOut) {
 		return `timed out after ${timeout} milliseconds`;
@@ -30346,7 +30347,7 @@ const makeError = ({
 	timedOut,
 	isCanceled,
 	killed,
-	parsed: {options: {timeout}},
+	parsed: {options: {timeout, cwd = external_node_process_namespaceObject.cwd()}},
 }) => {
 	// `signal` and `exitCode` emitted on `spawned.on('exit')` event can be `null`.
 	// We normalize them to `undefined`
@@ -30377,6 +30378,7 @@ const makeError = ({
 	error.signalDescription = signalDescription;
 	error.stdout = stdout;
 	error.stderr = stderr;
+	error.cwd = cwd;
 
 	if (all !== undefined) {
 		error.all = all;
