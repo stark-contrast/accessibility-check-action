@@ -48,7 +48,7 @@ async function run(): Promise<void> {
   if (token) {
     // TODO: change this to be 2 separate things
     params.push('--stark-token', token)
-    params.push('--run-id', token)
+    params.push('--scan-id', token)
   }
   try {
     const metadataDir = await dumpMetadata(github, 'github')
