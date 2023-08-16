@@ -7,14 +7,19 @@ In order for Stark to scan your GitHub web repository, you’ll need to set up a
 First, create a Github workflow file at `.github/workflows/starkflow.yml`. (The file name is important: that’s how Stark finds the correct workflow to run.)
 
 Next, copy and paste  the following template (update the necessary defaults and remove empty params):
+
 ```yml
 name: Stark Web Audit
+run-name: ${{ github.event.inputs.displayTitle }}
 
 on:
   workflow_dispatch:
     inputs:
       token:
         description: 'Stark Token'
+        required: true
+      displayTitle:
+        description: 'Display title'
         required: true
 
 jobs:
@@ -31,15 +36,39 @@ jobs:
         id: stark
         uses: stark-contrast/accessibility-check-action@0.2.0-beta.0
         with:
-            # Most of the following values are simply shell commands. You can use these to set up the container as needed for your app
-            token: ${{ github.event.inputs.token }} # The action will use this to send an audit report back to Stark.
-            setup: 'nvm install 16 && nvm use 16' # [Optional] Set up the container. Install some tools, export variables, etc.  
-            prebuild:  # [Optional] Run any prebuild steps, cd into subdirectories, etc.
-            build: 'npm run build' # [Optional] Build steps. Use && for multiple steps. 
-            serve:  'SERVER_PORT=3000 && npm run serve' # [Optional] Tell us how to serve your app. 
-            wait_time: 5000 # [Required, default 5000] Milliseconds to wait before your app can start serving
-            url: 'https://localhost' # [Required] Where does your app run? e.g. http://localhost:3000.
-            cleanup: # [Optional] After scanning, the command running in serve step is auto terminated. Use this to run any cleanup commands.
+            # [Required] The token used by the action to send an audit report back to Stark.
+            token: ${{ github.event.inputs.token }}
+
+            # [Optional] Shell commands for setting up the container.
+            # You can use this to install tools, export variables, etc.
+            # Example: 'nvm install 16 && nvm use 16'
+            setup: ''
+            
+            # [Optional] Shell comamnds to run before the app is built.
+            # Run any prebuild steps, cd into subdirectories, etc.
+            prebuild: ''
+
+            # [Optional] Shell commands for building your app.
+            # Example: 'npm run build'
+            build: ''
+
+            # [Optional] Shell commands for serving your app.
+            # This command is slightly different from the others: it runs in a long-lived,
+            # detached process that is only terminated when the scan finishes and our action stops.
+            # Example: 'SERVER_PORT=3000 && npm run serve'
+            serve: ''
+
+            # [Optional] The number of milliseconds to wait before your app is ready.
+            # Defaults to 5000 milliseconds.
+            wait_time: 5000
+
+            # [Required] The URL your app is being served at.
+            # Example: 'http://localhost:3000'
+            url: ''
+
+            # [Optional] Shell commands to run after the action finishes a scan.
+            # Use this to run any cleanup commands.
+            cleanup: ''
 ```
 
 The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `url`. At a minimum, you’ll want to configure `url` and `wait_time`.
