@@ -18,7 +18,7 @@ on:
       token:
         description: 'Stark Token'
         required: true
-      displayTitle:
+      display-title:
         description: 'Display title'
         required: true
 
