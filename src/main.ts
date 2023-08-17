@@ -6,17 +6,19 @@ import {execa, $} from 'execa'
 import {wait} from './wait'
 import {readResults} from './read-results'
 import {dumpMetadata} from './metadata'
+import { parseInputs } from './parse-inputs'
 
-const setupScript = core.getInput('setup', {required: true})
-const preBuildScript = core.getInput('prebuild', {required: true})
-const buildScript = core.getInput('build', {required: true})
-const serveScript = core.getInput('serve', {required: true})
-const cleanupScript = core.getInput('cleanup', {required: true})
-const url = core.getInput('url', {required: true})
-const minScore = core.getInput('min_score', {required: true})
-const sleepTime = core.getInput('wait_time', {required: true})
-const token = core.getInput('token', {required: false})
-// TODO: Need a validator for scripts.
+const {
+  setupScript,
+  preBuildScript,
+  buildScript,
+  serveScript,
+  cleanupScript,
+  url,
+  minScore,
+  sleepTime,
+  token
+} = parseInputs()
 
 async function run(): Promise<void> {
   core.startGroup('Stark Accessibility Checker: Setup')
