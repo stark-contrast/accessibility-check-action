@@ -3,11 +3,11 @@ name: 'Stark Accessibility Checker'
 description: "Run your server on github's infra and scan for accessibility issues with Stark's tooling"
 inputs:
   setup: # set up the container
-    description: 'Set up the current container. Here you can install dependencies related to the container. Eg install a node version. Use the node version.'
+    description: 'Set up the current container. Here you can install dependencies related to the container. E.g. install a node version. Use the node version.'
     required: true
     default: 'echo "Nothing to setup"'
   prebuild: # install project dependencies
-    description: 'Install project dependencies. Eg npm install'
+    description: 'Install project dependencies. E.g. npm install'
     required: true
     default: 'echo "Nothing to prebuild"'
   build:  # build the project
@@ -23,7 +23,7 @@ inputs:
     required: true
     default: 'echo "Nothing to cleanup"'
   url:
-    description: 'Url that needs to be scanned. http:localhost:1337/'
+    description: 'Url that needs to be scanned. E.g http:localhost:1337/'
     required: true
     default: 'https://getstark.co'
   wait_time:
