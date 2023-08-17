@@ -77,6 +77,14 @@ As with any GitHub workflow, you have all the power — all the action needs is 
 
 Once you’ve configured and committed your workflow to the default branch of your repository, you’re all set, and can now [return to your Stark project](https://account.getstark.co/projects) and run accessibility scans.
 
+## Examples
+
+We have several repositories available that demonstrate how you can configure your workflow for popular web tooling:
+
+- [Vite](https://github.com/stark-projects-demos/vite-demo)
+- [Next.js](https://github.com/stark-projects-demos/nextjs-demo)
+- [Gatsby](https://github.com/stark-projects-demos/gatsby-demo)
+
 ## Implementation Details
 
 Internally, the Stark Github action runs its code inside a `node-18` process. The process passes everything written within the `setup`, `prebuild`, `build`, `serve`, and `cleanup` parameters to the default shell on the image. That gives you the ability to run any kind of script you would like within these commands. The `serve` argument is slightly different: it starts a detached process that is killed automatically when our step ends. If you would like to explicitly kill the process (for instance, to safely close some database connections), use the `cleanup` script.
