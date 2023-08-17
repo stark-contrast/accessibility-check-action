@@ -4,7 +4,7 @@ In order for Stark to scan your GitHub web repository, you’ll need to set up a
 
 ## Setting up your repository
 
-First, create a Github workflow file at `.github/workflows/starkflow.yml`. (The file name is important: that’s how Stark finds the correct workflow to run.)
+First, create a GitHub workflow file at `.github/workflows/starkflow.yml`. (The file name is important: that’s how Stark finds the correct workflow to run.)
 
 Next, copy and paste  the following template (update the necessary defaults and remove empty params):
 
