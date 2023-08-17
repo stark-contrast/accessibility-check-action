@@ -10,7 +10,7 @@ Next, copy and paste  the following template (update the necessary defaults and 
 
 ```yml
 name: Stark Web Audit
-run-name: ${{ github.event.inputs.displayTitle }}
+run-name: ${{ github.event.inputs.display-title }}
 
 on:
   workflow_dispatch:
