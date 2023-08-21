@@ -47,16 +47,8 @@ const execa_1 = __nccwpck_require__(9956);
 const wait_1 = __nccwpck_require__(5817);
 const read_results_1 = __nccwpck_require__(3987);
 const metadata_1 = __nccwpck_require__(5708);
-const setupScript = core.getInput('setup', { required: true });
-const preBuildScript = core.getInput('prebuild', { required: true });
-const buildScript = core.getInput('build', { required: true });
-const serveScript = core.getInput('serve', { required: true });
-const cleanupScript = core.getInput('cleanup', { required: true });
-const url = core.getInput('url', { required: true });
-const minScore = core.getInput('min_score', { required: true });
-const sleepTime = core.getInput('wait_time', { required: true });
-const token = core.getInput('token', { required: false });
-// TODO: Need a validator for scripts.
+const parse_inputs_1 = __nccwpck_require__(2639);
+const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, url, minScore, sleepTime, token } = (0, parse_inputs_1.parseInputs)();
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.startGroup('Stark Accessibility Checker: Setup');
@@ -222,6 +214,73 @@ function dumpDataToFile(data) {
     });
 }
 exports.dumpDataToFile = dumpDataToFile;
+
+
+/***/ }),
+
+/***/ 2639:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getCoreInputSafe = exports.parseInputs = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+/**
+ * Function to parse inputs from github action. Replaces empty values with sensible defaults
+ * @returns InputParams
+ */
+function parseInputs() {
+    const setupScript = getCoreInputSafe('setup', 'echo "No setup script"');
+    const preBuildScript = getCoreInputSafe('prebuild', 'echo "No prebuild script"');
+    const buildScript = getCoreInputSafe('build', 'echo "No build script"');
+    const serveScript = getCoreInputSafe('serve', 'echo "No serve script"');
+    const cleanupScript = getCoreInputSafe('cleanup', 'echo "No cleanup script"');
+    // The only required param, should throw an exception on no value or empty value
+    const url = core.getInput('url', { required: true });
+    const minScore = getCoreInputSafe('min_score', '0');
+    const sleepTime = getCoreInputSafe('wait_time', '5000');
+    const token = getCoreInputSafe('token', '');
+    return {
+        setupScript,
+        preBuildScript,
+        buildScript,
+        serveScript,
+        cleanupScript,
+        url,
+        minScore,
+        sleepTime,
+        token
+    };
+}
+exports.parseInputs = parseInputs;
+function getCoreInputSafe(paramName, fallback) {
+    return core.getInput(paramName) || fallback;
+}
+exports.getCoreInputSafe = getCoreInputSafe;
 
 
 /***/ }),

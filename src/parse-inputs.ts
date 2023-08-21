@@ -17,7 +17,10 @@ export type InputParams = {
  */
 export function parseInputs(): InputParams {
   const setupScript = getCoreInputSafe('setup', 'echo "No setup script"')
-  const preBuildScript = getCoreInputSafe('prebuild', 'echo "No prebuild script"')
+  const preBuildScript = getCoreInputSafe(
+    'prebuild',
+    'echo "No prebuild script"'
+  )
   const buildScript = getCoreInputSafe('build', 'echo "No build script"')
   const serveScript = getCoreInputSafe('serve', 'echo "No serve script"')
   const cleanupScript = getCoreInputSafe('cleanup', 'echo "No cleanup script"')
@@ -41,5 +44,5 @@ export function parseInputs(): InputParams {
 }
 
 export function getCoreInputSafe(paramName: string, fallback: string): string {
-    return core.getInput(paramName) || fallback
+  return core.getInput(paramName) || fallback
 }

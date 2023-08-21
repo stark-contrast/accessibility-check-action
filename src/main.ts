@@ -6,7 +6,7 @@ import {execa, $} from 'execa'
 import {wait} from './wait'
 import {readResults} from './read-results'
 import {dumpMetadata} from './metadata'
-import { parseInputs } from './parse-inputs'
+import {parseInputs} from './parse-inputs'
 
 const {
   setupScript,
