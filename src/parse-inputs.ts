@@ -11,7 +11,10 @@ export type InputParams = {
   sleepTime: string
   token: string
 }
-
+/**
+ * Function to parse inputs from github action. Replaces empty values with sensible defaults
+ * @returns InputParams
+ */
 export function parseInputs(): InputParams {
   const setupScript = getCoreInputSafe('setup', 'echo "No setup script"')
   const preBuildScript = getCoreInputSafe('prebuild', 'echo "No prebuild script"')
