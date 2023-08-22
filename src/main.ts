@@ -80,12 +80,15 @@ async function run(): Promise<void> {
     .addHeading(`Accessibility results Summary`)
     .addHeading(url, 4)
     .addTable(tableData)
-  
-  if(results[0].url)
-    core.summary.addLink('View the full results', results[0].url) 
-  else 
-    core.summary.addLink('Connect your stark account', 'https://account.getstark.co/projects') 
-  
+
+  if (results[0].url)
+    core.summary.addLink('View the full results', results[0].url)
+  else
+    core.summary.addLink(
+      'Connect your stark account',
+      'https://account.getstark.co/projects'
+    )
+
   core.summary.addSeparator()
 
   await core.summary.write()

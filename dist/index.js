@@ -106,13 +106,16 @@ function run() {
         for (const data of results[0].data) {
             tableData.push([data.name, `${data.value}  `]);
         }
-        yield core.summary
+        core.summary
             .addHeading(`Accessibility results Summary`)
             .addHeading(url, 4)
-            .addTable(tableData)
-            .addLink('View the full results', 'https://getstark.co') // TODO: Get link
-            .addSeparator()
-            .write();
+            .addTable(tableData);
+        if (results[0].url)
+            core.summary.addLink('View the full results', results[0].url);
+        else
+            core.summary.addLink('Connect your stark account', 'https://account.getstark.co/projects');
+        core.summary.addSeparator();
+        yield core.summary.write();
         core.endGroup();
         core.startGroup('Stark Accessibility Checker: Cleanup');
         yield exec.exec(cleanupScript);
