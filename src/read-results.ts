@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import path from 'path'
 
 export interface ResultData {
+  url: string,
   data: {
     name: string
     value: string

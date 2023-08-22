@@ -76,14 +76,19 @@ async function run(): Promise<void> {
     tableData.push([data.name, `${data.value}  `])
   }
 
-  await core.summary
+  core.summary
     .addHeading(`Accessibility results Summary`)
     .addHeading(url, 4)
     .addTable(tableData)
-    .addLink('View the full results', 'https://getstark.co') // TODO: Get link
-    .addSeparator()
-    .write()
+  
+  if(results[0].url)
+    core.summary.addLink('View the full results', results[0].url) 
+  else 
+    core.summary.addLink('Connect your stark account', 'https://account.getstark.co/projects') 
+  
+  core.summary.addSeparator()
 
+  await core.summary.write()
   core.endGroup()
 
   core.startGroup('Stark Accessibility Checker: Cleanup')
