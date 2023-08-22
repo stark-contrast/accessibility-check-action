@@ -93,7 +93,7 @@ function run() {
             core.info('Could not dump github metadata to file. Continuing without metadata');
         }
         // TODO: Check run id
-        yield (0, execa_1.execa)('stark-accessibility', params, {
+        yield (0, execa_1.execa)('stark-accessibility-test', params, {
             stdio: 'inherit'
         });
         core.info('Shutting down server. Scanning done.');
