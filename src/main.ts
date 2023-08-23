@@ -81,7 +81,9 @@ async function run(): Promise<void> {
     .addHeading(url, 4)
     .addTable(tableData)
 
-  const reportURL = results[0].url ? results[0].url : 'https://account.getstark.co/projects'
+  const reportURL = results[0].url
+    ? results[0].url
+    : 'https://account.getstark.co/projects'
   core.summary.addLink('View the full results', reportURL)
 
   core.summary.addSeparator()
