@@ -1,7 +1,7 @@
 import {afterEach, describe} from 'node:test'
 import {getInput} from '@actions/core'
 import {expect, jest, test} from '@jest/globals'
-import {InputParams, getCoreInputSafe, parseInputs} from '../src/parse-inputs'
+import {InputParams, getCoreInputWithFallback, parseInputs} from '../src/parse-inputs'
 
 jest.mock('@actions/core', () => ({
   getInput: jest.fn()
@@ -10,17 +10,17 @@ jest.mock('@actions/core', () => ({
 describe('getCoreInputSafe', () => {
   test('should return value if it exists', () => {
     ;(getInput as jest.Mock).mockReturnValueOnce('value')
-    const value = getCoreInputSafe('somekey', 'default')
+    const value = getCoreInputWithFallback('somekey', 'default')
     expect(value).toBe('value')
   })
   test('should return default value if it does not exist', () => {
     ;(getInput as jest.Mock).mockReturnValueOnce(undefined)
-    const value = getCoreInputSafe('somekey', 'default')
+    const value = getCoreInputWithFallback('somekey', 'default')
     expect(value).toBe('default')
   })
   test('should return default value if it is empty', () => {
     ;(getInput as jest.Mock).mockReturnValueOnce('')
-    const value = getCoreInputSafe('somekey', 'default')
+    const value = getCoreInputWithFallback('somekey', 'default')
     expect(value).toBe('default')
   })
 })

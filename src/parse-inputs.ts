@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import { isEmpty, isString, isUndefined } from 'lodash'
+import { isEmpty } from 'lodash'
 
 export type InputParams = {
   setupScript: string
@@ -17,19 +17,19 @@ export type InputParams = {
  * @returns InputParams
  */
 export function parseInputs(): InputParams {
-  const setupScript = getCoreInputSafe('setup', 'echo "No setup script"')
-  const preBuildScript = getCoreInputSafe(
+  const setupScript = getCoreInputWithFallback('setup', 'echo "No setup script"')
+  const preBuildScript = getCoreInputWithFallback(
     'prebuild',
     'echo "No prebuild script"'
   )
-  const buildScript = getCoreInputSafe('build', 'echo "No build script"')
-  const serveScript = getCoreInputSafe('serve', 'echo "No serve script"')
-  const cleanupScript = getCoreInputSafe('cleanup', 'echo "No cleanup script"')
+  const buildScript = getCoreInputWithFallback('build', 'echo "No build script"')
+  const serveScript = getCoreInputWithFallback('serve', 'echo "No serve script"')
+  const cleanupScript = getCoreInputWithFallback('cleanup', 'echo "No cleanup script"')
   // The only required param, should throw an exception on no value or empty value
   const url = core.getInput('url', {required: true})
-  const minScore = getCoreInputSafe('min_score', '0')
-  const sleepTime = getCoreInputSafe('wait_time', '5000')
-  const token = getCoreInputSafe('token', '')
+  const minScore = getCoreInputWithFallback('min_score', '0')
+  const sleepTime = getCoreInputWithFallback('wait_time', '5000')
+  const token = getCoreInputWithFallback('token', '')
 
   return {
     setupScript,
@@ -44,7 +44,7 @@ export function parseInputs(): InputParams {
   }
 }
 
-export function getCoreInputSafe(paramName: string, fallback: string): string {
+export function getCoreInputWithFallback(paramName: string, fallback: string): string {
   const inputValue = core.getInput(paramName)
   return !isEmpty(inputValue) ? inputValue : fallback
 }
