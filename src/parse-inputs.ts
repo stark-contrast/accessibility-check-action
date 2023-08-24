@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import { isEmpty } from 'lodash'
+import {isEmpty} from 'lodash'
 
 export type InputParams = {
   setupScript: string
@@ -17,14 +17,26 @@ export type InputParams = {
  * @returns InputParams
  */
 export function parseInputs(): InputParams {
-  const setupScript = getCoreInputWithFallback('setup', 'echo "No setup script"')
+  const setupScript = getCoreInputWithFallback(
+    'setup',
+    'echo "No setup script"'
+  )
   const preBuildScript = getCoreInputWithFallback(
     'prebuild',
     'echo "No prebuild script"'
   )
-  const buildScript = getCoreInputWithFallback('build', 'echo "No build script"')
-  const serveScript = getCoreInputWithFallback('serve', 'echo "No serve script"')
-  const cleanupScript = getCoreInputWithFallback('cleanup', 'echo "No cleanup script"')
+  const buildScript = getCoreInputWithFallback(
+    'build',
+    'echo "No build script"'
+  )
+  const serveScript = getCoreInputWithFallback(
+    'serve',
+    'echo "No serve script"'
+  )
+  const cleanupScript = getCoreInputWithFallback(
+    'cleanup',
+    'echo "No cleanup script"'
+  )
   // The only required param, should throw an exception on no value or empty value
   const url = core.getInput('url', {required: true})
   const minScore = getCoreInputWithFallback('min_score', '0')
@@ -44,7 +56,10 @@ export function parseInputs(): InputParams {
   }
 }
 
-export function getCoreInputWithFallback(paramName: string, fallback: string): string {
+export function getCoreInputWithFallback(
+  paramName: string,
+  fallback: string
+): string {
   const inputValue = core.getInput(paramName)
   return !isEmpty(inputValue) ? inputValue : fallback
 }

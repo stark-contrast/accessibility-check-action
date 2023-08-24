@@ -1,7 +1,11 @@
 import {afterEach, describe} from 'node:test'
 import {getInput} from '@actions/core'
 import {expect, jest, test} from '@jest/globals'
-import {InputParams, getCoreInputWithFallback, parseInputs} from '../src/parse-inputs'
+import {
+  InputParams,
+  getCoreInputWithFallback,
+  parseInputs
+} from '../src/parse-inputs'
 
 jest.mock('@actions/core', () => ({
   getInput: jest.fn()

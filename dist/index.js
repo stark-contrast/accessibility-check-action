@@ -250,23 +250,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getCoreInputSafe = exports.parseInputs = void 0;
+exports.getCoreInputWithFallback = exports.parseInputs = void 0;
 const core = __importStar(__nccwpck_require__(2186));
+const lodash_1 = __nccwpck_require__(250);
 /**
  * Function to parse inputs from github action. Replaces empty values with sensible defaults
  * @returns InputParams
  */
 function parseInputs() {
-    const setupScript = getCoreInputSafe('setup', 'echo "No setup script"');
-    const preBuildScript = getCoreInputSafe('prebuild', 'echo "No prebuild script"');
-    const buildScript = getCoreInputSafe('build', 'echo "No build script"');
-    const serveScript = getCoreInputSafe('serve', 'echo "No serve script"');
-    const cleanupScript = getCoreInputSafe('cleanup', 'echo "No cleanup script"');
+    const setupScript = getCoreInputWithFallback('setup', 'echo "No setup script"');
+    const preBuildScript = getCoreInputWithFallback('prebuild', 'echo "No prebuild script"');
+    const buildScript = getCoreInputWithFallback('build', 'echo "No build script"');
+    const serveScript = getCoreInputWithFallback('serve', 'echo "No serve script"');
+    const cleanupScript = getCoreInputWithFallback('cleanup', 'echo "No cleanup script"');
     // The only required param, should throw an exception on no value or empty value
     const url = core.getInput('url', { required: true });
-    const minScore = getCoreInputSafe('min_score', '0');
-    const sleepTime = getCoreInputSafe('wait_time', '5000');
-    const token = getCoreInputSafe('token', '');
+    const minScore = getCoreInputWithFallback('min_score', '0');
+    const sleepTime = getCoreInputWithFallback('wait_time', '5000');
+    const token = getCoreInputWithFallback('token', '');
     return {
         setupScript,
         preBuildScript,
@@ -280,10 +281,11 @@ function parseInputs() {
     };
 }
 exports.parseInputs = parseInputs;
-function getCoreInputSafe(paramName, fallback) {
-    return core.getInput(paramName) || fallback;
+function getCoreInputWithFallback(paramName, fallback) {
+    const inputValue = core.getInput(paramName);
+    return !(0, lodash_1.isEmpty)(inputValue) ? inputValue : fallback;
 }
-exports.getCoreInputSafe = getCoreInputSafe;
+exports.getCoreInputWithFallback = getCoreInputWithFallback;
 
 
 /***/ }),
