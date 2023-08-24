@@ -85,7 +85,7 @@ function run() {
             core.info('Could not dump github metadata to file. Continuing without metadata');
         }
         // TODO: Check run id
-        yield (0, execa_1.execa)('stark-accessibility', params, {
+        yield (0, execa_1.execa)('stark-accessibility-test', params, {
             stdio: 'inherit'
         });
         core.info('Shutting down server. Scanning done.');
@@ -98,13 +98,16 @@ function run() {
         for (const data of results[0].data) {
             tableData.push([data.name, `${data.value}  `]);
         }
-        yield core.summary
+        core.summary
             .addHeading(`Accessibility results Summary`)
             .addHeading(url, 4)
-            .addTable(tableData)
-            .addLink('View the full results', 'https://getstark.co') // TODO: Get link
-            .addSeparator()
-            .write();
+            .addTable(tableData);
+        const reportURL = results[0].url
+            ? results[0].url
+            : 'https://account.getstark.co/projects';
+        core.summary.addLink('View full results', reportURL);
+        core.summary.addSeparator();
+        yield core.summary.write();
         core.endGroup();
         core.startGroup('Stark Accessibility Checker: Cleanup');
         yield exec.exec(cleanupScript);

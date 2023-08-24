@@ -61,7 +61,7 @@ async function run(): Promise<void> {
     )
   }
   // TODO: Check run id
-  await execa('stark-accessibility', params, {
+  await execa('stark-accessibility-test', params, {
     stdio: 'inherit'
   })
 
@@ -78,14 +78,19 @@ async function run(): Promise<void> {
     tableData.push([data.name, `${data.value}  `])
   }
 
-  await core.summary
+  core.summary
     .addHeading(`Accessibility results Summary`)
     .addHeading(url, 4)
     .addTable(tableData)
-    .addLink('View the full results', 'https://getstark.co') // TODO: Get link
-    .addSeparator()
-    .write()
 
+  const reportURL = results[0].url
+    ? results[0].url
+    : 'https://account.getstark.co/projects'
+  core.summary.addLink('View full results', reportURL)
+
+  core.summary.addSeparator()
+
+  await core.summary.write()
   core.endGroup()
 
   core.startGroup('Stark Accessibility Checker: Cleanup')
