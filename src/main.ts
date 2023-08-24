@@ -61,7 +61,7 @@ async function run(): Promise<void> {
     )
   }
   // TODO: Check run id
-  await execa('stark-accessibility-test', params, {
+  await execa('stark-accessibility', params, {
     stdio: 'inherit'
   })
 
