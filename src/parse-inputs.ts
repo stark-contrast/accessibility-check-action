@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import { isEmpty, isString, isUndefined } from 'lodash'
 
 export type InputParams = {
   setupScript: string
@@ -44,5 +45,6 @@ export function parseInputs(): InputParams {
 }
 
 export function getCoreInputSafe(paramName: string, fallback: string): string {
-  return core.getInput(paramName) || fallback
+  const inputValue = core.getInput(paramName)
+  return !isEmpty(inputValue) ? inputValue : fallback
 }
