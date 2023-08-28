@@ -1,1 +1,1 @@
-{"runId":"summary","type":"pass","data":[{"name":"score","value":94.20289855072464},{"name":"passed","value":65},{"name":"failed","value":3},{"name":"potentials","value":1}]}
+{"runId":"summary","url":"testurl","type":"pass","data":[{"name":"score","value":94.20289855072464},{"name":"passed","value":65},{"name":"failed","value":3},{"name":"potentials","value":1}]}
