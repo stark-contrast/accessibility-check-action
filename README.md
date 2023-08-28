@@ -1,12 +1,25 @@
-# Accessibility Check Action
+# accessibility-check-action
 
-In order for Stark to scan your GitHub web repository, you’ll need to set up a custom workflow. This workflow enables Stark to scan your web repository for accessibility issues.
+## Table of Contents
 
-## Setting up your repository
+- [Basic Usage](#basic-usage)
+- [Usage with Stark Projects](#usage-with-stark-projects)
+- [More Examples](#more-examples)
+- [Technical Details](#technical-details)
 
-First, create a GitHub workflow file at `.github/workflows/starkflow.yml`. (The file name is important: that’s how Stark finds the correct workflow to run.)
+## Basic Usage
 
-Next, copy and paste  the following template (update the necessary defaults and remove empty params):
+Basic usage of the action is exactly as shown in the next section's template, except you don't need to provide the action a `token`.
+
+## Usage with Stark Projects
+
+### Setting up a repository's workflow
+
+To use Stark Projects to scan your Github repositories for accessibility issues, you’ll need to set up custom workflows in those repositories.
+
+Begin by creating a GitHub workflow file at `.github/workflows/starkflow.yml`. Using the right file path and name is important, otherwise Stark won't be able to scan your repository.
+
+Next, use the following template for your workflow, updating the appropriate values as indicated:
 
 ```yml
 name: Stark Web Audit
@@ -16,7 +29,7 @@ on:
   workflow_dispatch:
     inputs:
       token:
-        description: 'Stark Token'
+        description: 'Stark token'
         required: true
       display-title:
         description: 'Display title'
@@ -36,7 +49,8 @@ jobs:
         id: stark
         uses: stark-contrast/accessibility-check-action@0.2.0-beta.0
         with:
-            # [Required] The token used by the action to send an audit report back to Stark.
+            # [Required when used with Stark Projects]
+            # The token used by the action to send an audit report back to Stark.
             token: ${{ github.event.inputs.token }}
 
             # [Optional] Shell commands for setting up the container.
@@ -77,7 +91,7 @@ As with any GitHub workflow, you have all the power — all the action needs is 
 
 Once you’ve configured and committed your workflow to the default branch of your repository, you’re all set, and can now [return to your Stark project](https://account.getstark.co/projects) and run accessibility scans.
 
-## Examples
+## More Examples
 
 We have several repositories available that demonstrate how you can configure your workflow for popular web tooling:
 
@@ -85,6 +99,6 @@ We have several repositories available that demonstrate how you can configure yo
 - [Next.js](https://github.com/stark-projects-demos/nextjs-demo)
 - [Gatsby](https://github.com/stark-projects-demos/gatsby-demo)
 
-## Implementation Details
+## Technical Details
 
 Internally, the Stark Github action runs its code inside a `node-18` process. The process passes everything written within the `setup`, `prebuild`, `build`, `serve`, and `cleanup` parameters to the default shell on the image. That gives you the ability to run any kind of script you would like within these commands. The `serve` argument is slightly different: it starts a detached process that is killed automatically when our step ends. If you would like to explicitly kill the process (for instance, to safely close some database connections), use the `cleanup` script.
