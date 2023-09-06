@@ -7,11 +7,11 @@
 - [More Examples](#more-examples)
 - [Technical Details](#technical-details)
 
-## Basic Usage
+## Usage
 
-Basic usage of the action is exactly as shown in the next section's template, except you don't need to provide the action a `token`.
+Usage of the action is exactly as shown in the next section's template, except you don't need to provide the action a `token`.
 
-## Usage with Stark Projects
+## Connecting with Stark Projects
 
 ### Setting up a repository's workflow
 
@@ -28,9 +28,11 @@ run-name: ${{ github.event.inputs.display-title }}
 on:
   workflow_dispatch:
     inputs:
+      # Used to send this scan's results back to Stark.
       token:
         description: 'Stark token'
         required: true
+      # Allows Stark to identify this scan.
       display-title:
         description: 'Display title'
         required: true
@@ -49,7 +51,7 @@ jobs:
         id: stark
         uses: stark-contrast/accessibility-check-action@0.2.0-beta.0
         with:
-            # [Required when used with Stark Projects]
+            # [Optional; only required when used with Stark Projects]
             # The token used by the action to send an audit report back to Stark.
             token: ${{ github.event.inputs.token }}
 
