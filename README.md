@@ -2,8 +2,8 @@
 
 ## Table of Contents
 
-- [Basic Usage](#basic-usage)
-- [Usage with Stark Projects](#usage-with-stark-projects)
+- [Usage](#usage)
+- [Connecting with Stark Projects](#connecting-with-stark-projects)
 - [More Examples](#more-examples)
 - [Technical Details](#technical-details)
 
