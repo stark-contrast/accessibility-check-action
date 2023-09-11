@@ -1,6 +1,9 @@
 # action.yml
 name: 'Stark Accessibility Checker'
 description: "Run your server on github's infra and scan for accessibility issues with Stark's tooling"
+branding:
+  icon: 'code'
+  color: 'purple'
 inputs:
   setup: # set up the container
     description: 'Set up the current container. Here you can install dependencies related to the container. E.g. install a node version. Use the node version.'
