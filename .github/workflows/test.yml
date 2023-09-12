@@ -10,7 +10,7 @@ jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           npm install
       - run: |
@@ -18,9 +18,9 @@ jobs:
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           url: 'http://localhost:3000'
-          prebuild: 'npx --yes create-next-app@latest test-app --use-npm --example "https://github.com/vercel/next-learn/tree/master/basics/learn-starter"'
+          prebuild: 'npx --yes create-next-app@latest test-app --use-npm --example "https://github.com/vercel/next-learn/tree/main/basics/learn-starter"'
           serve: 'cd test-app && npm run dev'
