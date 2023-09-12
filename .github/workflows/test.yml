@@ -22,5 +22,5 @@ jobs:
       - uses: ./
         with:
           url: 'http://localhost:3000'
-          prebuild: 'npx --yes create-next-app@latest test-app --use-npm --example "https://github.com/vercel/next-learn/tree/master/basics/learn-starter"'
+          prebuild: 'npx --yes create-next-app@latest test-app --use-npm --example "https://github.com/vercel/next-learn/tree/main/basics/learn-starter"'
           serve: 'cd test-app && npm run dev'
