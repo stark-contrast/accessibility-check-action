@@ -1,7 +1,6 @@
 import * as path from 'path'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import * as exec from '@actions/exec'
 import {execa, $} from 'execa'
 import {wait} from './wait'
 import {readResults} from './read-results'
@@ -20,17 +19,19 @@ const {
   token
 } = parseInputs()
 
+const shCommand = $({shell: true}) 
+
 async function run(): Promise<void> {
   core.startGroup('Stark Accessibility Checker: Setup')
-  await exec.exec(setupScript)
+  await shCommand`${setupScript}`
   core.endGroup()
 
   core.startGroup('Stark Accessibility Checker: Prebuild')
-  await exec.exec(preBuildScript)
+  await shCommand`${preBuildScript}`
   core.endGroup()
 
   core.startGroup('Stark Accessibility Checker: Build')
-  await exec.exec(buildScript)
+  await shCommand`${buildScript}`
   core.endGroup()
 
   core.startGroup('Stark Accessibility Checker: Serve & Scan')
@@ -94,7 +95,7 @@ async function run(): Promise<void> {
   core.endGroup()
 
   core.startGroup('Stark Accessibility Checker: Cleanup')
-  await exec.exec(cleanupScript)
+  await shCommand`${cleanupScript}`
   core.endGroup()
   return
 }
