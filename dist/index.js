@@ -48,7 +48,7 @@ const read_results_1 = __nccwpck_require__(3987);
 const metadata_1 = __nccwpck_require__(5708);
 const parse_inputs_1 = __nccwpck_require__(2639);
 const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, url, minScore, sleepTime, token } = (0, parse_inputs_1.parseInputs)();
-const shCommand = (0, execa_1.$)({ shell: true });
+const shCommand = (0, execa_1.$)({ shell: true, stdio: 'inherit' });
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.startGroup('Stark Accessibility Checker: Setup');
