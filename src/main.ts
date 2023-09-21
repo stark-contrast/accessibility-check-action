@@ -19,7 +19,7 @@ const {
   token
 } = parseInputs()
 
-const shCommand = $({shell: true})
+const shCommand = $({shell: true, stdio: 'inherit'})
 
 async function run(): Promise<void> {
   core.startGroup('Stark Accessibility Checker: Setup')
