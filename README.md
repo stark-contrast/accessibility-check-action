@@ -78,9 +78,12 @@ jobs:
             # Defaults to 5000 milliseconds.
             wait_time: 5000
 
-            # [Required] The URL your app is being served at.
-            # Example: 'http://localhost:3000'
-            url: ''
+            # [Required] The URLs your app is being served at. Urls can be named or unnamed
+            # Example: |-
+            #          homepage:http://localhost:3000
+            #          about:http://localhost:3000/about
+            #          http://localhost:3000/help
+            urls: 
 
             # [Optional] Shell commands to run after the action finishes a scan.
             # Use this to run any cleanup commands.
