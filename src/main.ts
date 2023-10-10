@@ -7,6 +7,7 @@ import {wait} from './wait'
 import {readResults} from './read-results'
 import {dumpMetadata} from './metadata'
 import {parseInputs} from './parse-inputs'
+import { writeSummary } from './write-summary'
 
 const {
   setupScript,
@@ -71,30 +72,11 @@ async function run(): Promise<void> {
 
   core.info('Shutting down server. Scanning done.')
   childProcess.unref()
+  core.endGroup()
 
+  core.startGroup('Writing action summary')
   const cliOutDir = path.resolve(process.cwd(), './.stark-contrast/')
-  const results = await readResults(cliOutDir)
-
-  //TODO: Format better. Add error checking
-  const tableData = []
-  //TODO: Handling if results = []
-  for (const data of results[0].data) {
-    tableData.push([data.name, `${data.value}  `])
-  }
-
-  core.summary
-    .addHeading(`Accessibility results Summary`)
-    .addHeading(url, 4)
-    .addTable(tableData)
-
-  const reportURL = results[0].url
-    ? results[0].url
-    : 'https://account.getstark.co/projects'
-  core.summary.addLink('View full results', reportURL)
-
-  core.summary.addSeparator()
-
-  await core.summary.write()
+  await writeSummary(cliOutDir)
   core.endGroup()
 
   core.startGroup('Stark Accessibility Checker: Cleanup')
