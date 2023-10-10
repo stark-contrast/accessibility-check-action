@@ -9,7 +9,8 @@ import {
 } from '../src/parse-inputs'
 
 jest.mock('@actions/core', () => ({
-  getInput: jest.fn()
+  getInput: jest.fn(),
+  debug: jest.fn()
 }))
 
 describe('getCoreInputSafe', () => {
