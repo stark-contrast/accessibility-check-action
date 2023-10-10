@@ -282,10 +282,9 @@ exports.getCoreInputWithFallback = getCoreInputWithFallback;
 /**
  * Accepts the actions list of urls and parses them to an array.
  *
- * @param input List of secrets, from the actions input, can be
- * comma-delimited or newline, whitespace around secret entires is removed.
- * @returns Array of References for each secret, in the same order they were
- * given.
+ * @param input List of urls, from the actions input, can be
+ * comma-delimited or newline, whitespace is removed.
+ * @returns Array of urls
  */
 function parseUrls(input) {
     return input

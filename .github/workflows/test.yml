@@ -23,6 +23,7 @@ jobs:
         with:
           url: '
             http://localhost:3000
+            
             https://nextjs.org/docs
             '
           prebuild: 'npx --yes create-next-app@latest test-app --use-npm --example "https://github.com/vercel/next-learn/tree/main/basics/learn-starter"'
