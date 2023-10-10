@@ -36,7 +36,8 @@ describe('parseInput', () => {
   })
   test('should return correct default values', () => {
     ;(getInput as jest.Mock).mockImplementation(key => {
-      const multilineUrls = 'localhost:3000/test \n\
+      const multilineUrls =
+        'localhost:3000/test \n\
       localhost:3000/about'
       return key === 'url' ? multilineUrls : ''
     })
@@ -68,7 +69,8 @@ describe('parseInput', () => {
 
 describe('parseUrls', () => {
   test('should trim whitespaces', () => {
-    const multiUrlString = '      localhost:3000/test\n          http://localhost:5000/test'
+    const multiUrlString =
+      '      localhost:3000/test\n          http://localhost:5000/test'
     const urls = parseUrls(multiUrlString)
 
     const expected = ['localhost:3000/test', 'http://localhost:5000/test']
@@ -76,7 +78,8 @@ describe('parseUrls', () => {
   })
 
   test('should skip empty lines', () => {
-    const multiUrlString = '\n\
+    const multiUrlString =
+      '\n\
     localhost:3000/test\n\
     http://localhost:5000/test'
     const urls = parseUrls(multiUrlString)

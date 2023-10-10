@@ -4,10 +4,9 @@ import * as github from '@actions/github'
 import * as exec from '@actions/exec'
 import {execa, $} from 'execa'
 import {wait} from './wait'
-import {readResults} from './read-results'
 import {dumpMetadata} from './metadata'
 import {parseInputs} from './parse-inputs'
-import { writeSummary } from './write-summary'
+import {writeSummary} from './write-summary'
 
 const {
   setupScript,
@@ -48,9 +47,11 @@ async function run(): Promise<void> {
   await wait(Number.parseInt(sleepTime))
   // TODO: Also pipe to logs
   const params = ['scan', '--min-score', minScore]
-  
+
   // Push all urls as params
-  urls.forEach(url => params.push('--url', url))
+  for (const url of urls) {
+    params.push('--url', url)
+  }
 
   if (token) {
     // TODO: change this to be 2 separate things

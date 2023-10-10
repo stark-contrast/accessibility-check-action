@@ -45,10 +45,10 @@ const github = __importStar(__nccwpck_require__(5438));
 const exec = __importStar(__nccwpck_require__(1514));
 const execa_1 = __nccwpck_require__(9956);
 const wait_1 = __nccwpck_require__(5817);
-const read_results_1 = __nccwpck_require__(3987);
 const metadata_1 = __nccwpck_require__(5708);
 const parse_inputs_1 = __nccwpck_require__(2639);
-const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, url, minScore, sleepTime, token } = (0, parse_inputs_1.parseInputs)();
+const write_summary_1 = __nccwpck_require__(242);
+const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token } = (0, parse_inputs_1.parseInputs)();
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.startGroup('Stark Accessibility Checker: Setup');
@@ -70,7 +70,11 @@ function run() {
         }) `${serveScript}`;
         yield (0, wait_1.wait)(Number.parseInt(sleepTime));
         // TODO: Also pipe to logs
-        const params = ['scan', '--url', url, '--min-score', minScore];
+        const params = ['scan', '--min-score', minScore];
+        // Push all urls as params
+        for (const url of urls) {
+            params.push('--url', url);
+        }
         if (token) {
             // TODO: change this to be 2 separate things
             params.push('--stark-token', token);
@@ -90,24 +94,10 @@ function run() {
         });
         core.info('Shutting down server. Scanning done.');
         childProcess.unref();
+        core.endGroup();
+        core.startGroup('Writing action summary');
         const cliOutDir = path.resolve(process.cwd(), './.stark-contrast/');
-        const results = yield (0, read_results_1.readResults)(cliOutDir);
-        //TODO: Format better. Add error checking
-        const tableData = [];
-        //TODO: Handling if results = []
-        for (const data of results[0].data) {
-            tableData.push([data.name, `${data.value}  `]);
-        }
-        core.summary
-            .addHeading(`Accessibility results Summary`)
-            .addHeading(url, 4)
-            .addTable(tableData);
-        const reportURL = results[0].url
-            ? results[0].url
-            : 'https://account.getstark.co/projects';
-        core.summary.addLink('View full results', reportURL);
-        core.summary.addSeparator();
-        yield core.summary.write();
+        yield (0, write_summary_1.writeSummary)(cliOutDir);
         core.endGroup();
         core.startGroup('Stark Accessibility Checker: Cleanup');
         yield exec.exec(cleanupScript);
@@ -250,7 +240,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getCoreInputWithFallback = exports.parseInputs = void 0;
+exports.parseUrls = exports.getCoreInputWithFallback = exports.parseInputs = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const lodash_1 = __nccwpck_require__(250);
 /**
@@ -264,7 +254,8 @@ function parseInputs() {
     const serveScript = getCoreInputWithFallback('serve', 'echo "No serve script"');
     const cleanupScript = getCoreInputWithFallback('cleanup', 'echo "No cleanup script"');
     // The only required param, should throw an exception on no value or empty value
-    const url = core.getInput('url', { required: true });
+    const urlInputString = core.getInput('url', { required: true });
+    const urls = parseUrls(urlInputString);
     const minScore = getCoreInputWithFallback('min_score', '0');
     const sleepTime = getCoreInputWithFallback('wait_time', '5000');
     const token = getCoreInputWithFallback('token', '');
@@ -274,7 +265,7 @@ function parseInputs() {
         buildScript,
         serveScript,
         cleanupScript,
-        url,
+        urls,
         minScore,
         sleepTime,
         token
@@ -286,6 +277,21 @@ function getCoreInputWithFallback(paramName, fallback) {
     return !(0, lodash_1.isEmpty)(inputValue) ? inputValue : fallback;
 }
 exports.getCoreInputWithFallback = getCoreInputWithFallback;
+/**
+ * Accepts the actions list of urls and parses them to an array.
+ *
+ * @param input List of secrets, from the actions input, can be
+ * comma-delimited or newline, whitespace around secret entires is removed.
+ * @returns Array of References for each secret, in the same order they were
+ * given.
+ */
+function parseUrls(input) {
+    return input
+        .split(/\r|\n/)
+        .map(url => url.trim())
+        .filter(url => !!url);
+}
+exports.parseUrls = parseUrls;
 
 
 /***/ }),
@@ -334,18 +340,36 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.readResults = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 const path_1 = __importDefault(__nccwpck_require__(1017));
+const core = __importStar(__nccwpck_require__(2186));
+/**
+ * Reads the stark directory for output files. Currently only expects that the folder has summary.json and individual reports for one run.
+ * The method loosely checks if the file is in correct format and only then appends it to the results
+ * @param cliOutDir
+ * @returns [summary, results[]] Tuple where the first value is the summary and the second is an array of individual scans
+ */
 function readResults(cliOutDir) {
     return __awaiter(this, void 0, void 0, function* () {
         const files = yield fs.promises.readdir(cliOutDir);
+        let summary = undefined;
         const results = [];
         for (const file of files) {
-            if (path_1.default.basename(file) === 'summary.json') {
+            try {
                 const filePath = path_1.default.resolve(cliOutDir, file);
                 const json = JSON.parse(yield fs.promises.readFile(filePath, 'utf8'));
-                results.push(json);
+                if (json.url && json.data && Array.isArray(json.data)) {
+                    if (path_1.default.basename(file) === 'summary.json') {
+                        summary = json;
+                    }
+                    else {
+                        results.push(json);
+                    }
+                }
+            }
+            catch (error) {
+                core.error(error);
             }
         }
-        return results;
+        return [summary, results];
     });
 }
 exports.readResults = readResults;
@@ -380,6 +404,86 @@ function wait(milliseconds) {
     });
 }
 exports.wait = wait;
+
+
+/***/ }),
+
+/***/ 242:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createSummaryTable = exports.writeSummary = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const read_results_1 = __nccwpck_require__(3987);
+function writeSummary(cliOutDir) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const results = yield (0, read_results_1.readResults)(cliOutDir);
+        const summary = results[0];
+        const individualReports = results[1];
+        //TODO: Format better. Add error checking
+        if (summary) {
+            core.summary.addHeading(`Accessibility results Summary`);
+            createSummaryTable(summary);
+            core.summary.addDetails('Scanned:', `${individualReports.length} URLs scanned based on the config.`);
+            core.summary.addSeparator();
+        }
+        // Backlink to Starks report for this scan
+        const reportURL = results[0].url
+            ? results[0].url
+            : 'https://account.getstark.co/projects';
+        core.summary.addLink('View detailed results', reportURL);
+        core.summary.addHeading(`Breakdown summary for ${individualReports.length} url(s)`, 3);
+        // Breakdown for individual urls
+        for (const report of individualReports) {
+            core.summary.addSeparator().addHeading(`Summary for: ${report.url}`, 5);
+            createSummaryTable(report);
+        }
+        yield core.summary.write();
+    });
+}
+exports.writeSummary = writeSummary;
+function createSummaryTable(results) {
+    const tableData = [];
+    for (const data of results.data) {
+        tableData.push([data.name, `${data.value}  `]);
+    }
+    core.summary.addTable(tableData);
+}
+exports.createSummaryTable = createSummaryTable;
 
 
 /***/ }),
