@@ -353,6 +353,7 @@ function readResults(cliOutDir) {
         let summary = undefined;
         const results = [];
         for (const file of files) {
+            core.debug(`Parsing ${file}`);
             try {
                 const filePath = path_1.default.resolve(cliOutDir, file);
                 const json = JSON.parse(yield fs.promises.readFile(filePath, 'utf8'));
@@ -462,8 +463,8 @@ function writeSummary(cliOutDir) {
             core.summary.addSeparator();
         }
         // Backlink to Starks report for this scan
-        const reportURL = results[0].url
-            ? results[0].url
+        const reportURL = summary.url
+            ? summary.url
             : 'https://account.getstark.co/projects';
         core.summary.addLink('View detailed results', reportURL);
         core.summary.addHeading(`Breakdown summary for ${individualReports.length} url(s)`, 3);

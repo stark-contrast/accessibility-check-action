@@ -23,6 +23,7 @@ export async function readResults(
   let summary = undefined
   const results = []
   for (const file of files) {
+    core.debug(`Parsing ${file}`)
     try {
       const filePath = path.resolve(cliOutDir, file)
       const json = JSON.parse(await fs.promises.readFile(filePath, 'utf8'))

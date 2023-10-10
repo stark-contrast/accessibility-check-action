@@ -21,8 +21,8 @@ export async function writeSummary(cliOutDir: string): Promise<void> {
   }
 
   // Backlink to Starks report for this scan
-  const reportURL = results[0].url
-    ? results[0].url
+  const reportURL = summary.url
+    ? summary.url
     : 'https://account.getstark.co/projects'
   core.summary.addLink('View detailed results', reportURL)
 
