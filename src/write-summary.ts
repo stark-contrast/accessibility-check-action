@@ -11,13 +11,6 @@ export async function writeSummary(cliOutDir: string): Promise<void> {
     core.summary.addHeading(`Accessibility results Summary`)
 
     createSummaryTable(summary)
-
-    core.summary.addDetails(
-      'Scanned:',
-      `${individualReports.length} URLs scanned based on the config.`
-    )
-
-    core.summary.addSeparator()
   }
 
   // Backlink to Starks report for this scan
@@ -27,7 +20,7 @@ export async function writeSummary(cliOutDir: string): Promise<void> {
   core.summary.addLink('View detailed results', reportURL)
 
   core.summary.addHeading(
-    `Breakdown summary for ${individualReports.length} url(s)`,
+    `Breakdown summary for ${individualReports.length} url(s):`,
     3
   )
   // Breakdown for individual urls

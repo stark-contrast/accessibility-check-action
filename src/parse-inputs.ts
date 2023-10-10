@@ -44,7 +44,7 @@ export function parseInputs(): InputParams {
   const sleepTime = getCoreInputWithFallback('wait_time', '5000')
   const token = getCoreInputWithFallback('token', '')
 
-  return {
+  const parsedInputs = {
     setupScript,
     preBuildScript,
     buildScript,
@@ -55,6 +55,8 @@ export function parseInputs(): InputParams {
     sleepTime,
     token
   }
+  core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`)
+  return parsedInputs
 }
 
 export function getCoreInputWithFallback(

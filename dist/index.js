@@ -259,7 +259,7 @@ function parseInputs() {
     const minScore = getCoreInputWithFallback('min_score', '0');
     const sleepTime = getCoreInputWithFallback('wait_time', '5000');
     const token = getCoreInputWithFallback('token', '');
-    return {
+    const parsedInputs = {
         setupScript,
         preBuildScript,
         buildScript,
@@ -270,6 +270,8 @@ function parseInputs() {
         sleepTime,
         token
     };
+    core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`);
+    return parsedInputs;
 }
 exports.parseInputs = parseInputs;
 function getCoreInputWithFallback(paramName, fallback) {
@@ -460,15 +462,13 @@ function writeSummary(cliOutDir) {
         if (summary) {
             core.summary.addHeading(`Accessibility results Summary`);
             createSummaryTable(summary);
-            core.summary.addDetails('Scanned:', `${individualReports.length} URLs scanned based on the config.`);
-            core.summary.addSeparator();
         }
         // Backlink to Starks report for this scan
         const reportURL = summary.url
             ? summary.url
             : 'https://account.getstark.co/projects';
         core.summary.addLink('View detailed results', reportURL);
-        core.summary.addHeading(`Breakdown summary for ${individualReports.length} url(s)`, 3);
+        core.summary.addHeading(`Breakdown summary for ${individualReports.length} url(s):`, 3);
         // Breakdown for individual urls
         for (const report of individualReports) {
             core.summary.addSeparator().addHeading(`Summary for: ${report.url}`, 5);
