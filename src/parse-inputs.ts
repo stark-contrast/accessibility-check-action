@@ -74,5 +74,5 @@ export function getCoreInputWithFallback(
  * given.
  */
 export function parseUrls(input: string): string[] {
-  return input.split(/\r|\n/)
+  return input.split(/\r|\n/).map(url => url.trim()).filter(url => !!url)
 }
