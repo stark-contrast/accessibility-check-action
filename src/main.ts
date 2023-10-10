@@ -14,7 +14,7 @@ const {
   buildScript,
   serveScript,
   cleanupScript,
-  url,
+  urls,
   minScore,
   sleepTime,
   token
@@ -46,7 +46,11 @@ async function run(): Promise<void> {
 
   await wait(Number.parseInt(sleepTime))
   // TODO: Also pipe to logs
-  const params = ['scan', '--url', url, '--min-score', minScore]
+  const params = ['scan', '--min-score', minScore]
+  
+  // Push all urls as params
+  urls.forEach(url => params.push('--url', url))
+
   if (token) {
     // TODO: change this to be 2 separate things
     params.push('--stark-token', token)
