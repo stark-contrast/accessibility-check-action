@@ -27,6 +27,7 @@ export async function readResults(
     try {
       const filePath = path.resolve(cliOutDir, file)
       const json = JSON.parse(await fs.promises.readFile(filePath, 'utf8'))
+      core.debug(json)
       if (json.url && json.data && Array.isArray(json.data)) {
         if (path.basename(file) === 'summary.json') {
           summary = json
