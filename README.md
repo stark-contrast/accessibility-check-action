@@ -78,7 +78,7 @@ jobs:
             # Defaults to 5000 milliseconds.
             wait_time: 5000
 
-            # [Required] The URLs that need to be scanned
+            # [Required] The URLs that need to be scanned. This follows yaml conventions, so either the first example or if you want quotes then leave an empty line
             # Example: 
             #     urls:|-
             #          http://localhost:3000
@@ -86,7 +86,9 @@ jobs:
             #          http://localhost:3000/help
             #     urls:'
             #          http://localhost:3000
+            #
             #          http://localhost:3000/about
+            #
             #          http://localhost:3000/help
             #          '
             urls: 
