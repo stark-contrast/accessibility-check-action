@@ -79,10 +79,16 @@ jobs:
             wait_time: 5000
 
             # [Required] The URLs that need to be scanned
-            # Example: |-
+            # Example: 
+            #     urls:|-
             #          http://localhost:3000
             #          http://localhost:3000/about
             #          http://localhost:3000/help
+            #     urls:'
+            #          http://localhost:3000
+            #          http://localhost:3000/about
+            #          http://localhost:3000/help
+            #          '
             urls: 
 
             # [Optional] Shell commands to run after the action finishes a scan.
