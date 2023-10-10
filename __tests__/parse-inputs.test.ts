@@ -4,7 +4,8 @@ import {expect, jest, test} from '@jest/globals'
 import {
   InputParams,
   getCoreInputWithFallback,
-  parseInputs
+  parseInputs,
+  parseUrls
 } from '../src/parse-inputs'
 
 jest.mock('@actions/core', () => ({
@@ -35,7 +36,9 @@ describe('parseInput', () => {
   })
   test('should return correct default values', () => {
     ;(getInput as jest.Mock).mockImplementation(key => {
-      return key === 'url' ? 'localhost:3000/test' : ''
+      const multilineUrls = 'localhost:3000/test \n\
+      localhost:3000/about'
+      return key === 'url' ? multilineUrls : ''
     })
     const expectedInputs: InputParams = {
       setupScript: 'echo "No setup script"',
@@ -43,7 +46,7 @@ describe('parseInput', () => {
       buildScript: 'echo "No build script"',
       serveScript: 'echo "No serve script"',
       cleanupScript: 'echo "No cleanup script"',
-      url: 'localhost:3000/test',
+      urls: ['localhost:3000/test', 'localhost:3000/about'],
       minScore: '0',
       sleepTime: '5000',
       token: ''
@@ -60,5 +63,25 @@ describe('parseInput', () => {
     })
 
     expect(parseInputs).toThrowError()
+  })
+})
+
+describe('parseUrls', () => {
+  test('should trim whitespaces', () => {
+    const multiUrlString = '      localhost:3000/test\n          http://localhost:5000/test'
+    const urls = parseUrls(multiUrlString)
+
+    const expected = ['localhost:3000/test', 'http://localhost:5000/test']
+    expect(urls).toEqual(expected)
+  })
+
+  test('should skip empty lines', () => {
+    const multiUrlString = '\n\
+    localhost:3000/test\n\
+    http://localhost:5000/test'
+    const urls = parseUrls(multiUrlString)
+
+    const expected = ['localhost:3000/test', 'http://localhost:5000/test']
+    expect(urls).toEqual(expected)
   })
 })
