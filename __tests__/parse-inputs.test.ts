@@ -40,7 +40,7 @@ describe('parseInput', () => {
       const multilineUrls =
         'localhost:3000/test \n\
       localhost:3000/about'
-      return key === 'url' ? multilineUrls : ''
+      return key === 'urls' ? multilineUrls : ''
     })
     const expectedInputs: InputParams = {
       setupScript: 'echo "No setup script"',
@@ -58,9 +58,9 @@ describe('parseInput', () => {
 
     expect(inputs).toEqual(expectedInputs)
   })
-  test('should throw if url is not provided', () => {
+  test('should throw if urls is not provided', () => {
     ;(getInput as jest.Mock).mockImplementation(key => {
-      if (key === 'url') throw new Error('')
+      if (key === 'urls') throw new Error('')
       return ''
     })
 

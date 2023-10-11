@@ -38,7 +38,7 @@ export function parseInputs(): InputParams {
     'echo "No cleanup script"'
   )
   // The only required param, should throw an exception on no value or empty value
-  const urlInputString = core.getInput('url', {required: true})
+  const urlInputString = core.getInput('urls', {required: true})
   const urls = parseUrls(urlInputString)
   const minScore = getCoreInputWithFallback('min_score', '0')
   const sleepTime = getCoreInputWithFallback('wait_time', '5000')
