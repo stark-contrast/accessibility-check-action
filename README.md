@@ -91,7 +91,7 @@ jobs:
             #
             #          http://localhost:3000/help
             #          '
-            urls: 
+            urls: ''
 
             # [Optional] Shell commands to run after the action finishes a scan.
             # Use this to run any cleanup commands.
