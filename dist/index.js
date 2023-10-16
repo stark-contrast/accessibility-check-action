@@ -282,8 +282,8 @@ exports.getCoreInputWithFallback = getCoreInputWithFallback;
 /**
  * Accepts the actions list of urls and parses them to an array.
  *
- * @param input List of urls, from the actions input, can be
- * comma-delimited or newline, whitespace is removed.
+ * @param input List of urls, from the actions input
+ * separated by newline, whitespace and empty urls are removed.
  * @returns Array of urls
  */
 function parseUrls(input) {
