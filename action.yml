@@ -26,7 +26,7 @@ inputs:
     required: false
     default: 'echo "Nothing to cleanup"'
   urls:
-    description: 'Urls that needs to be scanned. Provide multiple urls staring with |- and then a url on each line'
+    description: 'A list of URLs to be scanned, with each URL belonging to its own line. This value follows YAML conventions for multiline strings.'
     required: true
     default: 'https://getstark.co'
   wait_time:
