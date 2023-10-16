@@ -98,9 +98,9 @@ jobs:
             cleanup: ''
 ```
 
-The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `url`. At a minimum, you’ll want to configure `url` and `wait_time`.
+The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `urls`. At a minimum, you’ll want to configure `urls` and `wait_time`.
 
-As with any GitHub workflow, you have all the power — all the action needs is the URL to scan. You’re free to configure your workflow however else you want.
+As with any GitHub workflow, you have all the power — all the action needs are URLs to scan. You’re free to configure your workflow however else you want.
 
 Once you’ve configured and committed your workflow to the default branch of your repository, you’re all set, and can now [return to your Stark project](https://account.getstark.co/projects) and run accessibility scans.
 
