@@ -7,7 +7,7 @@ export type InputParams = {
   buildScript: string
   serveScript: string
   cleanupScript: string
-  url: string
+  urls: string[]
   minScore: string
   sleepTime: string
   token: string
@@ -38,22 +38,25 @@ export function parseInputs(): InputParams {
     'echo "No cleanup script"'
   )
   // The only required param, should throw an exception on no value or empty value
-  const url = core.getInput('url', {required: true})
+  const urlInputString = core.getInput('urls', {required: true})
+  const urls = parseUrls(urlInputString)
   const minScore = getCoreInputWithFallback('min_score', '0')
   const sleepTime = getCoreInputWithFallback('wait_time', '5000')
   const token = getCoreInputWithFallback('token', '')
 
-  return {
+  const parsedInputs = {
     setupScript,
     preBuildScript,
     buildScript,
     serveScript,
     cleanupScript,
-    url,
+    urls,
     minScore,
     sleepTime,
     token
   }
+  core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`)
+  return parsedInputs
 }
 
 export function getCoreInputWithFallback(
@@ -62,4 +65,18 @@ export function getCoreInputWithFallback(
 ): string {
   const inputValue = core.getInput(paramName)
   return !isEmpty(inputValue) ? inputValue : fallback
+}
+
+/**
+ * Accepts the actions list of urls and parses them to an array.
+ *
+ * @param input List of urls, from the actions input
+ * separated by newline, whitespace and empty urls are removed.
+ * @returns Array of urls
+ */
+export function parseUrls(input: string): string[] {
+  return input
+    .split(/\r|\n/)
+    .map(url => url.trim())
+    .filter(url => !!url)
 }

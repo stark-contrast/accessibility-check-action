@@ -49,7 +49,7 @@ jobs:
 
       - name: Audit
         id: stark
-        uses: stark-contrast/accessibility-check-action@0.2.1-beta.1
+        uses: stark-contrast/accessibility-check-action@0.3.0-beta.0
         with:
             # [Optional; only required when used with Stark Projects]
             # The token used by the action to send an audit report back to Stark.
@@ -78,18 +78,29 @@ jobs:
             # Defaults to 5000 milliseconds.
             wait_time: 5000
 
-            # [Required] The URL your app is being served at.
-            # Example: 'http://localhost:3000'
-            url: ''
+            # [Required] A list of URLs to be scanned, with each URL belonging to its own line. This value follows YAML conventions for multiline strings.
+            # Example: 
+            #     urls:|-
+            #          http://localhost:3000
+            #          http://localhost:3000/about
+            #          http://localhost:3000/help
+            #     urls:'
+            #          http://localhost:3000
+            #
+            #          http://localhost:3000/about
+            #
+            #          http://localhost:3000/help
+            #          '
+            urls: ''
 
             # [Optional] Shell commands to run after the action finishes a scan.
             # Use this to run any cleanup commands.
             cleanup: ''
 ```
 
-The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `url`. At a minimum, you’ll want to configure `url` and `wait_time`.
+The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `urls`. At a minimum, you’ll want to configure `urls` and `wait_time`.
 
-As with any GitHub workflow, you have all the power — all the action needs is the URL to scan. You’re free to configure your workflow however else you want.
+As with any GitHub workflow, you have all the power — all the action needs are URLs to scan. You’re free to configure your workflow however else you want.
 
 Once you’ve configured and committed your workflow to the default branch of your repository, you’re all set, and can now [return to your Stark project](https://account.getstark.co/projects) and run accessibility scans.
 

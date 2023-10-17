@@ -25,8 +25,8 @@ inputs:
     description: 'Run a cleanup if needed.'
     required: false
     default: 'echo "Nothing to cleanup"'
-  url:
-    description: 'Url that needs to be scanned. E.g http:localhost:1337/'
+  urls:
+    description: 'A list of URLs to be scanned, with each URL belonging to its own line. This value follows YAML conventions for multiline strings.'
     required: true
     default: 'https://getstark.co'
   wait_time:
@@ -49,7 +49,7 @@ runs:
     - ${{ inputs.build }}
     - ${{ inputs.serve }}
     - ${{ inputs.cleanup }}
-    - ${{ inputs.url }}
+    - ${{ inputs.urls }}
     - ${{ inputs.min_score }}
     - ${{ inputs.wait_time }}
     - ${{ inputs.token }}
