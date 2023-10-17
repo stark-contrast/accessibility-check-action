@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import path from 'path'
+import * as core from '@actions/core'
 
 export interface ResultData {
   url: string
@@ -9,15 +10,34 @@ export interface ResultData {
   }[]
 }
 
-export async function readResults(cliOutDir: string): Promise<ResultData[]> {
+/**
+ * Reads the stark directory for output files. Currently only expects that the folder has summary.json and individual reports for one run.
+ * The method loosely checks if the file is in correct format and only then appends it to the results
+ * @param cliOutDir
+ * @returns [summary, results[]] Tuple where the first value is the summary and the second is an array of individual scans
+ */
+export async function readResults(
+  cliOutDir: string
+): Promise<[ResultData, ResultData[]]> {
   const files = await fs.promises.readdir(cliOutDir)
+  let summary = undefined
   const results = []
   for (const file of files) {
-    if (path.basename(file) === 'summary.json') {
+    core.debug(`Parsing ${file}`)
+    try {
       const filePath = path.resolve(cliOutDir, file)
       const json = JSON.parse(await fs.promises.readFile(filePath, 'utf8'))
-      results.push(json)
+      core.debug(json)
+      if (json.data && Array.isArray(json.data)) {
+        if (path.basename(file) === 'summary.json') {
+          summary = json
+        } else {
+          results.push(json)
+        }
+      }
+    } catch (error) {
+      core.error(error as Error | string)
     }
   }
-  return results
+  return [summary, results]
 }
