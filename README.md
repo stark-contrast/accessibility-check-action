@@ -1,5 +1,6 @@
 # accessibility-check-action
 
+This is the beta branch of our accessibility check action. We are currently in beta and all newer releases are always also merged here. If you want to keep receiving updates to the action as the development happens, please use this action `@beta`. 
 ## Table of Contents
 
 - [Usage](#usage)
@@ -49,7 +50,7 @@ jobs:
 
       - name: Audit
         id: stark
-        uses: stark-contrast/accessibility-check-action@0.3.2-beta.0
+        uses: stark-contrast/accessibility-check-action@beta
         with:
             # [Optional; only required when used with Stark Projects]
             # The token used by the action to send an audit report back to Stark.
