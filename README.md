@@ -84,6 +84,7 @@ jobs:
             #          http://localhost:3000
             #          http://localhost:3000/about
             #          http://localhost:3000/help
+            # OR
             #     urls:'
             #          http://localhost:3000
             #
@@ -92,6 +93,34 @@ jobs:
             #          http://localhost:3000/help
             #          '
             urls: ''
+
+            # [Optional] Navigation timeout for puppeteer in ms. How long should puppeteer wait till it checks page load (wait until event) is complete.
+            # Note: This timeout applies to all pages in your url list individually
+            # Defaults to 30000 ms
+            puppeteer_timeout: 30000
+
+            # [Optional] Event that puppeteer looks out for to assume completed navigation to a given page. In case of multiple values, navigation is considered to be successful after all events have been fired
+            # This can be multiple values from [load, domcontentloaded, networkidle0, networkidle2], with each value belonging to its own line. 
+            # This value follows YAML conventions for multiline strings.
+            # Example:
+            #   puppeteer_wait_until: |-
+            #                         load
+            #                         domcontentloaded
+            # Defaults to load
+            puppeteer_wait_until: 'load'
+
+            # [Optional] Run puppeteer in stealth mode. Attempts to hide puppeteer from your server. Won't be necessary for localhost
+            # Note: Uses puppeteer-extra stealth-mode. This is not a guaranteed way to hide usage of automated software to control browsers.
+            # Defaults to false (use if you have bot checks in your server code)
+            stealth_mode: false
+
+            # [Optional] If a url scan failed, scans the next one without failing the action. 
+            # Defaults to false
+            skip_errors: false
+
+            # [Optional] Adds a delay before running the scan. This is different from the timeout and delay in the sense that this delay occurs after the page is navigated to.
+            # Defaults to 100
+            scan_delay: 500
 
             # [Optional] Shell commands to run after the action finishes a scan.
             # Use this to run any cleanup commands.
