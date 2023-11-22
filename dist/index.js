@@ -48,7 +48,7 @@ const wait_1 = __nccwpck_require__(5817);
 const metadata_1 = __nccwpck_require__(5708);
 const parse_inputs_1 = __nccwpck_require__(2639);
 const write_summary_1 = __nccwpck_require__(242);
-const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token } = (0, parse_inputs_1.parseInputs)();
+const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token, puppeteerTimeout, puppeteerWaitUntil, stealthMode, skipErrors, scanDelay } = (0, parse_inputs_1.parseInputs)();
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.startGroup('Stark Accessibility Checker: Setup');
@@ -80,6 +80,18 @@ function run() {
             params.push('--stark-token', token);
             params.push('--scan-id', token);
         }
+        for (const waitUntil of puppeteerWaitUntil) {
+            params.push('--puppeteer-wait-until');
+            params.push(waitUntil);
+        }
+        if (stealthMode) {
+            params.push('--stealth-mode');
+        }
+        if (skipErrors) {
+            params.push('--skip-errors');
+        }
+        params.push(...['--puppeteer-timeout', puppeteerTimeout]);
+        params.push(...['--scan-delay', scanDelay]);
         try {
             const metadataDir = yield (0, metadata_1.dumpMetadata)(github, 'github');
             if (metadataDir)
@@ -89,7 +101,7 @@ function run() {
             core.info('Could not dump github metadata to file. Continuing without metadata');
         }
         // TODO: Check run id
-        yield (0, execa_1.execa)('stark-accessibility', params, {
+        yield (0, execa_1.execa)('stark-accessibility-test', params, {
             stdio: 'inherit'
         });
         core.info('Shutting down server. Scanning done.');
@@ -240,7 +252,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseUrls = exports.getCoreInputWithFallback = exports.parseInputs = void 0;
+exports.parseMultilineString = exports.getCoreInputWithFallback = exports.parseInputs = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const lodash_1 = __nccwpck_require__(250);
 /**
@@ -253,9 +265,15 @@ function parseInputs() {
     const buildScript = getCoreInputWithFallback('build', 'echo "No build script"');
     const serveScript = getCoreInputWithFallback('serve', 'echo "No serve script"');
     const cleanupScript = getCoreInputWithFallback('cleanup', 'echo "No cleanup script"');
+    const puppeteerTimeout = getCoreInputWithFallback('puppeteer_timeout', '30000');
+    const puppeteerWaitUntilInputString = getCoreInputWithFallback('puppeteer_wait_until', 'load');
+    const puppeteerWaitUntil = parseMultilineString(puppeteerWaitUntilInputString);
+    const stealthMode = !!core.getInput('stealth_mode');
+    const skipErrors = !!core.getInput('skip_errors');
+    const scanDelay = getCoreInputWithFallback('scan_delay', '100');
     // The only required param, should throw an exception on no value or empty value
     const urlInputString = core.getInput('urls', { required: true });
-    const urls = parseUrls(urlInputString);
+    const urls = parseMultilineString(urlInputString);
     const minScore = getCoreInputWithFallback('min_score', '0');
     const sleepTime = getCoreInputWithFallback('wait_time', '5000');
     const token = getCoreInputWithFallback('token', '');
@@ -268,7 +286,12 @@ function parseInputs() {
         urls,
         minScore,
         sleepTime,
-        token
+        token,
+        puppeteerTimeout,
+        puppeteerWaitUntil,
+        stealthMode,
+        skipErrors,
+        scanDelay
     };
     core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`);
     return parsedInputs;
@@ -286,13 +309,13 @@ exports.getCoreInputWithFallback = getCoreInputWithFallback;
  * separated by newline, whitespace and empty urls are removed.
  * @returns Array of urls
  */
-function parseUrls(input) {
+function parseMultilineString(input) {
     return input
         .split(/\r|\n/)
-        .map(url => url.trim())
-        .filter(url => !!url);
+        .map(value => value.trim())
+        .filter(value => !!value);
 }
-exports.parseUrls = parseUrls;
+exports.parseMultilineString = parseMultilineString;
 
 
 /***/ }),
