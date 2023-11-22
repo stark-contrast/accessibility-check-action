@@ -64,20 +64,20 @@ async function run(): Promise<void> {
     params.push('--scan-id', token)
   }
 
-  for(const waitUntil of puppeteerWaitUntil) {
+  for (const waitUntil of puppeteerWaitUntil) {
     params.push('--puppeteer-wait-until')
     params.push(waitUntil)
   }
 
-  if(stealthMode) {
+  if (stealthMode) {
     params.push('--stealth-mode')
   }
-  if(skipErrors) {
+  if (skipErrors) {
     params.push('--skip-errors')
   }
   params.push(...['--puppeteer-timeout', puppeteerTimeout])
   params.push(...['--scan-delay', scanDelay])
-  
+
   try {
     const metadataDir = await dumpMetadata(github, 'github')
     if (metadataDir) params.push('--metadata', metadataDir)
