@@ -11,6 +11,11 @@ export type InputParams = {
   minScore: string
   sleepTime: string
   token: string
+  puppeteerTimeout: string
+  puppeteerWaitUntil: string[]
+  stealthMode: boolean
+  skipErrors: boolean
+  scanDelay: string
 }
 /**
  * Function to parse inputs from github action. Replaces empty values with sensible defaults
@@ -37,9 +42,21 @@ export function parseInputs(): InputParams {
     'cleanup',
     'echo "No cleanup script"'
   )
+  const puppeteerTimeout = getCoreInputWithFallback(
+    'puppeteer_timeout',
+    '30000'
+  )
+  const puppeteerWaitUntilInputString = getCoreInputWithFallback(
+    'puppeteer_wait_until',
+    'load'
+  )
+  const puppeteerWaitUntil = parseMultilineString(puppeteerWaitUntilInputString)
+  const stealthMode = !!core.getInput('stealth_mode')
+  const skipErrors = !!core.getInput('skip_errors')
+  const scanDelay = getCoreInputWithFallback('scan_delay', '100')
   // The only required param, should throw an exception on no value or empty value
   const urlInputString = core.getInput('urls', {required: true})
-  const urls = parseUrls(urlInputString)
+  const urls = parseMultilineString(urlInputString)
   const minScore = getCoreInputWithFallback('min_score', '0')
   const sleepTime = getCoreInputWithFallback('wait_time', '5000')
   const token = getCoreInputWithFallback('token', '')
@@ -53,7 +70,12 @@ export function parseInputs(): InputParams {
     urls,
     minScore,
     sleepTime,
-    token
+    token,
+    puppeteerTimeout,
+    puppeteerWaitUntil,
+    stealthMode,
+    skipErrors,
+    scanDelay
   }
   core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`)
   return parsedInputs
@@ -74,9 +96,9 @@ export function getCoreInputWithFallback(
  * separated by newline, whitespace and empty urls are removed.
  * @returns Array of urls
  */
-export function parseUrls(input: string): string[] {
+export function parseMultilineString(input: string): string[] {
   return input
     .split(/\r|\n/)
-    .map(url => url.trim())
-    .filter(url => !!url)
+    .map(value => value.trim())
+    .filter(value => !!value)
 }
