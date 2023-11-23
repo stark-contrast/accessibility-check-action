@@ -51,7 +51,7 @@ async function run(): Promise<void> {
 
   await wait(Number.parseInt(sleepTime))
   // TODO: Also pipe to logs
-  const params = ['scan', '--min-score', minScore]
+  const params = ['scan', '--min-score', minScore, '--sandbox-mode', 'on']
 
   // Push all urls as params
   for (const url of urls) {
