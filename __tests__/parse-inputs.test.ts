@@ -1,5 +1,5 @@
 import {afterEach, describe} from 'node:test'
-import {getInput} from '@actions/core'
+import {getInput, getBooleanInput} from '@actions/core'
 import {expect, jest, test} from '@jest/globals'
 import {
   InputParams,
@@ -10,6 +10,7 @@ import {
 
 jest.mock('@actions/core', () => ({
   getInput: jest.fn(),
+  getBooleanInput: jest.fn(),
   debug: jest.fn()
 }))
 
@@ -33,7 +34,8 @@ describe('getCoreInputSafe', () => {
 
 describe('parseInput', () => {
   afterEach(() => {
-    ;(getInput as jest.Mock).mockClear()
+    ;(getInput as jest.Mock).mockClear();
+    (getBooleanInput as jest.Mock).mockClear();
   })
   test('should return correct default values', () => {
     ;(getInput as jest.Mock).mockImplementation(key => {
