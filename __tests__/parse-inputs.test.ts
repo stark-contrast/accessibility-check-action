@@ -34,8 +34,8 @@ describe('getCoreInputSafe', () => {
 
 describe('parseInput', () => {
   afterEach(() => {
-    ;(getInput as jest.Mock).mockClear();
-    (getBooleanInput as jest.Mock).mockClear();
+    ;(getInput as jest.Mock).mockClear()
+    ;(getBooleanInput as jest.Mock).mockClear()
   })
   test('should return correct default values', () => {
     ;(getInput as jest.Mock).mockImplementation(key => {

@@ -70,7 +70,7 @@ function run() {
         }) `${serveScript}`;
         yield (0, wait_1.wait)(Number.parseInt(sleepTime));
         // TODO: Also pipe to logs
-        const params = ['scan', '--min-score', minScore, '--sandbox-mode', 'on'];
+        const params = ['scan', '--min-score', minScore, '--sandbox-mode', 'off'];
         // Push all urls as params
         for (const url of urls) {
             params.push('--url', url);
