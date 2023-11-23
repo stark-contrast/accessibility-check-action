@@ -70,7 +70,7 @@ function run() {
         }) `${serveScript}`;
         yield (0, wait_1.wait)(Number.parseInt(sleepTime));
         // TODO: Also pipe to logs
-        const params = ['scan', '--min-score', minScore];
+        const params = ['scan', '--min-score', minScore, '--sandbox-mode', 'on'];
         // Push all urls as params
         for (const url of urls) {
             params.push('--url', url);
@@ -268,8 +268,8 @@ function parseInputs() {
     const puppeteerTimeout = getCoreInputWithFallback('puppeteer_timeout', '30000');
     const puppeteerWaitUntilInputString = getCoreInputWithFallback('puppeteer_wait_until', 'load');
     const puppeteerWaitUntil = parseMultilineString(puppeteerWaitUntilInputString);
-    const stealthMode = !!core.getInput('stealth_mode');
-    const skipErrors = !!core.getInput('skip_errors');
+    const stealthMode = !!core.getBooleanInput('stealth_mode');
+    const skipErrors = !!core.getBooleanInput('skip_errors');
     const scanDelay = getCoreInputWithFallback('scan_delay', '100');
     // The only required param, should throw an exception on no value or empty value
     const urlInputString = core.getInput('urls', { required: true });
