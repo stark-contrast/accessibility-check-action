@@ -20,8 +20,8 @@ COPY entrypoint.sh /stark_ga/entrypoint.sh
 COPY dist /stark_ga/dist
 
 # Install stark accessibility cli
-RUN npm i -g npm i @stark-test/accessibility-cli@0.5.0-basic-wraith.0 \
-    && stark-accessibility-test --version
+RUN npm i -g npm i @stark-lab-inc/accessibility-cli@0.5.0-beta.0 \
+    && stark-accessibility --version
 
 # TODO: symlink /root/.local-chromium to $GITHUB_HOME/.local-chromium to avoid double install or remove install from this step.
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
