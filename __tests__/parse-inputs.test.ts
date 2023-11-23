@@ -1,15 +1,16 @@
 import {afterEach, describe} from 'node:test'
-import {getInput} from '@actions/core'
+import {getInput, getBooleanInput} from '@actions/core'
 import {expect, jest, test} from '@jest/globals'
 import {
   InputParams,
   getCoreInputWithFallback,
   parseInputs,
-  parseUrls
+  parseMultilineString
 } from '../src/parse-inputs'
 
 jest.mock('@actions/core', () => ({
   getInput: jest.fn(),
+  getBooleanInput: jest.fn(),
   debug: jest.fn()
 }))
 
@@ -34,6 +35,7 @@ describe('getCoreInputSafe', () => {
 describe('parseInput', () => {
   afterEach(() => {
     ;(getInput as jest.Mock).mockClear()
+    ;(getBooleanInput as jest.Mock).mockClear()
   })
   test('should return correct default values', () => {
     ;(getInput as jest.Mock).mockImplementation(key => {
@@ -51,7 +53,12 @@ describe('parseInput', () => {
       urls: ['localhost:3000/test', 'localhost:3000/about'],
       minScore: '0',
       sleepTime: '5000',
-      token: ''
+      token: '',
+      puppeteerTimeout: '30000',
+      puppeteerWaitUntil: ['load'],
+      scanDelay: '100',
+      skipErrors: false,
+      stealthMode: false
     }
 
     const inputs = parseInputs()
@@ -72,7 +79,7 @@ describe('parseUrls', () => {
   test('should trim whitespaces', () => {
     const multiUrlString =
       '      localhost:3000/test\n          http://localhost:5000/test'
-    const urls = parseUrls(multiUrlString)
+    const urls = parseMultilineString(multiUrlString)
 
     const expected = ['localhost:3000/test', 'http://localhost:5000/test']
     expect(urls).toEqual(expected)
@@ -83,7 +90,7 @@ describe('parseUrls', () => {
       '\n\
     localhost:3000/test\n\
     http://localhost:5000/test'
-    const urls = parseUrls(multiUrlString)
+    const urls = parseMultilineString(multiUrlString)
 
     const expected = ['localhost:3000/test', 'http://localhost:5000/test']
     expect(urls).toEqual(expected)

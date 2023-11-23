@@ -40,6 +40,26 @@ inputs:
   token:
     description: "Stark token required to send data back to stark web. The cli doesn't post data if token is not provided"
     required: false
+  puppeteer_timeout:
+    description: "Navigation timeout for puppeteer in ms"
+    required: false
+    default: 30000
+  puppeteer_wait_until:
+    description: "Wait until params for puppeteer from [load, domcontentloaded, networkidle0, networkidle2]. Each value belongs to a new line. Follows YAML conventions."
+    required: false
+    default: "load"
+  stealth_mode: 
+    description: "Run puppeteer in stealth mode. Attempts to hide puppeteer from your server. Won't be necessary for localhost"
+    required: false
+    default: false
+  skip_errors:
+    description: "Continue to scanning the next url if an error occurs while scanning a url"
+    required: false
+    default: false
+  scan_delay:
+    description: "Delay running a scan after navigation has completed (wait for something to happen on the page)"
+    required: false
+    default: 100
 runs:
   using: 'docker'
   image: 'Dockerfile'
