@@ -51,8 +51,8 @@ export function parseInputs(): InputParams {
     'load'
   )
   const puppeteerWaitUntil = parseMultilineString(puppeteerWaitUntilInputString)
-  const stealthMode = !!core.getInput('stealth_mode')
-  const skipErrors = !!core.getInput('skip_errors')
+  const stealthMode = !!core.getBooleanInput('stealth_mode')
+  const skipErrors = !!core.getBooleanInput('skip_errors')
   const scanDelay = getCoreInputWithFallback('scan_delay', '100')
   // The only required param, should throw an exception on no value or empty value
   const urlInputString = core.getInput('urls', {required: true})
