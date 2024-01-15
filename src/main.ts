@@ -17,7 +17,12 @@ const {
   urls,
   minScore,
   sleepTime,
-  token
+  token,
+  puppeteerTimeout,
+  puppeteerWaitUntil,
+  stealthMode,
+  skipErrors,
+  scanDelay
 } = parseInputs()
 
 async function run(): Promise<void> {
@@ -46,7 +51,7 @@ async function run(): Promise<void> {
 
   await wait(Number.parseInt(sleepTime))
   // TODO: Also pipe to logs
-  const params = ['scan', '--min-score', minScore]
+  const params = ['scan', '--min-score', minScore, '--sandbox-mode', 'off']
 
   // Push all urls as params
   for (const url of urls) {
@@ -58,6 +63,21 @@ async function run(): Promise<void> {
     params.push('--stark-token', token)
     params.push('--scan-id', token)
   }
+
+  for (const waitUntil of puppeteerWaitUntil) {
+    params.push('--puppeteer-wait-until')
+    params.push(waitUntil)
+  }
+
+  if (stealthMode) {
+    params.push('--stealth-mode')
+  }
+  if (skipErrors) {
+    params.push('--skip-errors')
+  }
+  params.push(...['--puppeteer-timeout', puppeteerTimeout])
+  params.push(...['--scan-delay', scanDelay])
+
   try {
     const metadataDir = await dumpMetadata(github, 'github')
     if (metadataDir) params.push('--metadata', metadataDir)
