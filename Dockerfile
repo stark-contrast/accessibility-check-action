@@ -20,7 +20,7 @@ COPY entrypoint.sh /stark_ga/entrypoint.sh
 COPY dist /stark_ga/dist
 
 # Install stark accessibility cli
-RUN npm i -g @stark-lab-inc/accessibility-cli#th-updated-ruleengine \
+RUN npm i -g @stark-lab-inc/accessibility-cli@th-updated-ruleengine \
   && stark-accessibility --version
 
 # TODO: symlink /root/.local-chromium to $GITHUB_HOME/.local-chromium to avoid double install or remove install from this step.
