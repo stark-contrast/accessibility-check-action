@@ -21,7 +21,7 @@ COPY dist /stark_ga/dist
 
 # Install stark accessibility cli
 RUN npm i -g @stark-test/accessibility-cli@0.7.1-bump-ruleengine.0 \
-  && stark-accessibility --version
+  && stark-test --version
 
 # TODO: symlink /root/.local-chromium to $GITHUB_HOME/.local-chromium to avoid double install or remove install from this step.
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
