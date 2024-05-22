@@ -58,7 +58,8 @@ describe('parseInput', () => {
       puppeteerWaitUntil: ['load'],
       scanDelay: '100',
       skipErrors: false,
-      stealthMode: false
+      stealthMode: false,
+      disableFerryman: false
     }
 
     const inputs = parseInputs()
