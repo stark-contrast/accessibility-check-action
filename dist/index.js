@@ -48,7 +48,7 @@ const wait_1 = __nccwpck_require__(5817);
 const metadata_1 = __nccwpck_require__(5708);
 const parse_inputs_1 = __nccwpck_require__(2639);
 const write_summary_1 = __nccwpck_require__(242);
-const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token, puppeteerTimeout, puppeteerWaitUntil, stealthMode, skipErrors, scanDelay } = (0, parse_inputs_1.parseInputs)();
+const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token, puppeteerTimeout, puppeteerWaitUntil, stealthMode, skipErrors, scanDelay, disableFerryman } = (0, parse_inputs_1.parseInputs)();
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.startGroup('Stark Accessibility Checker: Setup');
@@ -89,6 +89,9 @@ function run() {
         }
         if (skipErrors) {
             params.push('--skip-errors');
+        }
+        if (disableFerryman) {
+            params.push('--disable-ferryman');
         }
         params.push(...['--puppeteer-timeout', puppeteerTimeout]);
         params.push(...['--scan-delay', scanDelay]);
@@ -277,6 +280,7 @@ function parseInputs() {
     const minScore = getCoreInputWithFallback('min_score', '0');
     const sleepTime = getCoreInputWithFallback('wait_time', '5000');
     const token = getCoreInputWithFallback('token', '');
+    const disableFerryman = !!core.getBooleanInput('disable_ferryman');
     const parsedInputs = {
         setupScript,
         preBuildScript,
@@ -291,7 +295,8 @@ function parseInputs() {
         puppeteerWaitUntil,
         stealthMode,
         skipErrors,
-        scanDelay
+        scanDelay,
+        disableFerryman
     };
     core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`);
     return parsedInputs;
