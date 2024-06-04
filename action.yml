@@ -25,6 +25,10 @@ inputs:
     description: 'Run a cleanup if needed.'
     required: false
     default: 'echo "Nothing to cleanup"'
+  disable_ferryman:
+    description: "Enable ferryman on the scanner for optimised scans"
+    required: false
+    default: false
   urls:
     description: 'A list of URLs to be scanned, with each URL belonging to its own line. This value follows YAML conventions for multiline strings.'
     required: true
