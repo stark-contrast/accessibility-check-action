@@ -7,6 +7,7 @@ export type InputParams = {
   buildScript: string
   serveScript: string
   cleanupScript: string
+  disableFerryman: boolean
   urls: string[]
   minScore: string
   sleepTime: string
@@ -60,6 +61,7 @@ export function parseInputs(): InputParams {
   const minScore = getCoreInputWithFallback('min_score', '0')
   const sleepTime = getCoreInputWithFallback('wait_time', '5000')
   const token = getCoreInputWithFallback('token', '')
+  const disableFerryman = !!core.getBooleanInput('disable_ferryman')
 
   const parsedInputs = {
     setupScript,
@@ -75,7 +77,8 @@ export function parseInputs(): InputParams {
     puppeteerWaitUntil,
     stealthMode,
     skipErrors,
-    scanDelay
+    scanDelay,
+    disableFerryman
   }
   core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`)
   return parsedInputs

@@ -22,7 +22,8 @@ const {
   puppeteerWaitUntil,
   stealthMode,
   skipErrors,
-  scanDelay
+  scanDelay,
+  disableFerryman
 } = parseInputs()
 
 async function run(): Promise<void> {
@@ -75,6 +76,10 @@ async function run(): Promise<void> {
   if (skipErrors) {
     params.push('--skip-errors')
   }
+  if (disableFerryman) {
+    params.push('--disable-ferryman')
+  }
+
   params.push(...['--puppeteer-timeout', puppeteerTimeout])
   params.push(...['--scan-delay', scanDelay])
 
