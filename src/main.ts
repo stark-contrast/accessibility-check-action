@@ -23,7 +23,8 @@ const {
   stealthMode,
   skipErrors,
   scanDelay,
-  disableFerryman
+  disableFerryman,
+  viewport
 } = parseInputs()
 
 async function run(): Promise<void> {
@@ -82,6 +83,10 @@ async function run(): Promise<void> {
 
   params.push(...['--puppeteer-timeout', puppeteerTimeout])
   params.push(...['--scan-delay', scanDelay])
+
+  if (viewport) {
+    params.push('--viewport', viewport)
+  }
 
   try {
     const metadataDir = await dumpMetadata(github, 'github')

@@ -43,12 +43,12 @@ const path = __importStar(__nccwpck_require__(1017));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const exec = __importStar(__nccwpck_require__(1514));
-const execa_1 = __nccwpck_require__(2055);
+const execa_1 = __nccwpck_require__(4307);
 const wait_1 = __nccwpck_require__(5817);
 const metadata_1 = __nccwpck_require__(5708);
 const parse_inputs_1 = __nccwpck_require__(2639);
 const write_summary_1 = __nccwpck_require__(242);
-const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token, puppeteerTimeout, puppeteerWaitUntil, stealthMode, skipErrors, scanDelay, disableFerryman } = (0, parse_inputs_1.parseInputs)();
+const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token, puppeteerTimeout, puppeteerWaitUntil, stealthMode, skipErrors, scanDelay, disableFerryman, viewport } = (0, parse_inputs_1.parseInputs)();
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.startGroup('Stark Accessibility Checker: Setup');
@@ -95,6 +95,9 @@ function run() {
         }
         params.push(...['--puppeteer-timeout', puppeteerTimeout]);
         params.push(...['--scan-delay', scanDelay]);
+        if (viewport) {
+            params.push('--viewport', viewport);
+        }
         try {
             const metadataDir = yield (0, metadata_1.dumpMetadata)(github, 'github');
             if (metadataDir)
@@ -163,7 +166,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.dumpDataToFile = exports.extractGithubData = exports.dumpMetadata = void 0;
+exports.dumpMetadata = dumpMetadata;
+exports.extractGithubData = extractGithubData;
+exports.dumpDataToFile = dumpDataToFile;
 const fs = __importStar(__nccwpck_require__(3292));
 const lodash_1 = __nccwpck_require__(250);
 const path = __importStar(__nccwpck_require__(1017));
@@ -183,7 +188,6 @@ function dumpMetadata(data, type) {
         return yield dumpDataToFile(metadata);
     });
 }
-exports.dumpMetadata = dumpMetadata;
 function extractGithubData(github) {
     const requiredProps = [
         'context.eventName',
@@ -203,7 +207,6 @@ function extractGithubData(github) {
     const githubData = (0, lodash_1.pick)(github, ...requiredProps);
     return githubData;
 }
-exports.extractGithubData = extractGithubData;
 function dumpDataToFile(data) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -221,7 +224,6 @@ function dumpDataToFile(data) {
         return fullDirPath;
     });
 }
-exports.dumpDataToFile = dumpDataToFile;
 
 
 /***/ }),
@@ -255,7 +257,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseMultilineString = exports.getCoreInputWithFallback = exports.parseInputs = void 0;
+exports.parseInputs = parseInputs;
+exports.getCoreInputWithFallback = getCoreInputWithFallback;
+exports.parseMultilineString = parseMultilineString;
 const core = __importStar(__nccwpck_require__(2186));
 const lodash_1 = __nccwpck_require__(250);
 /**
@@ -281,6 +285,7 @@ function parseInputs() {
     const sleepTime = getCoreInputWithFallback('wait_time', '5000');
     const token = getCoreInputWithFallback('token', '');
     const disableFerryman = !!core.getBooleanInput('disable_ferryman');
+    const viewport = getCoreInputWithFallback('viewport', '800x600');
     const parsedInputs = {
         setupScript,
         preBuildScript,
@@ -296,17 +301,16 @@ function parseInputs() {
         stealthMode,
         skipErrors,
         scanDelay,
-        disableFerryman
+        disableFerryman,
+        viewport
     };
     core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`);
     return parsedInputs;
 }
-exports.parseInputs = parseInputs;
 function getCoreInputWithFallback(paramName, fallback) {
     const inputValue = core.getInput(paramName);
     return !(0, lodash_1.isEmpty)(inputValue) ? inputValue : fallback;
 }
-exports.getCoreInputWithFallback = getCoreInputWithFallback;
 /**
  * Accepts the actions list of urls and parses them to an array.
  *
@@ -320,7 +324,6 @@ function parseMultilineString(input) {
         .map(value => value.trim())
         .filter(value => !!value);
 }
-exports.parseMultilineString = parseMultilineString;
 
 
 /***/ }),
@@ -366,7 +369,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.readResults = void 0;
+exports.readResults = readResults;
 const fs = __importStar(__nccwpck_require__(7147));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const core = __importStar(__nccwpck_require__(2186));
@@ -403,7 +406,6 @@ function readResults(cliOutDir) {
         return [summary, results];
     });
 }
-exports.readResults = readResults;
 
 
 /***/ }),
@@ -423,7 +425,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = void 0;
+exports.wait = wait;
 function wait(milliseconds) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(resolve => {
@@ -434,7 +436,6 @@ function wait(milliseconds) {
         });
     });
 }
-exports.wait = wait;
 
 
 /***/ }),
@@ -477,7 +478,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createSummaryTable = exports.writeSummary = void 0;
+exports.writeSummary = writeSummary;
+exports.createSummaryTable = createSummaryTable;
 const core = __importStar(__nccwpck_require__(2186));
 const read_results_1 = __nccwpck_require__(3987);
 function writeSummary(cliOutDir) {
@@ -504,7 +506,6 @@ function writeSummary(cliOutDir) {
         yield core.summary.write();
     });
 }
-exports.writeSummary = writeSummary;
 function createSummaryTable(results) {
     const tableData = [];
     for (const data of results.data) {
@@ -512,7 +513,6 @@ function createSummaryTable(results) {
     }
     core.summary.addTable(tableData);
 }
-exports.createSummaryTable = createSummaryTable;
 
 
 /***/ }),
@@ -50736,7 +50736,7 @@ module.exports = parseParams
 
 /***/ }),
 
-/***/ 2055:
+/***/ 4307:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -50752,7 +50752,12 @@ __nccwpck_require__.d(__webpack_exports__, {
   "execaCommand": () => (/* binding */ execaCommand),
   "execaCommandSync": () => (/* binding */ execaCommandSync),
   "execaNode": () => (/* binding */ execaNode),
-  "execaSync": () => (/* binding */ execaSync)
+  "execaSync": () => (/* binding */ execaSync),
+  "getCancelSignal": () => (/* binding */ execa_getCancelSignal),
+  "getEachMessage": () => (/* binding */ execa_getEachMessage),
+  "getOneMessage": () => (/* binding */ execa_getOneMessage),
+  "parseCommandString": () => (/* reexport */ parseCommandString),
+  "sendMessage": () => (/* binding */ execa_sendMessage)
 });
 
 ;// CONCATENATED MODULE: ./node_modules/is-plain-obj/index.js
@@ -51043,146 +51048,242 @@ const getSubprocessResult = ({stdout}) => {
 	throw new TypeError(`Unexpected "${typeof stdout}" stdout in template expression`);
 };
 
-;// CONCATENATED MODULE: external "node:tty"
-const external_node_tty_namespaceObject = require("node:tty");
-;// CONCATENATED MODULE: ./node_modules/yoctocolors/index.js
-
-
-// eslint-disable-next-line no-warning-comments
-// TODO: Use a better method when it's added to Node.js (https://github.com/nodejs/node/pull/40240)
-const hasColors = external_node_tty_namespaceObject.WriteStream.prototype.hasColors();
-
-const format = (open, close) => {
-	if (!hasColors) {
-		return input => input;
-	}
-
-	const openCode = `\u001B[${open}m`;
-	const closeCode = `\u001B[${close}m`;
-
-	return input => {
-		const string = input + ''; // eslint-disable-line no-implicit-coercion -- This is faster.
-		let index = string.indexOf(closeCode);
-
-		if (index === -1) {
-			// Note: Intentionally not using string interpolation for performance reasons.
-			return openCode + string + closeCode;
-		}
-
-		// Handle nested colors.
-
-		// We could have done this, but it's too slow (as of Node.js 22).
-		// return openCode + string.replaceAll(closeCode, openCode) + closeCode;
-
-		let result = openCode;
-		let lastIndex = 0;
-
-		while (index !== -1) {
-			result += string.slice(lastIndex, index) + openCode;
-			lastIndex = index + closeCode.length;
-			index = string.indexOf(closeCode, lastIndex);
-		}
-
-		result += string.slice(lastIndex) + closeCode;
-
-		return result;
-	};
-};
-
-const yoctocolors_reset = format(0, 0);
-const bold = format(1, 22);
-const dim = format(2, 22);
-const italic = format(3, 23);
-const underline = format(4, 24);
-const overline = format(53, 55);
-const inverse = format(7, 27);
-const yoctocolors_hidden = format(8, 28);
-const strikethrough = format(9, 29);
-
-const black = format(30, 39);
-const red = format(31, 39);
-const green = format(32, 39);
-const yellow = format(33, 39);
-const blue = format(34, 39);
-const magenta = format(35, 39);
-const cyan = format(36, 39);
-const white = format(37, 39);
-const gray = format(90, 39);
-
-const bgBlack = format(40, 49);
-const bgRed = format(41, 49);
-const bgGreen = format(42, 49);
-const bgYellow = format(43, 49);
-const bgBlue = format(44, 49);
-const bgMagenta = format(45, 49);
-const bgCyan = format(46, 49);
-const bgWhite = format(47, 49);
-const bgGray = format(100, 49);
-
-const redBright = format(91, 39);
-const greenBright = format(92, 39);
-const yellowBright = format(93, 39);
-const blueBright = format(94, 39);
-const magentaBright = format(95, 39);
-const cyanBright = format(96, 39);
-const whiteBright = format(97, 39);
-
-const bgRedBright = format(101, 49);
-const bgGreenBright = format(102, 49);
-const bgYellowBright = format(103, 49);
-const bgBlueBright = format(104, 49);
-const bgMagentaBright = format(105, 49);
-const bgCyanBright = format(106, 49);
-const bgWhiteBright = format(107, 49);
-
 // EXTERNAL MODULE: external "node:util"
 var external_node_util_ = __nccwpck_require__(7261);
-;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/info.js
+;// CONCATENATED MODULE: external "node:process"
+const external_node_process_namespaceObject = require("node:process");
+;// CONCATENATED MODULE: ./node_modules/execa/lib/utils/standard-stream.js
 
+
+const isStandardStream = stream => STANDARD_STREAMS.includes(stream);
+const STANDARD_STREAMS = [external_node_process_namespaceObject.stdin, external_node_process_namespaceObject.stdout, external_node_process_namespaceObject.stderr];
+const STANDARD_STREAMS_ALIASES = ['stdin', 'stdout', 'stderr'];
+const getStreamName = fdNumber => STANDARD_STREAMS_ALIASES[fdNumber] ?? `stdio[${fdNumber}]`;
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/specific.js
+
+
+
+
+// Some options can have different values for `stdout`/`stderr`/`fd3`.
+// This normalizes those to array of values.
+// For example, `{verbose: {stdout: 'none', stderr: 'full'}}` becomes `{verbose: ['none', 'none', 'full']}`
+const normalizeFdSpecificOptions = options => {
+	const optionsCopy = {...options};
+
+	for (const optionName of FD_SPECIFIC_OPTIONS) {
+		optionsCopy[optionName] = normalizeFdSpecificOption(options, optionName);
+	}
+
+	return optionsCopy;
+};
+
+const normalizeFdSpecificOption = (options, optionName) => {
+	const optionBaseArray = Array.from({length: getStdioLength(options) + 1});
+	const optionArray = normalizeFdSpecificValue(options[optionName], optionBaseArray, optionName);
+	return addDefaultValue(optionArray, optionName);
+};
+
+const getStdioLength = ({stdio}) => Array.isArray(stdio)
+	? Math.max(stdio.length, STANDARD_STREAMS_ALIASES.length)
+	: STANDARD_STREAMS_ALIASES.length;
+
+const normalizeFdSpecificValue = (optionValue, optionArray, optionName) => isPlainObject(optionValue)
+	? normalizeOptionObject(optionValue, optionArray, optionName)
+	: optionArray.fill(optionValue);
+
+const normalizeOptionObject = (optionValue, optionArray, optionName) => {
+	for (const fdName of Object.keys(optionValue).sort(compareFdName)) {
+		for (const fdNumber of parseFdName(fdName, optionName, optionArray)) {
+			optionArray[fdNumber] = optionValue[fdName];
+		}
+	}
+
+	return optionArray;
+};
+
+// Ensure priority order when setting both `stdout`/`stderr`, `fd1`/`fd2`, and `all`
+const compareFdName = (fdNameA, fdNameB) => getFdNameOrder(fdNameA) < getFdNameOrder(fdNameB) ? 1 : -1;
+
+const getFdNameOrder = fdName => {
+	if (fdName === 'stdout' || fdName === 'stderr') {
+		return 0;
+	}
+
+	return fdName === 'all' ? 2 : 1;
+};
+
+const parseFdName = (fdName, optionName, optionArray) => {
+	if (fdName === 'ipc') {
+		return [optionArray.length - 1];
+	}
+
+	const fdNumber = parseFd(fdName);
+	if (fdNumber === undefined || fdNumber === 0) {
+		throw new TypeError(`"${optionName}.${fdName}" is invalid.
+It must be "${optionName}.stdout", "${optionName}.stderr", "${optionName}.all", "${optionName}.ipc", or "${optionName}.fd3", "${optionName}.fd4" (and so on).`);
+	}
+
+	if (fdNumber >= optionArray.length) {
+		throw new TypeError(`"${optionName}.${fdName}" is invalid: that file descriptor does not exist.
+Please set the "stdio" option to ensure that file descriptor exists.`);
+	}
+
+	return fdNumber === 'all' ? [1, 2] : [fdNumber];
+};
+
+// Use the same syntax for fd-specific options and the `from`/`to` options
+const parseFd = fdName => {
+	if (fdName === 'all') {
+		return fdName;
+	}
+
+	if (STANDARD_STREAMS_ALIASES.includes(fdName)) {
+		return STANDARD_STREAMS_ALIASES.indexOf(fdName);
+	}
+
+	const regexpResult = FD_REGEXP.exec(fdName);
+	if (regexpResult !== null) {
+		return Number(regexpResult[1]);
+	}
+};
+
+const FD_REGEXP = /^fd(\d+)$/;
+
+const addDefaultValue = (optionArray, optionName) => optionArray.map(optionValue => optionValue === undefined
+	? DEFAULT_OPTIONS[optionName]
+	: optionValue);
 
 // Default value for the `verbose` option
 const verboseDefault = (0,external_node_util_.debuglog)('execa').enabled ? 'full' : 'none';
 
-// Information computed before spawning, used by the `verbose` option
-const getVerboseInfo = verbose => {
-	const verboseId = isVerbose(verbose) ? VERBOSE_ID++ : undefined;
-	validateVerbose(verbose);
-	return {verbose, verboseId};
+const DEFAULT_OPTIONS = {
+	lines: false,
+	buffer: true,
+	maxBuffer: 1000 * 1000 * 100,
+	verbose: verboseDefault,
+	stripFinalNewline: true,
 };
 
-// Prepending the `pid` is useful when multiple commands print their output at the same time.
-// However, we cannot use the real PID since this is not available with `child_process.spawnSync()`.
-// Also, we cannot use the real PID if we want to print it before `child_process.spawn()` is run.
-// As a pro, it is shorter than a normal PID and never re-uses the same id.
-// As a con, it cannot be used to send signals.
-let VERBOSE_ID = 0n;
+// List of options which can have different values for `stdout`/`stderr`
+const FD_SPECIFIC_OPTIONS = ['lines', 'buffer', 'maxBuffer', 'verbose', 'stripFinalNewline'];
+
+// Retrieve fd-specific option
+const getFdSpecificValue = (optionArray, fdNumber) => fdNumber === 'ipc'
+	? optionArray.at(-1)
+	: optionArray[fdNumber];
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/values.js
+
 
 // The `verbose` option can have different values for `stdout`/`stderr`
-const isVerbose = verbose => verbose.some(fdVerbose => fdVerbose !== 'none');
+const isVerbose = ({verbose}, fdNumber) => getFdVerbose(verbose, fdNumber) !== 'none';
 
-const validateVerbose = verbose => {
-	for (const verboseItem of verbose) {
-		if (verboseItem === false) {
-			throw new TypeError('The "verbose: false" option was renamed to "verbose: \'none\'".');
-		}
+// Whether IPC and output and logged
+const isFullVerbose = ({verbose}, fdNumber) => !['none', 'short'].includes(getFdVerbose(verbose, fdNumber));
 
-		if (verboseItem === true) {
-			throw new TypeError('The "verbose: true" option was renamed to "verbose: \'short\'".');
-		}
-
-		if (!VERBOSE_VALUES.has(verboseItem)) {
-			const allowedValues = [...VERBOSE_VALUES].map(allowedValue => `'${allowedValue}'`).join(', ');
-			throw new TypeError(`The "verbose" option must not be ${verboseItem}. Allowed values are: ${allowedValues}.`);
-		}
-	}
+// The `verbose` option can be a function to customize logging
+const getVerboseFunction = ({verbose}, fdNumber) => {
+	const fdVerbose = getFdVerbose(verbose, fdNumber);
+	return isVerboseFunction(fdVerbose) ? fdVerbose : undefined;
 };
 
-const VERBOSE_VALUES = new Set(['none', 'short', 'full']);
+// When using `verbose: {stdout, stderr, fd3, ipc}`:
+//  - `verbose.stdout|stderr|fd3` is used for 'output'
+//  - `verbose.ipc` is only used for 'ipc'
+//  - highest `verbose.*` value is used for 'command', 'error' and 'duration'
+const getFdVerbose = (verbose, fdNumber) => fdNumber === undefined
+	? getFdGenericVerbose(verbose)
+	: getFdSpecificValue(verbose, fdNumber);
+
+// When using `verbose: {stdout, stderr, fd3, ipc}` and logging is not specific to a file descriptor.
+// We then use the highest `verbose.*` value, using the following order:
+//  - function > 'full' > 'short' > 'none'
+//  - if several functions are defined: stdout > stderr > fd3 > ipc
+const getFdGenericVerbose = verbose => verbose.find(fdVerbose => isVerboseFunction(fdVerbose))
+	?? VERBOSE_VALUES.findLast(fdVerbose => verbose.includes(fdVerbose));
+
+// Whether the `verbose` option is customized using a function
+const isVerboseFunction = fdVerbose => typeof fdVerbose === 'function';
+
+const VERBOSE_VALUES = ['none', 'short', 'full'];
 
 ;// CONCATENATED MODULE: external "node:fs"
 const external_node_fs_namespaceObject = require("node:fs");
-;// CONCATENATED MODULE: external "node:process"
-const external_node_process_namespaceObject = require("node:process");
+;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/escape.js
+
+
+
+// Compute `result.command` and `result.escapedCommand`
+const joinCommand = (filePath, rawArguments) => {
+	const fileAndArguments = [filePath, ...rawArguments];
+	const command = fileAndArguments.join(' ');
+	const escapedCommand = fileAndArguments
+		.map(fileAndArgument => quoteString(escapeControlCharacters(fileAndArgument)))
+		.join(' ');
+	return {command, escapedCommand};
+};
+
+// Remove ANSI sequences and escape control characters and newlines
+const escapeLines = lines => (0,external_node_util_.stripVTControlCharacters)(lines)
+	.split('\n')
+	.map(line => escapeControlCharacters(line))
+	.join('\n');
+
+const escapeControlCharacters = line => line.replaceAll(SPECIAL_CHAR_REGEXP, character => escapeControlCharacter(character));
+
+const escapeControlCharacter = character => {
+	const commonEscape = COMMON_ESCAPES[character];
+	if (commonEscape !== undefined) {
+		return commonEscape;
+	}
+
+	const codepoint = character.codePointAt(0);
+	const codepointHex = codepoint.toString(16);
+	return codepoint <= ASTRAL_START
+		? `\\u${codepointHex.padStart(4, '0')}`
+		: `\\U${codepointHex}`;
+};
+
+// Characters that would create issues when printed are escaped using the \u or \U notation.
+// Those include control characters and newlines.
+// The \u and \U notation is Bash specific, but there is no way to do this in a shell-agnostic way.
+// Some shells do not even have a way to print those characters in an escaped fashion.
+// Therefore, we prioritize printing those safely, instead of allowing those to be copy-pasted.
+// List of Unicode character categories: https://www.fileformat.info/info/unicode/category/index.htm
+const SPECIAL_CHAR_REGEXP = /\p{Separator}|\p{Other}/gu;
+
+// Accepted by $'...' in Bash.
+// Exclude \a \e \v which are accepted in Bash but not in JavaScript (except \v) and JSON.
+const COMMON_ESCAPES = {
+	' ': ' ',
+	'\b': '\\b',
+	'\f': '\\f',
+	'\n': '\\n',
+	'\r': '\\r',
+	'\t': '\\t',
+};
+
+// Up until that codepoint, \u notation can be used instead of \U
+const ASTRAL_START = 65_535;
+
+// Some characters are shell-specific, i.e. need to be escaped when the command is copy-pasted then run.
+// Escaping is shell-specific. We cannot know which shell is used: `process.platform` detection is not enough.
+// For example, Windows users could be using `cmd.exe`, Powershell or Bash for Windows which all use different escaping.
+// We use '...' on Unix, which is POSIX shell compliant and escape all characters but ' so this is fairly safe.
+// On Windows, we assume cmd.exe is used and escape with "...", which also works with Powershell.
+const quoteString = escapedArgument => {
+	if (NO_ESCAPE_REGEXP.test(escapedArgument)) {
+		return escapedArgument;
+	}
+
+	return external_node_process_namespaceObject.platform === 'win32'
+		? `"${escapedArgument.replaceAll('"', '""')}"`
+		: `'${escapedArgument.replaceAll('\'', '\'\\\'\'')}'`;
+};
+
+const NO_ESCAPE_REGEXP = /^[\w./-]+$/;
+
 ;// CONCATENATED MODULE: ./node_modules/is-unicode-supported/index.js
 
 
@@ -51495,65 +51596,285 @@ const replaceSymbols = (string, {useFallback = !shouldUseMain} = {}) => {
 	return string;
 };
 
+;// CONCATENATED MODULE: external "node:tty"
+const external_node_tty_namespaceObject = require("node:tty");
+;// CONCATENATED MODULE: ./node_modules/yoctocolors/base.js
+
+
+// eslint-disable-next-line no-warning-comments
+// TODO: Use a better method when it's added to Node.js (https://github.com/nodejs/node/pull/40240)
+// Lots of optionals here to support Deno.
+const hasColors = external_node_tty_namespaceObject?.WriteStream?.prototype?.hasColors?.() ?? false;
+
+const format = (open, close) => {
+	if (!hasColors) {
+		return input => input;
+	}
+
+	const openCode = `\u001B[${open}m`;
+	const closeCode = `\u001B[${close}m`;
+
+	return input => {
+		const string = input + ''; // eslint-disable-line no-implicit-coercion -- This is faster.
+		let index = string.indexOf(closeCode);
+
+		if (index === -1) {
+			// Note: Intentionally not using string interpolation for performance reasons.
+			return openCode + string + closeCode;
+		}
+
+		// Handle nested colors.
+
+		// We could have done this, but it's too slow (as of Node.js 22).
+		// return openCode + string.replaceAll(closeCode, openCode) + closeCode;
+
+		let result = openCode;
+		let lastIndex = 0;
+
+		while (index !== -1) {
+			result += string.slice(lastIndex, index) + openCode;
+			lastIndex = index + closeCode.length;
+			index = string.indexOf(closeCode, lastIndex);
+		}
+
+		result += string.slice(lastIndex) + closeCode;
+
+		return result;
+	};
+};
+
+const base_reset = format(0, 0);
+const bold = format(1, 22);
+const dim = format(2, 22);
+const italic = format(3, 23);
+const underline = format(4, 24);
+const overline = format(53, 55);
+const inverse = format(7, 27);
+const base_hidden = format(8, 28);
+const strikethrough = format(9, 29);
+
+const black = format(30, 39);
+const red = format(31, 39);
+const green = format(32, 39);
+const yellow = format(33, 39);
+const blue = format(34, 39);
+const magenta = format(35, 39);
+const cyan = format(36, 39);
+const white = format(37, 39);
+const gray = format(90, 39);
+
+const bgBlack = format(40, 49);
+const bgRed = format(41, 49);
+const bgGreen = format(42, 49);
+const bgYellow = format(43, 49);
+const bgBlue = format(44, 49);
+const bgMagenta = format(45, 49);
+const bgCyan = format(46, 49);
+const bgWhite = format(47, 49);
+const bgGray = format(100, 49);
+
+const redBright = format(91, 39);
+const greenBright = format(92, 39);
+const yellowBright = format(93, 39);
+const blueBright = format(94, 39);
+const magentaBright = format(95, 39);
+const cyanBright = format(96, 39);
+const whiteBright = format(97, 39);
+
+const bgRedBright = format(101, 49);
+const bgGreenBright = format(102, 49);
+const bgYellowBright = format(103, 49);
+const bgBlueBright = format(104, 49);
+const bgMagentaBright = format(105, 49);
+const bgCyanBright = format(106, 49);
+const bgWhiteBright = format(107, 49);
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/default.js
+
+
+
+// Default when `verbose` is not a function
+const defaultVerboseFunction = ({
+	type,
+	message,
+	timestamp,
+	piped,
+	commandId,
+	result: {failed = false} = {},
+	options: {reject = true},
+}) => {
+	const timestampString = serializeTimestamp(timestamp);
+	const icon = ICONS[type]({failed, reject, piped});
+	const color = COLORS[type]({reject});
+	return `${gray(`[${timestampString}]`)} ${gray(`[${commandId}]`)} ${color(icon)} ${color(message)}`;
+};
+
+// Prepending the timestamp allows debugging the slow paths of a subprocess
+const serializeTimestamp = timestamp => `${padField(timestamp.getHours(), 2)}:${padField(timestamp.getMinutes(), 2)}:${padField(timestamp.getSeconds(), 2)}.${padField(timestamp.getMilliseconds(), 3)}`;
+
+const padField = (field, padding) => String(field).padStart(padding, '0');
+
+const getFinalIcon = ({failed, reject}) => {
+	if (!failed) {
+		return node_modules_figures.tick;
+	}
+
+	return reject ? node_modules_figures.cross : node_modules_figures.warning;
+};
+
+const ICONS = {
+	command: ({piped}) => piped ? '|' : '$',
+	output: () => ' ',
+	ipc: () => '*',
+	error: getFinalIcon,
+	duration: getFinalIcon,
+};
+
+const identity = string => string;
+
+const COLORS = {
+	command: () => bold,
+	output: () => identity,
+	ipc: () => identity,
+	error: ({reject}) => reject ? redBright : yellowBright,
+	duration: () => gray,
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/custom.js
+
+
+// Apply the `verbose` function on each line
+const applyVerboseOnLines = (printedLines, verboseInfo, fdNumber) => {
+	const verboseFunction = getVerboseFunction(verboseInfo, fdNumber);
+	return printedLines
+		.map(({verboseLine, verboseObject}) => applyVerboseFunction(verboseLine, verboseObject, verboseFunction))
+		.filter(printedLine => printedLine !== undefined)
+		.map(printedLine => appendNewline(printedLine))
+		.join('');
+};
+
+const applyVerboseFunction = (verboseLine, verboseObject, verboseFunction) => {
+	if (verboseFunction === undefined) {
+		return verboseLine;
+	}
+
+	const printedLine = verboseFunction(verboseLine, verboseObject);
+	if (typeof printedLine === 'string') {
+		return printedLine;
+	}
+};
+
+const appendNewline = printedLine => printedLine.endsWith('\n')
+	? printedLine
+	: `${printedLine}\n`;
+
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/log.js
 
 
 
 
+
+
 // Write synchronously to ensure lines are properly ordered and not interleaved with `stdout`
-const verboseLog = (string, verboseId, icon, color) => {
-	const prefixedLines = addPrefix(string, verboseId, icon, color);
-	(0,external_node_fs_namespaceObject.writeFileSync)(STDERR_FD, `${prefixedLines}\n`);
+const verboseLog = ({type, verboseMessage, fdNumber, verboseInfo, result}) => {
+	const verboseObject = getVerboseObject({type, result, verboseInfo});
+	const printedLines = getPrintedLines(verboseMessage, verboseObject);
+	const finalLines = applyVerboseOnLines(printedLines, verboseInfo, fdNumber);
+	(0,external_node_fs_namespaceObject.writeFileSync)(STDERR_FD, finalLines);
 };
 
+const getVerboseObject = ({
+	type,
+	result,
+	verboseInfo: {escapedCommand, commandId, rawOptions: {piped = false, ...options}},
+}) => ({
+	type,
+	escapedCommand,
+	commandId: `${commandId}`,
+	timestamp: new Date(),
+	piped,
+	result,
+	options,
+});
+
+const getPrintedLines = (verboseMessage, verboseObject) => verboseMessage
+	.split('\n')
+	.map(message => getPrintedLine({...verboseObject, message}));
+
+const getPrintedLine = verboseObject => {
+	const verboseLine = defaultVerboseFunction(verboseObject);
+	return {verboseLine, verboseObject};
+};
+
+// Unless a `verbose` function is used, print all logs on `stderr`
 const STDERR_FD = 2;
 
-const addPrefix = (string, verboseId, icon, color) => string.includes('\n')
-	? string
-		.split('\n')
-		.map(line => addPrefixToLine(line, verboseId, icon, color))
-		.join('\n')
-	: addPrefixToLine(string, verboseId, icon, color);
-
-const addPrefixToLine = (line, verboseId, icon, color = identity) => [
-	gray(`[${getTimestamp()}]`),
-	gray(`[${verboseId}]`),
-	color(ICONS[icon]),
-	color(line),
-].join(' ');
-
-const identity = string => string;
-
-// Prepending the timestamp allows debugging the slow paths of a subprocess
-const getTimestamp = () => {
-	const date = new Date();
-	return `${padField(date.getHours(), 2)}:${padField(date.getMinutes(), 2)}:${padField(date.getSeconds(), 2)}.${padField(date.getMilliseconds(), 3)}`;
+// Serialize any type to a line string, for logging
+const serializeVerboseMessage = message => {
+	const messageString = typeof message === 'string' ? message : (0,external_node_util_.inspect)(message);
+	const escapedMessage = escapeLines(messageString);
+	return escapedMessage.replaceAll('\t', ' '.repeat(TAB_SIZE));
 };
 
-const padField = (field, padding) => String(field).padStart(padding, '0');
-
-const ICONS = {
-	command: '$',
-	pipedCommand: '|',
-	output: ' ',
-	error: node_modules_figures.cross,
-	warning: node_modules_figures.warning,
-	success: node_modules_figures.tick,
-};
+// Same as `util.inspect()`
+const TAB_SIZE = 2;
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/start.js
 
 
 
-
-// When `verbose` is `short|full`, print each command
-const logCommand = (escapedCommand, {verbose, verboseId}, {piped = false}) => {
-	if (!isVerbose(verbose)) {
+// When `verbose` is `short|full|custom`, print each command
+const logCommand = (escapedCommand, verboseInfo) => {
+	if (!isVerbose(verboseInfo)) {
 		return;
 	}
 
-	const icon = piped ? 'pipedCommand' : 'command';
-	verboseLog(escapedCommand, verboseId, icon, bold);
+	verboseLog({
+		type: 'command',
+		verboseMessage: escapedCommand,
+		verboseInfo,
+	});
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/info.js
+
+
+// Information computed before spawning, used by the `verbose` option
+const getVerboseInfo = (verbose, escapedCommand, rawOptions) => {
+	validateVerbose(verbose);
+	const commandId = getCommandId(verbose);
+	return {
+		verbose,
+		escapedCommand,
+		commandId,
+		rawOptions,
+	};
+};
+
+const getCommandId = verbose => isVerbose({verbose}) ? COMMAND_ID++ : undefined;
+
+// Prepending the `pid` is useful when multiple commands print their output at the same time.
+// However, we cannot use the real PID since this is not available with `child_process.spawnSync()`.
+// Also, we cannot use the real PID if we want to print it before `child_process.spawn()` is run.
+// As a pro, it is shorter than a normal PID and never re-uses the same id.
+// As a con, it cannot be used to send signals.
+let COMMAND_ID = 0n;
+
+const validateVerbose = verbose => {
+	for (const fdVerbose of verbose) {
+		if (fdVerbose === false) {
+			throw new TypeError('The "verbose: false" option was renamed to "verbose: \'none\'".');
+		}
+
+		if (fdVerbose === true) {
+			throw new TypeError('The "verbose: true" option was renamed to "verbose: \'short\'".');
+		}
+
+		if (!VERBOSE_VALUES.includes(fdVerbose) && !isVerboseFunction(fdVerbose)) {
+			const allowedValues = VERBOSE_VALUES.map(allowedValue => `'${allowedValue}'`).join(', ');
+			throw new TypeError(`The "verbose" option must not be ${fdVerbose}. Allowed values are: ${allowedValues} or a function.`);
+		}
+	}
 };
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/return/duration.js
@@ -51566,189 +51887,6 @@ const getStartTime = () => external_node_process_namespaceObject.hrtime.bigint()
 // Printed by the `verbose` option.
 const getDurationMs = startTime => Number(external_node_process_namespaceObject.hrtime.bigint() - startTime) / 1e6;
 
-;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/escape.js
-
-
-
-// Compute `result.command` and `result.escapedCommand`
-const joinCommand = (filePath, rawArguments) => {
-	const fileAndArguments = [filePath, ...rawArguments];
-	const command = fileAndArguments.join(' ');
-	const escapedCommand = fileAndArguments
-		.map(fileAndArgument => quoteString(escapeControlCharacters(fileAndArgument)))
-		.join(' ');
-	return {command, escapedCommand};
-};
-
-// Remove ANSI sequences and escape control characters and newlines
-const escapeLines = lines => (0,external_node_util_.stripVTControlCharacters)(lines)
-	.split('\n')
-	.map(line => escapeControlCharacters(line))
-	.join('\n');
-
-const escapeControlCharacters = line => line.replaceAll(SPECIAL_CHAR_REGEXP, character => escapeControlCharacter(character));
-
-const escapeControlCharacter = character => {
-	const commonEscape = COMMON_ESCAPES[character];
-	if (commonEscape !== undefined) {
-		return commonEscape;
-	}
-
-	const codepoint = character.codePointAt(0);
-	const codepointHex = codepoint.toString(16);
-	return codepoint <= ASTRAL_START
-		? `\\u${codepointHex.padStart(4, '0')}`
-		: `\\U${codepointHex}`;
-};
-
-// Characters that would create issues when printed are escaped using the \u or \U notation.
-// Those include control characters and newlines.
-// The \u and \U notation is Bash specific, but there is no way to do this in a shell-agnostic way.
-// Some shells do not even have a way to print those characters in an escaped fashion.
-// Therefore, we prioritize printing those safely, instead of allowing those to be copy-pasted.
-// List of Unicode character categories: https://www.fileformat.info/info/unicode/category/index.htm
-const SPECIAL_CHAR_REGEXP = /\p{Separator}|\p{Other}/gu;
-
-// Accepted by $'...' in Bash.
-// Exclude \a \e \v which are accepted in Bash but not in JavaScript (except \v) and JSON.
-const COMMON_ESCAPES = {
-	' ': ' ',
-	'\b': '\\b',
-	'\f': '\\f',
-	'\n': '\\n',
-	'\r': '\\r',
-	'\t': '\\t',
-};
-
-// Up until that codepoint, \u notation can be used instead of \U
-const ASTRAL_START = 65_535;
-
-// Some characters are shell-specific, i.e. need to be escaped when the command is copy-pasted then run.
-// Escaping is shell-specific. We cannot know which shell is used: `process.platform` detection is not enough.
-// For example, Windows users could be using `cmd.exe`, Powershell or Bash for Windows which all use different escaping.
-// We use '...' on Unix, which is POSIX shell compliant and escape all characters but ' so this is fairly safe.
-// On Windows, we assume cmd.exe is used and escape with "...", which also works with Powershell.
-const quoteString = escapedArgument => {
-	if (NO_ESCAPE_REGEXP.test(escapedArgument)) {
-		return escapedArgument;
-	}
-
-	return external_node_process_namespaceObject.platform === 'win32'
-		? `"${escapedArgument.replaceAll('"', '""')}"`
-		: `'${escapedArgument.replaceAll('\'', '\'\\\'\'')}'`;
-};
-
-const NO_ESCAPE_REGEXP = /^[\w./-]+$/;
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/utils/standard-stream.js
-
-
-const isStandardStream = stream => STANDARD_STREAMS.includes(stream);
-const STANDARD_STREAMS = [external_node_process_namespaceObject.stdin, external_node_process_namespaceObject.stdout, external_node_process_namespaceObject.stderr];
-const STANDARD_STREAMS_ALIASES = ['stdin', 'stdout', 'stderr'];
-const getStreamName = fdNumber => STANDARD_STREAMS_ALIASES[fdNumber] ?? `stdio[${fdNumber}]`;
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/specific.js
-
-
-
-
-// Some options can have different values for `stdout`/`stderr`/`fd3`.
-// This normalizes those to array of values.
-// For example, `{verbose: {stdout: 'none', stderr: 'full'}}` becomes `{verbose: ['none', 'none', 'full']}`
-const normalizeFdSpecificOptions = options => {
-	const optionsCopy = {...options};
-
-	for (const optionName of FD_SPECIFIC_OPTIONS) {
-		optionsCopy[optionName] = normalizeFdSpecificOption(options, optionName);
-	}
-
-	return optionsCopy;
-};
-
-const normalizeFdSpecificOption = (options, optionName) => {
-	const optionBaseArray = Array.from({length: getStdioLength(options)});
-	const optionArray = normalizeFdSpecificValue(options[optionName], optionBaseArray, optionName);
-	return addDefaultValue(optionArray, optionName);
-};
-
-const getStdioLength = ({stdio}) => Array.isArray(stdio)
-	? Math.max(stdio.length, STANDARD_STREAMS_ALIASES.length)
-	: STANDARD_STREAMS_ALIASES.length;
-
-const normalizeFdSpecificValue = (optionValue, optionArray, optionName) => isPlainObject(optionValue)
-	? normalizeOptionObject(optionValue, optionArray, optionName)
-	: optionArray.fill(optionValue);
-
-const normalizeOptionObject = (optionValue, optionArray, optionName) => {
-	for (const fdName of Object.keys(optionValue).sort(compareFdName)) {
-		for (const fdNumber of parseFdName(fdName, optionName, optionArray)) {
-			optionArray[fdNumber] = optionValue[fdName];
-		}
-	}
-
-	return optionArray;
-};
-
-// Ensure priority order when setting both `stdout`/`stderr`, `fd1`/`fd2`, and `all`
-const compareFdName = (fdNameA, fdNameB) => getFdNameOrder(fdNameA) < getFdNameOrder(fdNameB) ? 1 : -1;
-
-const getFdNameOrder = fdName => {
-	if (fdName === 'stdout' || fdName === 'stderr') {
-		return 0;
-	}
-
-	return fdName === 'all' ? 2 : 1;
-};
-
-const parseFdName = (fdName, optionName, optionArray) => {
-	const fdNumber = parseFd(fdName);
-	if (fdNumber === undefined || fdNumber === 0) {
-		throw new TypeError(`"${optionName}.${fdName}" is invalid.
-It must be "${optionName}.stdout", "${optionName}.stderr", "${optionName}.all", or "${optionName}.fd3", "${optionName}.fd4" (and so on).`);
-	}
-
-	if (fdNumber >= optionArray.length) {
-		throw new TypeError(`"${optionName}.${fdName}" is invalid: that file descriptor does not exist.
-Please set the "stdio" option to ensure that file descriptor exists.`);
-	}
-
-	return fdNumber === 'all' ? [1, 2] : [fdNumber];
-};
-
-// Use the same syntax for fd-specific options and the `from`/`to` options
-const parseFd = fdName => {
-	if (fdName === 'all') {
-		return fdName;
-	}
-
-	if (STANDARD_STREAMS_ALIASES.includes(fdName)) {
-		return STANDARD_STREAMS_ALIASES.indexOf(fdName);
-	}
-
-	const regexpResult = FD_REGEXP.exec(fdName);
-	if (regexpResult !== null) {
-		return Number(regexpResult[1]);
-	}
-};
-
-const FD_REGEXP = /^fd(\d+)$/;
-
-const addDefaultValue = (optionArray, optionName) => optionArray.map(optionValue => optionValue === undefined
-	? DEFAULT_OPTIONS[optionName]
-	: optionValue);
-
-const DEFAULT_OPTIONS = {
-	lines: false,
-	buffer: true,
-	maxBuffer: 1000 * 1000 * 100,
-	verbose: verboseDefault,
-	stripFinalNewline: true,
-};
-
-// List of options which can have different values for `stdout`/`stderr`
-const FD_SPECIFIC_OPTIONS = ['lines', 'buffer', 'maxBuffer', 'verbose', 'stripFinalNewline'];
-
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/command.js
 
 
@@ -51760,8 +51898,9 @@ const FD_SPECIFIC_OPTIONS = ['lines', 'buffer', 'maxBuffer', 'verbose', 'stripFi
 const handleCommand = (filePath, rawArguments, rawOptions) => {
 	const startTime = getStartTime();
 	const {command, escapedCommand} = joinCommand(filePath, rawArguments);
-	const verboseInfo = getVerboseInfo(normalizeFdSpecificOption(rawOptions, 'verbose'));
-	logCommand(escapedCommand, verboseInfo, rawOptions);
+	const verbose = normalizeFdSpecificOption(rawOptions, 'verbose');
+	const verboseInfo = getVerboseInfo(verbose, escapedCommand, {...rawOptions});
+	logCommand(escapedCommand, verboseInfo);
 	return {
 		command,
 		escapedCommand,
@@ -51888,415 +52027,6 @@ setErrorName(ExecaSyncError, ExecaSyncError.name);
 
 ;// CONCATENATED MODULE: external "node:os"
 const external_node_os_namespaceObject = require("node:os");
-;// CONCATENATED MODULE: ./node_modules/execa/lib/terminate/signal.js
-
-
-// Normalize signals for comparison purpose.
-// Also validate the signal exists.
-const normalizeKillSignal = killSignal => {
-	const optionName = 'option `killSignal`';
-	if (killSignal === 0) {
-		throw new TypeError(`Invalid ${optionName}: 0 cannot be used.`);
-	}
-
-	return normalizeSignal(killSignal, optionName);
-};
-
-const normalizeSignalArgument = signal => signal === 0
-	? signal
-	: normalizeSignal(signal, '`subprocess.kill()`\'s argument');
-
-const normalizeSignal = (signalNameOrInteger, optionName) => {
-	if (Number.isInteger(signalNameOrInteger)) {
-		return normalizeSignalInteger(signalNameOrInteger, optionName);
-	}
-
-	if (typeof signalNameOrInteger === 'string') {
-		return normalizeSignalName(signalNameOrInteger, optionName);
-	}
-
-	throw new TypeError(`Invalid ${optionName} ${String(signalNameOrInteger)}: it must be a string or an integer.\n${getAvailableSignals()}`);
-};
-
-const normalizeSignalInteger = (signalInteger, optionName) => {
-	if (signalsIntegerToName.has(signalInteger)) {
-		return signalsIntegerToName.get(signalInteger);
-	}
-
-	throw new TypeError(`Invalid ${optionName} ${signalInteger}: this signal integer does not exist.\n${getAvailableSignals()}`);
-};
-
-const getSignalsIntegerToName = () => new Map(Object.entries(external_node_os_namespaceObject.constants.signals)
-	.reverse()
-	.map(([signalName, signalInteger]) => [signalInteger, signalName]));
-
-const signalsIntegerToName = getSignalsIntegerToName();
-
-const normalizeSignalName = (signalName, optionName) => {
-	if (signalName in external_node_os_namespaceObject.constants.signals) {
-		return signalName;
-	}
-
-	if (signalName.toUpperCase() in external_node_os_namespaceObject.constants.signals) {
-		throw new TypeError(`Invalid ${optionName} '${signalName}': please rename it to '${signalName.toUpperCase()}'.`);
-	}
-
-	throw new TypeError(`Invalid ${optionName} '${signalName}': this signal name does not exist.\n${getAvailableSignals()}`);
-};
-
-const getAvailableSignals = () => `Available signal names: ${getAvailableSignalNames()}.
-Available signal numbers: ${getAvailableSignalIntegers()}.`;
-
-const getAvailableSignalNames = () => Object.keys(external_node_os_namespaceObject.constants.signals)
-	.sort()
-	.map(signalName => `'${signalName}'`)
-	.join(', ');
-
-const getAvailableSignalIntegers = () => [...new Set(Object.values(external_node_os_namespaceObject.constants.signals)
-	.sort((signalInteger, signalIntegerTwo) => signalInteger - signalIntegerTwo))]
-	.join(', ');
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/terminate/kill.js
-
-
-
-
-// Normalize the `forceKillAfterDelay` option
-const normalizeForceKillAfterDelay = forceKillAfterDelay => {
-	if (forceKillAfterDelay === false) {
-		return forceKillAfterDelay;
-	}
-
-	if (forceKillAfterDelay === true) {
-		return DEFAULT_FORCE_KILL_TIMEOUT;
-	}
-
-	if (!Number.isFinite(forceKillAfterDelay) || forceKillAfterDelay < 0) {
-		throw new TypeError(`Expected the \`forceKillAfterDelay\` option to be a non-negative integer, got \`${forceKillAfterDelay}\` (${typeof forceKillAfterDelay})`);
-	}
-
-	return forceKillAfterDelay;
-};
-
-const DEFAULT_FORCE_KILL_TIMEOUT = 1000 * 5;
-
-// Monkey-patches `subprocess.kill()` to add `forceKillAfterDelay` behavior and `.kill(error)`
-const subprocessKill = (
-	{kill, options: {forceKillAfterDelay, killSignal}, onInternalError, controller},
-	signalOrError,
-	errorArgument,
-) => {
-	const {signal, error} = parseKillArguments(signalOrError, errorArgument, killSignal);
-	emitKillError(error, onInternalError);
-	const killResult = kill(signal);
-	setKillTimeout({
-		kill,
-		signal,
-		forceKillAfterDelay,
-		killSignal,
-		killResult,
-		controller,
-	});
-	return killResult;
-};
-
-const parseKillArguments = (signalOrError, errorArgument, killSignal) => {
-	const [signal = killSignal, error] = isErrorInstance(signalOrError)
-		? [undefined, signalOrError]
-		: [signalOrError, errorArgument];
-
-	if (typeof signal !== 'string' && !Number.isInteger(signal)) {
-		throw new TypeError(`The first argument must be an error instance or a signal name string/integer: ${String(signal)}`);
-	}
-
-	if (error !== undefined && !isErrorInstance(error)) {
-		throw new TypeError(`The second argument is optional. If specified, it must be an error instance: ${error}`);
-	}
-
-	return {signal: normalizeSignalArgument(signal), error};
-};
-
-// Fails right away when calling `subprocess.kill(error)`.
-// Does not wait for actual signal termination.
-// Uses a deferred promise instead of the `error` event on the subprocess, as this is less intrusive.
-const emitKillError = (error, onInternalError) => {
-	if (error !== undefined) {
-		onInternalError.reject(error);
-	}
-};
-
-const setKillTimeout = async ({kill, signal, forceKillAfterDelay, killSignal, killResult, controller}) => {
-	if (!shouldForceKill(signal, forceKillAfterDelay, killSignal, killResult)) {
-		return;
-	}
-
-	try {
-		await (0,promises_namespaceObject.setTimeout)(forceKillAfterDelay, undefined, {signal: controller.signal});
-		kill('SIGKILL');
-	} catch {}
-};
-
-const shouldForceKill = (signal, forceKillAfterDelay, killSignal, killResult) => signal === killSignal
-	&& forceKillAfterDelay !== false
-	&& killResult;
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/terminate/timeout.js
-
-
-
-// Validate `timeout` option
-const validateTimeout = ({timeout}) => {
-	if (timeout !== undefined && (!Number.isFinite(timeout) || timeout < 0)) {
-		throw new TypeError(`Expected the \`timeout\` option to be a non-negative integer, got \`${timeout}\` (${typeof timeout})`);
-	}
-};
-
-// Fails when the `timeout` option is exceeded
-const throwOnTimeout = (subprocess, timeout, context, controller) => timeout === 0 || timeout === undefined
-	? []
-	: [killAfterTimeout(subprocess, timeout, context, controller)];
-
-const killAfterTimeout = async (subprocess, timeout, context, {signal}) => {
-	await (0,promises_namespaceObject.setTimeout)(timeout, undefined, {signal});
-	context.timedOut = true;
-	subprocess.kill();
-	throw new DiscardedError();
-};
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/methods/node.js
-
-
-
-
-// `execaNode()` is a shortcut for `execa(..., {node: true})`
-const mapNode = ({options}) => {
-	if (options.node === false) {
-		throw new TypeError('The "node" option cannot be false with `execaNode()`.');
-	}
-
-	return {options: {...options, node: true}};
-};
-
-// Applies the `node: true` option, and the related `nodePath`/`nodeOptions` options.
-// Modifies the file commands/arguments to ensure the same Node binary and flags are re-used.
-// Also adds `ipc: true` and `shell: false`.
-const handleNodeOption = (file, commandArguments, {
-	node: shouldHandleNode = false,
-	nodePath = external_node_process_namespaceObject.execPath,
-	nodeOptions = external_node_process_namespaceObject.execArgv.filter(nodeOption => !nodeOption.startsWith('--inspect')),
-	cwd,
-	execPath: formerNodePath,
-	...options
-}) => {
-	if (formerNodePath !== undefined) {
-		throw new TypeError('The "execPath" option has been removed. Please use the "nodePath" option instead.');
-	}
-
-	const normalizedNodePath = safeNormalizeFileUrl(nodePath, 'The "nodePath" option');
-	const resolvedNodePath = (0,external_node_path_namespaceObject.resolve)(cwd, normalizedNodePath);
-	const newOptions = {
-		...options,
-		nodePath: resolvedNodePath,
-		node: shouldHandleNode,
-		cwd,
-	};
-
-	if (!shouldHandleNode) {
-		return [file, commandArguments, newOptions];
-	}
-
-	if ((0,external_node_path_namespaceObject.basename)(file, '.exe') === 'node') {
-		throw new TypeError('When the "node" option is true, the first argument does not need to be "node".');
-	}
-
-	return [
-		resolvedNodePath,
-		[...nodeOptions, file, ...commandArguments],
-		{ipc: true, ...newOptions, shell: false},
-	];
-};
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/encoding-option.js
-// Validate `encoding` option
-const validateEncoding = ({encoding}) => {
-	if (ENCODINGS.has(encoding)) {
-		return;
-	}
-
-	const correctEncoding = getCorrectEncoding(encoding);
-	if (correctEncoding !== undefined) {
-		throw new TypeError(`Invalid option \`encoding: ${serializeEncoding(encoding)}\`.
-Please rename it to ${serializeEncoding(correctEncoding)}.`);
-	}
-
-	const correctEncodings = [...ENCODINGS].map(correctEncoding => serializeEncoding(correctEncoding)).join(', ');
-	throw new TypeError(`Invalid option \`encoding: ${serializeEncoding(encoding)}\`.
-Please rename it to one of: ${correctEncodings}.`);
-};
-
-const TEXT_ENCODINGS = new Set(['utf8', 'utf16le']);
-const BINARY_ENCODINGS = new Set(['buffer', 'hex', 'base64', 'base64url', 'latin1', 'ascii']);
-const ENCODINGS = new Set([...TEXT_ENCODINGS, ...BINARY_ENCODINGS]);
-
-const getCorrectEncoding = encoding => {
-	if (encoding === null) {
-		return 'buffer';
-	}
-
-	if (typeof encoding !== 'string') {
-		return;
-	}
-
-	const lowerEncoding = encoding.toLowerCase();
-	if (lowerEncoding in ENCODING_ALIASES) {
-		return ENCODING_ALIASES[lowerEncoding];
-	}
-
-	if (ENCODINGS.has(lowerEncoding)) {
-		return lowerEncoding;
-	}
-};
-
-const ENCODING_ALIASES = {
-	// eslint-disable-next-line unicorn/text-encoding-identifier-case
-	'utf-8': 'utf8',
-	'utf-16le': 'utf16le',
-	'ucs-2': 'utf16le',
-	ucs2: 'utf16le',
-	binary: 'latin1',
-};
-
-const serializeEncoding = encoding => typeof encoding === 'string' ? `"${encoding}"` : String(encoding);
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/cwd.js
-
-
-
-
-
-// Normalize `cwd` option
-const normalizeCwd = (cwd = getDefaultCwd()) => {
-	const cwdString = safeNormalizeFileUrl(cwd, 'The "cwd" option');
-	return (0,external_node_path_namespaceObject.resolve)(cwdString);
-};
-
-const getDefaultCwd = () => {
-	try {
-		return external_node_process_namespaceObject.cwd();
-	} catch (error) {
-		error.message = `The current directory does not exist.\n${error.message}`;
-		throw error;
-	}
-};
-
-// When `cwd` option has an invalid value, provide with a better error message
-const fixCwdError = (originalMessage, cwd) => {
-	if (cwd === getDefaultCwd()) {
-		return originalMessage;
-	}
-
-	let cwdStat;
-	try {
-		cwdStat = (0,external_node_fs_namespaceObject.statSync)(cwd);
-	} catch (error) {
-		return `The "cwd" option is invalid: ${cwd}.\n${error.message}\n${originalMessage}`;
-	}
-
-	if (!cwdStat.isDirectory()) {
-		return `The "cwd" option is not a directory: ${cwd}.\n${originalMessage}`;
-	}
-
-	return originalMessage;
-};
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/options.js
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Normalize the options object, and sometimes also the file paths and arguments.
-// Applies default values, validate allowed options, normalize them.
-const normalizeOptions = (filePath, rawArguments, rawOptions) => {
-	rawOptions.cwd = normalizeCwd(rawOptions.cwd);
-	const [processedFile, processedArguments, processedOptions] = handleNodeOption(filePath, rawArguments, rawOptions);
-
-	const {command: file, args: commandArguments, options: initialOptions} = cross_spawn._parse(processedFile, processedArguments, processedOptions);
-
-	const fdOptions = normalizeFdSpecificOptions(initialOptions);
-	const options = addDefaultOptions(fdOptions);
-	validateTimeout(options);
-	validateEncoding(options);
-	options.shell = normalizeFileUrl(options.shell);
-	options.env = getEnv(options);
-	options.killSignal = normalizeKillSignal(options.killSignal);
-	options.forceKillAfterDelay = normalizeForceKillAfterDelay(options.forceKillAfterDelay);
-	options.lines = options.lines.map((lines, fdNumber) => lines && !BINARY_ENCODINGS.has(options.encoding) && options.buffer[fdNumber]);
-
-	if (external_node_process_namespaceObject.platform === 'win32' && (0,external_node_path_namespaceObject.basename)(file, '.exe') === 'cmd') {
-		// #116
-		commandArguments.unshift('/q');
-	}
-
-	return {file, commandArguments, options};
-};
-
-const addDefaultOptions = ({
-	extendEnv = true,
-	preferLocal = false,
-	cwd,
-	localDir: localDirectory = cwd,
-	encoding = 'utf8',
-	reject = true,
-	cleanup = true,
-	all = false,
-	windowsHide = true,
-	killSignal = 'SIGTERM',
-	forceKillAfterDelay = true,
-	ipc = false,
-	serialization = 'advanced',
-	...options
-}) => ({
-	...options,
-	extendEnv,
-	preferLocal,
-	cwd,
-	localDirectory,
-	encoding,
-	reject,
-	cleanup,
-	all,
-	windowsHide,
-	killSignal,
-	forceKillAfterDelay,
-	ipc,
-	serialization,
-});
-
-const getEnv = ({env: envOption, extendEnv, preferLocal, node, localDirectory, nodePath}) => {
-	const env = extendEnv ? {...external_node_process_namespaceObject.env, ...envOption} : envOption;
-
-	if (preferLocal || node) {
-		return npmRunPathEnv({
-			env,
-			cwd: localDirectory,
-			execPath: nodePath,
-			preferLocal,
-			addExecPath: node,
-		});
-	}
-
-	return env;
-};
-
 ;// CONCATENATED MODULE: ./node_modules/human-signals/build/src/realtime.js
 
 const getRealtimeSignals=()=>{
@@ -52598,7 +52328,7 @@ standard:"other"
 
 const getSignals=()=>{
 const realtimeSignals=getRealtimeSignals();
-const signals=[...SIGNALS,...realtimeSignals].map(signals_normalizeSignal);
+const signals=[...SIGNALS,...realtimeSignals].map(normalizeSignal);
 return signals
 };
 
@@ -52608,7 +52338,7 @@ return signals
 
 
 
-const signals_normalizeSignal=({
+const normalizeSignal=({
 name,
 number:defaultNumber,
 description,
@@ -52694,6 +52424,1354 @@ return signals.find((signalA)=>signalA.number===number)
 };
 
 const signalsByNumber=getSignalsByNumber();
+;// CONCATENATED MODULE: ./node_modules/execa/lib/terminate/signal.js
+
+
+
+// Normalize signals for comparison purpose.
+// Also validate the signal exists.
+const normalizeKillSignal = killSignal => {
+	const optionName = 'option `killSignal`';
+	if (killSignal === 0) {
+		throw new TypeError(`Invalid ${optionName}: 0 cannot be used.`);
+	}
+
+	return signal_normalizeSignal(killSignal, optionName);
+};
+
+const normalizeSignalArgument = signal => signal === 0
+	? signal
+	: signal_normalizeSignal(signal, '`subprocess.kill()`\'s argument');
+
+const signal_normalizeSignal = (signalNameOrInteger, optionName) => {
+	if (Number.isInteger(signalNameOrInteger)) {
+		return normalizeSignalInteger(signalNameOrInteger, optionName);
+	}
+
+	if (typeof signalNameOrInteger === 'string') {
+		return normalizeSignalName(signalNameOrInteger, optionName);
+	}
+
+	throw new TypeError(`Invalid ${optionName} ${String(signalNameOrInteger)}: it must be a string or an integer.\n${getAvailableSignals()}`);
+};
+
+const normalizeSignalInteger = (signalInteger, optionName) => {
+	if (signalsIntegerToName.has(signalInteger)) {
+		return signalsIntegerToName.get(signalInteger);
+	}
+
+	throw new TypeError(`Invalid ${optionName} ${signalInteger}: this signal integer does not exist.\n${getAvailableSignals()}`);
+};
+
+const getSignalsIntegerToName = () => new Map(Object.entries(external_node_os_namespaceObject.constants.signals)
+	.reverse()
+	.map(([signalName, signalInteger]) => [signalInteger, signalName]));
+
+const signalsIntegerToName = getSignalsIntegerToName();
+
+const normalizeSignalName = (signalName, optionName) => {
+	if (signalName in external_node_os_namespaceObject.constants.signals) {
+		return signalName;
+	}
+
+	if (signalName.toUpperCase() in external_node_os_namespaceObject.constants.signals) {
+		throw new TypeError(`Invalid ${optionName} '${signalName}': please rename it to '${signalName.toUpperCase()}'.`);
+	}
+
+	throw new TypeError(`Invalid ${optionName} '${signalName}': this signal name does not exist.\n${getAvailableSignals()}`);
+};
+
+const getAvailableSignals = () => `Available signal names: ${getAvailableSignalNames()}.
+Available signal numbers: ${getAvailableSignalIntegers()}.`;
+
+const getAvailableSignalNames = () => Object.keys(external_node_os_namespaceObject.constants.signals)
+	.sort()
+	.map(signalName => `'${signalName}'`)
+	.join(', ');
+
+const getAvailableSignalIntegers = () => [...new Set(Object.values(external_node_os_namespaceObject.constants.signals)
+	.sort((signalInteger, signalIntegerTwo) => signalInteger - signalIntegerTwo))]
+	.join(', ');
+
+// Human-friendly description of a signal
+const getSignalDescription = signal => signalsByName[signal].description;
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/terminate/kill.js
+
+
+
+
+// Normalize the `forceKillAfterDelay` option
+const normalizeForceKillAfterDelay = forceKillAfterDelay => {
+	if (forceKillAfterDelay === false) {
+		return forceKillAfterDelay;
+	}
+
+	if (forceKillAfterDelay === true) {
+		return DEFAULT_FORCE_KILL_TIMEOUT;
+	}
+
+	if (!Number.isFinite(forceKillAfterDelay) || forceKillAfterDelay < 0) {
+		throw new TypeError(`Expected the \`forceKillAfterDelay\` option to be a non-negative integer, got \`${forceKillAfterDelay}\` (${typeof forceKillAfterDelay})`);
+	}
+
+	return forceKillAfterDelay;
+};
+
+const DEFAULT_FORCE_KILL_TIMEOUT = 1000 * 5;
+
+// Monkey-patches `subprocess.kill()` to add `forceKillAfterDelay` behavior and `.kill(error)`
+const subprocessKill = (
+	{kill, options: {forceKillAfterDelay, killSignal}, onInternalError, context, controller},
+	signalOrError,
+	errorArgument,
+) => {
+	const {signal, error} = parseKillArguments(signalOrError, errorArgument, killSignal);
+	emitKillError(error, onInternalError);
+	const killResult = kill(signal);
+	setKillTimeout({
+		kill,
+		signal,
+		forceKillAfterDelay,
+		killSignal,
+		killResult,
+		context,
+		controller,
+	});
+	return killResult;
+};
+
+const parseKillArguments = (signalOrError, errorArgument, killSignal) => {
+	const [signal = killSignal, error] = isErrorInstance(signalOrError)
+		? [undefined, signalOrError]
+		: [signalOrError, errorArgument];
+
+	if (typeof signal !== 'string' && !Number.isInteger(signal)) {
+		throw new TypeError(`The first argument must be an error instance or a signal name string/integer: ${String(signal)}`);
+	}
+
+	if (error !== undefined && !isErrorInstance(error)) {
+		throw new TypeError(`The second argument is optional. If specified, it must be an error instance: ${error}`);
+	}
+
+	return {signal: normalizeSignalArgument(signal), error};
+};
+
+// Fails right away when calling `subprocess.kill(error)`.
+// Does not wait for actual signal termination.
+// Uses a deferred promise instead of the `error` event on the subprocess, as this is less intrusive.
+const emitKillError = (error, onInternalError) => {
+	if (error !== undefined) {
+		onInternalError.reject(error);
+	}
+};
+
+const setKillTimeout = async ({kill, signal, forceKillAfterDelay, killSignal, killResult, context, controller}) => {
+	if (signal === killSignal && killResult) {
+		killOnTimeout({
+			kill,
+			forceKillAfterDelay,
+			context,
+			controllerSignal: controller.signal,
+		});
+	}
+};
+
+// Forcefully terminate a subprocess after a timeout
+const killOnTimeout = async ({kill, forceKillAfterDelay, context, controllerSignal}) => {
+	if (forceKillAfterDelay === false) {
+		return;
+	}
+
+	try {
+		await (0,promises_namespaceObject.setTimeout)(forceKillAfterDelay, undefined, {signal: controllerSignal});
+		if (kill('SIGKILL')) {
+			context.isForcefullyTerminated ??= true;
+		}
+	} catch {}
+};
+
+// EXTERNAL MODULE: external "node:events"
+var external_node_events_ = __nccwpck_require__(5673);
+;// CONCATENATED MODULE: ./node_modules/execa/lib/utils/abort-signal.js
+
+
+// Combines `util.aborted()` and `events.addAbortListener()`: promise-based and cleaned up with a stop signal
+const onAbortedSignal = async (mainSignal, stopSignal) => {
+	if (!mainSignal.aborted) {
+		await (0,external_node_events_.once)(mainSignal, 'abort', {signal: stopSignal});
+	}
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/terminate/cancel.js
+
+
+// Validate the `cancelSignal` option
+const validateCancelSignal = ({cancelSignal}) => {
+	if (cancelSignal !== undefined && Object.prototype.toString.call(cancelSignal) !== '[object AbortSignal]') {
+		throw new Error(`The \`cancelSignal\` option must be an AbortSignal: ${String(cancelSignal)}`);
+	}
+};
+
+// Terminate the subprocess when aborting the `cancelSignal` option and `gracefulSignal` is `false`
+const throwOnCancel = ({subprocess, cancelSignal, gracefulCancel, context, controller}) => cancelSignal === undefined || gracefulCancel
+	? []
+	: [terminateOnCancel(subprocess, cancelSignal, context, controller)];
+
+const terminateOnCancel = async (subprocess, cancelSignal, context, {signal}) => {
+	await onAbortedSignal(cancelSignal, signal);
+	context.terminationReason ??= 'cancel';
+	subprocess.kill();
+	throw cancelSignal.reason;
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/validation.js
+// Validate the IPC channel is connected before receiving/sending messages
+const validateIpcMethod = ({methodName, isSubprocess, ipc, isConnected}) => {
+	validateIpcOption(methodName, isSubprocess, ipc);
+	validateConnection(methodName, isSubprocess, isConnected);
+};
+
+// Better error message when forgetting to set `ipc: true` and using the IPC methods
+const validateIpcOption = (methodName, isSubprocess, ipc) => {
+	if (!ipc) {
+		throw new Error(`${getMethodName(methodName, isSubprocess)} can only be used if the \`ipc\` option is \`true\`.`);
+	}
+};
+
+// Better error message when one process does not send/receive messages once the other process has disconnected.
+// This also makes it clear that any buffered messages are lost once either process has disconnected.
+// Also when aborting `cancelSignal` after disconnecting the IPC.
+const validateConnection = (methodName, isSubprocess, isConnected) => {
+	if (!isConnected) {
+		throw new Error(`${getMethodName(methodName, isSubprocess)} cannot be used: the ${getOtherProcessName(isSubprocess)} has already exited or disconnected.`);
+	}
+};
+
+// When `getOneMessage()` could not complete due to an early disconnection
+const throwOnEarlyDisconnect = isSubprocess => {
+	throw new Error(`${getMethodName('getOneMessage', isSubprocess)} could not complete: the ${getOtherProcessName(isSubprocess)} exited or disconnected.`);
+};
+
+// When both processes use `sendMessage()` with `strict` at the same time
+const throwOnStrictDeadlockError = isSubprocess => {
+	throw new Error(`${getMethodName('sendMessage', isSubprocess)} failed: the ${getOtherProcessName(isSubprocess)} is sending a message too, instead of listening to incoming messages.
+This can be fixed by both sending a message and listening to incoming messages at the same time:
+
+const [receivedMessage] = await Promise.all([
+	${getMethodName('getOneMessage', isSubprocess)},
+	${getMethodName('sendMessage', isSubprocess, 'message, {strict: true}')},
+]);`);
+};
+
+// When the other process used `strict` but the current process had I/O error calling `sendMessage()` for the response
+const getStrictResponseError = (error, isSubprocess) => new Error(`${getMethodName('sendMessage', isSubprocess)} failed when sending an acknowledgment response to the ${getOtherProcessName(isSubprocess)}.`, {cause: error});
+
+// When using `strict` but the other process was not listening for messages
+const throwOnMissingStrict = isSubprocess => {
+	throw new Error(`${getMethodName('sendMessage', isSubprocess)} failed: the ${getOtherProcessName(isSubprocess)} is not listening to incoming messages.`);
+};
+
+// When using `strict` but the other process disconnected before receiving the message
+const throwOnStrictDisconnect = isSubprocess => {
+	throw new Error(`${getMethodName('sendMessage', isSubprocess)} failed: the ${getOtherProcessName(isSubprocess)} exited without listening to incoming messages.`);
+};
+
+// When the current process disconnects while the subprocess is listening to `cancelSignal`
+const getAbortDisconnectError = () => new Error(`\`cancelSignal\` aborted: the ${getOtherProcessName(true)} disconnected.`);
+
+// When the subprocess uses `cancelSignal` but not the current process
+const throwOnMissingParent = () => {
+	throw new Error('`getCancelSignal()` cannot be used without setting the `cancelSignal` subprocess option.');
+};
+
+// EPIPE can happen when sending a message to a subprocess that is closing but has not disconnected yet
+const handleEpipeError = ({error, methodName, isSubprocess}) => {
+	if (error.code === 'EPIPE') {
+		throw new Error(`${getMethodName(methodName, isSubprocess)} cannot be used: the ${getOtherProcessName(isSubprocess)} is disconnecting.`, {cause: error});
+	}
+};
+
+// Better error message when sending messages which cannot be serialized.
+// Works with both `serialization: 'advanced'` and `serialization: 'json'`.
+const handleSerializationError = ({error, methodName, isSubprocess, message}) => {
+	if (isSerializationError(error)) {
+		throw new Error(`${getMethodName(methodName, isSubprocess)}'s argument type is invalid: the message cannot be serialized: ${String(message)}.`, {cause: error});
+	}
+};
+
+const isSerializationError = ({code, message}) => SERIALIZATION_ERROR_CODES.has(code)
+	|| SERIALIZATION_ERROR_MESSAGES.some(serializationErrorMessage => message.includes(serializationErrorMessage));
+
+// `error.code` set by Node.js when it failed to serialize the message
+const SERIALIZATION_ERROR_CODES = new Set([
+	// Message is `undefined`
+	'ERR_MISSING_ARGS',
+	// Message is a function, a bigint, a symbol
+	'ERR_INVALID_ARG_TYPE',
+]);
+
+// `error.message` set by Node.js when it failed to serialize the message
+const SERIALIZATION_ERROR_MESSAGES = [
+	// Message is a promise or a proxy, with `serialization: 'advanced'`
+	'could not be cloned',
+	// Message has cycles, with `serialization: 'json'`
+	'circular structure',
+	// Message has cycles inside toJSON(), with `serialization: 'json'`
+	'call stack size exceeded',
+];
+
+const getMethodName = (methodName, isSubprocess, parameters = '') => methodName === 'cancelSignal'
+	? '`cancelSignal`\'s `controller.abort()`'
+	: `${getNamespaceName(isSubprocess)}${methodName}(${parameters})`;
+
+const getNamespaceName = isSubprocess => isSubprocess ? '' : 'subprocess.';
+
+const getOtherProcessName = isSubprocess => isSubprocess ? 'parent process' : 'subprocess';
+
+// When any error arises, we disconnect the IPC.
+// Otherwise, it is likely that one of the processes will stop sending/receiving messages.
+// This would leave the other process hanging.
+const disconnect = anyProcess => {
+	if (anyProcess.connected) {
+		anyProcess.disconnect();
+	}
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/utils/deferred.js
+const createDeferred = () => {
+	const methods = {};
+	const promise = new Promise((resolve, reject) => {
+		Object.assign(methods, {resolve, reject});
+	});
+	return Object.assign(promise, methods);
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/fd-options.js
+
+
+// Retrieve stream targeted by the `to` option
+const getToStream = (destination, to = 'stdin') => {
+	const isWritable = true;
+	const {options, fileDescriptors} = SUBPROCESS_OPTIONS.get(destination);
+	const fdNumber = getFdNumber(fileDescriptors, to, isWritable);
+	const destinationStream = destination.stdio[fdNumber];
+
+	if (destinationStream === null) {
+		throw new TypeError(getInvalidStdioOptionMessage(fdNumber, to, options, isWritable));
+	}
+
+	return destinationStream;
+};
+
+// Retrieve stream targeted by the `from` option
+const getFromStream = (source, from = 'stdout') => {
+	const isWritable = false;
+	const {options, fileDescriptors} = SUBPROCESS_OPTIONS.get(source);
+	const fdNumber = getFdNumber(fileDescriptors, from, isWritable);
+	const sourceStream = fdNumber === 'all' ? source.all : source.stdio[fdNumber];
+
+	if (sourceStream === null || sourceStream === undefined) {
+		throw new TypeError(getInvalidStdioOptionMessage(fdNumber, from, options, isWritable));
+	}
+
+	return sourceStream;
+};
+
+// Keeps track of the options passed to each Execa call
+const SUBPROCESS_OPTIONS = new WeakMap();
+
+const getFdNumber = (fileDescriptors, fdName, isWritable) => {
+	const fdNumber = parseFdNumber(fdName, isWritable);
+	validateFdNumber(fdNumber, fdName, isWritable, fileDescriptors);
+	return fdNumber;
+};
+
+const parseFdNumber = (fdName, isWritable) => {
+	const fdNumber = parseFd(fdName);
+	if (fdNumber !== undefined) {
+		return fdNumber;
+	}
+
+	const {validOptions, defaultValue} = isWritable
+		? {validOptions: '"stdin"', defaultValue: 'stdin'}
+		: {validOptions: '"stdout", "stderr", "all"', defaultValue: 'stdout'};
+	throw new TypeError(`"${getOptionName(isWritable)}" must not be "${fdName}".
+It must be ${validOptions} or "fd3", "fd4" (and so on).
+It is optional and defaults to "${defaultValue}".`);
+};
+
+const validateFdNumber = (fdNumber, fdName, isWritable, fileDescriptors) => {
+	const fileDescriptor = fileDescriptors[getUsedDescriptor(fdNumber)];
+	if (fileDescriptor === undefined) {
+		throw new TypeError(`"${getOptionName(isWritable)}" must not be ${fdName}. That file descriptor does not exist.
+Please set the "stdio" option to ensure that file descriptor exists.`);
+	}
+
+	if (fileDescriptor.direction === 'input' && !isWritable) {
+		throw new TypeError(`"${getOptionName(isWritable)}" must not be ${fdName}. It must be a readable stream, not writable.`);
+	}
+
+	if (fileDescriptor.direction !== 'input' && isWritable) {
+		throw new TypeError(`"${getOptionName(isWritable)}" must not be ${fdName}. It must be a writable stream, not readable.`);
+	}
+};
+
+const getInvalidStdioOptionMessage = (fdNumber, fdName, options, isWritable) => {
+	if (fdNumber === 'all' && !options.all) {
+		return 'The "all" option must be true to use "from: \'all\'".';
+	}
+
+	const {optionName, optionValue} = getInvalidStdioOption(fdNumber, options);
+	return `The "${optionName}: ${serializeOptionValue(optionValue)}" option is incompatible with using "${getOptionName(isWritable)}: ${serializeOptionValue(fdName)}".
+Please set this option with "pipe" instead.`;
+};
+
+const getInvalidStdioOption = (fdNumber, {stdin, stdout, stderr, stdio}) => {
+	const usedDescriptor = getUsedDescriptor(fdNumber);
+
+	if (usedDescriptor === 0 && stdin !== undefined) {
+		return {optionName: 'stdin', optionValue: stdin};
+	}
+
+	if (usedDescriptor === 1 && stdout !== undefined) {
+		return {optionName: 'stdout', optionValue: stdout};
+	}
+
+	if (usedDescriptor === 2 && stderr !== undefined) {
+		return {optionName: 'stderr', optionValue: stderr};
+	}
+
+	return {optionName: `stdio[${usedDescriptor}]`, optionValue: stdio[usedDescriptor]};
+};
+
+const getUsedDescriptor = fdNumber => fdNumber === 'all' ? 1 : fdNumber;
+
+const getOptionName = isWritable => isWritable ? 'to' : 'from';
+
+const serializeOptionValue = value => {
+	if (typeof value === 'string') {
+		return `'${value}'`;
+	}
+
+	return typeof value === 'number' ? `${value}` : 'Stream';
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/utils/max-listeners.js
+
+
+// Temporarily increase the maximum number of listeners on an eventEmitter
+const incrementMaxListeners = (eventEmitter, maxListenersIncrement, signal) => {
+	const maxListeners = eventEmitter.getMaxListeners();
+	if (maxListeners === 0 || maxListeners === Number.POSITIVE_INFINITY) {
+		return;
+	}
+
+	eventEmitter.setMaxListeners(maxListeners + maxListenersIncrement);
+	(0,external_node_events_.addAbortListener)(signal, () => {
+		eventEmitter.setMaxListeners(eventEmitter.getMaxListeners() - maxListenersIncrement);
+	});
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/reference.js
+// By default, Node.js keeps the subprocess alive while it has a `message` or `disconnect` listener.
+// We replicate the same logic for the events that we proxy.
+// This ensures the subprocess is kept alive while `getOneMessage()` and `getEachMessage()` are ongoing.
+// This is not a problem with `sendMessage()` since Node.js handles that method automatically.
+// We do not use `anyProcess.channel.ref()` since this would prevent the automatic `.channel.refCounted()` Node.js is doing.
+// We keep a reference to `anyProcess.channel` since it might be `null` while `getOneMessage()` or `getEachMessage()` is still processing debounced messages.
+// See https://github.com/nodejs/node/blob/2aaeaa863c35befa2ebaa98fb7737ec84df4d8e9/lib/internal/child_process.js#L547
+const addReference = (channel, reference) => {
+	if (reference) {
+		addReferenceCount(channel);
+	}
+};
+
+const addReferenceCount = channel => {
+	channel.refCounted();
+};
+
+const removeReference = (channel, reference) => {
+	if (reference) {
+		removeReferenceCount(channel);
+	}
+};
+
+const removeReferenceCount = channel => {
+	channel.unrefCounted();
+};
+
+// To proxy events, we setup some global listeners on the `message` and `disconnect` events.
+// Those should not keep the subprocess alive, so we remove the automatic counting that Node.js is doing.
+// See https://github.com/nodejs/node/blob/1b965270a9c273d4cf70e8808e9d28b9ada7844f/lib/child_process.js#L180
+const undoAddedReferences = (channel, isSubprocess) => {
+	if (isSubprocess) {
+		removeReferenceCount(channel);
+		removeReferenceCount(channel);
+	}
+};
+
+// Reverse it during `disconnect`
+const redoAddedReferences = (channel, isSubprocess) => {
+	if (isSubprocess) {
+		addReferenceCount(channel);
+		addReferenceCount(channel);
+	}
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/incoming.js
+
+
+
+
+
+
+
+// By default, Node.js buffers `message` events.
+//  - Buffering happens when there is a `message` event is emitted but there is no handler.
+//  - As soon as a `message` event handler is set, all buffered `message` events are emitted, emptying the buffer.
+//  - This happens both in the current process and the subprocess.
+//  - See https://github.com/nodejs/node/blob/501546e8f37059cd577041e23941b640d0d4d406/lib/internal/child_process.js#L719
+// This is helpful. Notably, this allows sending messages to a subprocess that's still initializing.
+// However, it has several problems.
+//  - This works with `events.on()` but not `events.once()` since all buffered messages are emitted at once.
+//    For example, users cannot call `await getOneMessage()`/`getEachMessage()` multiple times in a row.
+//  - When a user intentionally starts listening to `message` at a specific point in time, past `message` events are replayed, which might be unexpected.
+//  - Buffering is unlimited, which might lead to an out-of-memory crash.
+//  - This does not work well with multiple consumers.
+//    For example, Execa consumes events with both `result.ipcOutput` and manual IPC calls like `getOneMessage()`.
+//    Since `result.ipcOutput` reads all incoming messages, no buffering happens for manual IPC calls.
+//  - Forgetting to setup a `message` listener, or setting it up too late, is a programming mistake.
+//    The default behavior does not allow users to realize they made that mistake.
+// To solve those problems, instead of buffering messages, we debounce them.
+// The `message` event so it is emitted at most once per macrotask.
+const onMessage = async ({anyProcess, channel, isSubprocess, ipcEmitter}, wrappedMessage) => {
+	if (handleStrictResponse(wrappedMessage) || handleAbort(wrappedMessage)) {
+		return;
+	}
+
+	if (!INCOMING_MESSAGES.has(anyProcess)) {
+		INCOMING_MESSAGES.set(anyProcess, []);
+	}
+
+	const incomingMessages = INCOMING_MESSAGES.get(anyProcess);
+	incomingMessages.push(wrappedMessage);
+
+	if (incomingMessages.length > 1) {
+		return;
+	}
+
+	while (incomingMessages.length > 0) {
+		// eslint-disable-next-line no-await-in-loop
+		await waitForOutgoingMessages(anyProcess, ipcEmitter, wrappedMessage);
+		// eslint-disable-next-line no-await-in-loop
+		await promises_namespaceObject.scheduler["yield"]();
+
+		// eslint-disable-next-line no-await-in-loop
+		const message = await handleStrictRequest({
+			wrappedMessage: incomingMessages[0],
+			anyProcess,
+			channel,
+			isSubprocess,
+			ipcEmitter,
+		});
+
+		incomingMessages.shift();
+		ipcEmitter.emit('message', message);
+		ipcEmitter.emit('message:done');
+	}
+};
+
+// If the `message` event is currently debounced, the `disconnect` event must wait for it
+const onDisconnect = async ({anyProcess, channel, isSubprocess, ipcEmitter, boundOnMessage}) => {
+	abortOnDisconnect();
+
+	const incomingMessages = INCOMING_MESSAGES.get(anyProcess);
+	while (incomingMessages?.length > 0) {
+		// eslint-disable-next-line no-await-in-loop
+		await (0,external_node_events_.once)(ipcEmitter, 'message:done');
+	}
+
+	anyProcess.removeListener('message', boundOnMessage);
+	redoAddedReferences(channel, isSubprocess);
+	ipcEmitter.connected = false;
+	ipcEmitter.emit('disconnect');
+};
+
+const INCOMING_MESSAGES = new WeakMap();
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/forward.js
+
+
+
+
+// Forward the `message` and `disconnect` events from the process and subprocess to a proxy emitter.
+// This prevents the `error` event from stopping IPC.
+// This also allows debouncing the `message` event.
+const getIpcEmitter = (anyProcess, channel, isSubprocess) => {
+	if (IPC_EMITTERS.has(anyProcess)) {
+		return IPC_EMITTERS.get(anyProcess);
+	}
+
+	// Use an `EventEmitter`, like the `process` that is being proxied
+	// eslint-disable-next-line unicorn/prefer-event-target
+	const ipcEmitter = new external_node_events_.EventEmitter();
+	ipcEmitter.connected = true;
+	IPC_EMITTERS.set(anyProcess, ipcEmitter);
+	forwardEvents({
+		ipcEmitter,
+		anyProcess,
+		channel,
+		isSubprocess,
+	});
+	return ipcEmitter;
+};
+
+const IPC_EMITTERS = new WeakMap();
+
+// The `message` and `disconnect` events are buffered in the subprocess until the first listener is setup.
+// However, unbuffering happens after one tick, so this give enough time for the caller to setup the listener on the proxy emitter first.
+// See https://github.com/nodejs/node/blob/2aaeaa863c35befa2ebaa98fb7737ec84df4d8e9/lib/internal/child_process.js#L721
+const forwardEvents = ({ipcEmitter, anyProcess, channel, isSubprocess}) => {
+	const boundOnMessage = onMessage.bind(undefined, {
+		anyProcess,
+		channel,
+		isSubprocess,
+		ipcEmitter,
+	});
+	anyProcess.on('message', boundOnMessage);
+	anyProcess.once('disconnect', onDisconnect.bind(undefined, {
+		anyProcess,
+		channel,
+		isSubprocess,
+		ipcEmitter,
+		boundOnMessage,
+	}));
+	undoAddedReferences(channel, isSubprocess);
+};
+
+// Check whether there might still be some `message` events to receive
+const isConnected = anyProcess => {
+	const ipcEmitter = IPC_EMITTERS.get(anyProcess);
+	return ipcEmitter === undefined
+		? anyProcess.channel !== null
+		: ipcEmitter.connected;
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/strict.js
+
+
+
+
+
+
+
+
+// When using the `strict` option, wrap the message with metadata during `sendMessage()`
+const handleSendStrict = ({anyProcess, channel, isSubprocess, message, strict}) => {
+	if (!strict) {
+		return message;
+	}
+
+	const ipcEmitter = getIpcEmitter(anyProcess, channel, isSubprocess);
+	const hasListeners = hasMessageListeners(anyProcess, ipcEmitter);
+	return {
+		id: count++,
+		type: REQUEST_TYPE,
+		message,
+		hasListeners,
+	};
+};
+
+let count = 0n;
+
+// Handles when both processes are calling `sendMessage()` with `strict` at the same time.
+// If neither process is listening, this would create a deadlock. We detect it and throw.
+const validateStrictDeadlock = (outgoingMessages, wrappedMessage) => {
+	if (wrappedMessage?.type !== REQUEST_TYPE || wrappedMessage.hasListeners) {
+		return;
+	}
+
+	for (const {id} of outgoingMessages) {
+		if (id !== undefined) {
+			STRICT_RESPONSES[id].resolve({isDeadlock: true, hasListeners: false});
+		}
+	}
+};
+
+// The other process then sends the acknowledgment back as a response
+const handleStrictRequest = async ({wrappedMessage, anyProcess, channel, isSubprocess, ipcEmitter}) => {
+	if (wrappedMessage?.type !== REQUEST_TYPE || !anyProcess.connected) {
+		return wrappedMessage;
+	}
+
+	const {id, message} = wrappedMessage;
+	const response = {id, type: RESPONSE_TYPE, message: hasMessageListeners(anyProcess, ipcEmitter)};
+
+	try {
+		await sendMessage({
+			anyProcess,
+			channel,
+			isSubprocess,
+			ipc: true,
+		}, response);
+	} catch (error) {
+		ipcEmitter.emit('strict:error', error);
+	}
+
+	return message;
+};
+
+// Reception of the acknowledgment response
+const handleStrictResponse = wrappedMessage => {
+	if (wrappedMessage?.type !== RESPONSE_TYPE) {
+		return false;
+	}
+
+	const {id, message: hasListeners} = wrappedMessage;
+	STRICT_RESPONSES[id]?.resolve({isDeadlock: false, hasListeners});
+	return true;
+};
+
+// Wait for the other process to receive the message from `sendMessage()`
+const waitForStrictResponse = async (wrappedMessage, anyProcess, isSubprocess) => {
+	if (wrappedMessage?.type !== REQUEST_TYPE) {
+		return;
+	}
+
+	const deferred = createDeferred();
+	STRICT_RESPONSES[wrappedMessage.id] = deferred;
+	const controller = new AbortController();
+
+	try {
+		const {isDeadlock, hasListeners} = await Promise.race([
+			deferred,
+			throwOnDisconnect(anyProcess, isSubprocess, controller),
+		]);
+
+		if (isDeadlock) {
+			throwOnStrictDeadlockError(isSubprocess);
+		}
+
+		if (!hasListeners) {
+			throwOnMissingStrict(isSubprocess);
+		}
+	} finally {
+		controller.abort();
+		delete STRICT_RESPONSES[wrappedMessage.id];
+	}
+};
+
+const STRICT_RESPONSES = {};
+
+const throwOnDisconnect = async (anyProcess, isSubprocess, {signal}) => {
+	incrementMaxListeners(anyProcess, 1, signal);
+	await (0,external_node_events_.once)(anyProcess, 'disconnect', {signal});
+	throwOnStrictDisconnect(isSubprocess);
+};
+
+const REQUEST_TYPE = 'execa:ipc:request';
+const RESPONSE_TYPE = 'execa:ipc:response';
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/outgoing.js
+
+
+
+
+
+// When `sendMessage()` is ongoing, any `message` being received waits before being emitted.
+// This allows calling one or multiple `await sendMessage()` followed by `await getOneMessage()`/`await getEachMessage()`.
+// Without running into a race condition when the other process sends a response too fast, before the current process set up a listener.
+const startSendMessage = (anyProcess, wrappedMessage, strict) => {
+	if (!OUTGOING_MESSAGES.has(anyProcess)) {
+		OUTGOING_MESSAGES.set(anyProcess, new Set());
+	}
+
+	const outgoingMessages = OUTGOING_MESSAGES.get(anyProcess);
+	const onMessageSent = createDeferred();
+	const id = strict ? wrappedMessage.id : undefined;
+	const outgoingMessage = {onMessageSent, id};
+	outgoingMessages.add(outgoingMessage);
+	return {outgoingMessages, outgoingMessage};
+};
+
+const endSendMessage = ({outgoingMessages, outgoingMessage}) => {
+	outgoingMessages.delete(outgoingMessage);
+	outgoingMessage.onMessageSent.resolve();
+};
+
+// Await while `sendMessage()` is ongoing, unless there is already a `message` listener
+const waitForOutgoingMessages = async (anyProcess, ipcEmitter, wrappedMessage) => {
+	while (!hasMessageListeners(anyProcess, ipcEmitter) && OUTGOING_MESSAGES.get(anyProcess)?.size > 0) {
+		const outgoingMessages = [...OUTGOING_MESSAGES.get(anyProcess)];
+		validateStrictDeadlock(outgoingMessages, wrappedMessage);
+		// eslint-disable-next-line no-await-in-loop
+		await Promise.all(outgoingMessages.map(({onMessageSent}) => onMessageSent));
+	}
+};
+
+const OUTGOING_MESSAGES = new WeakMap();
+
+// Whether any `message` listener is setup
+const hasMessageListeners = (anyProcess, ipcEmitter) => ipcEmitter.listenerCount('message') > getMinListenerCount(anyProcess);
+
+// When `buffer` is `false`, we set up a `message` listener that should be ignored.
+// That listener is only meant to intercept `strict` acknowledgement responses.
+const getMinListenerCount = anyProcess => SUBPROCESS_OPTIONS.has(anyProcess)
+	&& !getFdSpecificValue(SUBPROCESS_OPTIONS.get(anyProcess).options.buffer, 'ipc')
+	? 1
+	: 0;
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/send.js
+
+
+
+
+
+// Like `[sub]process.send()` but promise-based.
+// We do not `await subprocess` during `.sendMessage()` nor `.getOneMessage()` since those methods are transient.
+// Users would still need to `await subprocess` after the method is done.
+// Also, this would prevent `unhandledRejection` event from being emitted, making it silent.
+const sendMessage = ({anyProcess, channel, isSubprocess, ipc}, message, {strict = false} = {}) => {
+	const methodName = 'sendMessage';
+	validateIpcMethod({
+		methodName,
+		isSubprocess,
+		ipc,
+		isConnected: anyProcess.connected,
+	});
+
+	return sendMessageAsync({
+		anyProcess,
+		channel,
+		methodName,
+		isSubprocess,
+		message,
+		strict,
+	});
+};
+
+const sendMessageAsync = async ({anyProcess, channel, methodName, isSubprocess, message, strict}) => {
+	const wrappedMessage = handleSendStrict({
+		anyProcess,
+		channel,
+		isSubprocess,
+		message,
+		strict,
+	});
+	const outgoingMessagesState = startSendMessage(anyProcess, wrappedMessage, strict);
+	try {
+		await sendOneMessage({
+			anyProcess,
+			methodName,
+			isSubprocess,
+			wrappedMessage,
+			message,
+		});
+	} catch (error) {
+		disconnect(anyProcess);
+		throw error;
+	} finally {
+		endSendMessage(outgoingMessagesState);
+	}
+};
+
+// Used internally by `cancelSignal`
+const sendOneMessage = async ({anyProcess, methodName, isSubprocess, wrappedMessage, message}) => {
+	const sendMethod = getSendMethod(anyProcess);
+
+	try {
+		await Promise.all([
+			waitForStrictResponse(wrappedMessage, anyProcess, isSubprocess),
+			sendMethod(wrappedMessage),
+		]);
+	} catch (error) {
+		handleEpipeError({error, methodName, isSubprocess});
+		handleSerializationError({
+			error,
+			methodName,
+			isSubprocess,
+			message,
+		});
+		throw error;
+	}
+};
+
+// [sub]process.send() promisified, memoized
+const getSendMethod = anyProcess => {
+	if (PROCESS_SEND_METHODS.has(anyProcess)) {
+		return PROCESS_SEND_METHODS.get(anyProcess);
+	}
+
+	const sendMethod = (0,external_node_util_.promisify)(anyProcess.send.bind(anyProcess));
+	PROCESS_SEND_METHODS.set(anyProcess, sendMethod);
+	return sendMethod;
+};
+
+const PROCESS_SEND_METHODS = new WeakMap();
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/graceful.js
+
+
+
+
+
+// Send an IPC message so the subprocess performs a graceful termination
+const sendAbort = (subprocess, message) => {
+	const methodName = 'cancelSignal';
+	validateConnection(methodName, false, subprocess.connected);
+	return sendOneMessage({
+		anyProcess: subprocess,
+		methodName,
+		isSubprocess: false,
+		wrappedMessage: {type: GRACEFUL_CANCEL_TYPE, message},
+		message,
+	});
+};
+
+// When the signal is being used, start listening for incoming messages.
+// Unbuffering messages takes one microtask to complete, so this must be async.
+const getCancelSignal = async ({anyProcess, channel, isSubprocess, ipc}) => {
+	await startIpc({
+		anyProcess,
+		channel,
+		isSubprocess,
+		ipc,
+	});
+	return cancelController.signal;
+};
+
+const startIpc = async ({anyProcess, channel, isSubprocess, ipc}) => {
+	if (cancelListening) {
+		return;
+	}
+
+	cancelListening = true;
+
+	if (!ipc) {
+		throwOnMissingParent();
+		return;
+	}
+
+	if (channel === null) {
+		abortOnDisconnect();
+		return;
+	}
+
+	getIpcEmitter(anyProcess, channel, isSubprocess);
+	await promises_namespaceObject.scheduler["yield"]();
+};
+
+let cancelListening = false;
+
+// Reception of IPC message to perform a graceful termination
+const handleAbort = wrappedMessage => {
+	if (wrappedMessage?.type !== GRACEFUL_CANCEL_TYPE) {
+		return false;
+	}
+
+	cancelController.abort(wrappedMessage.message);
+	return true;
+};
+
+const GRACEFUL_CANCEL_TYPE = 'execa:ipc:cancel';
+
+// When the current process disconnects early, the subprocess `cancelSignal` is aborted.
+// Otherwise, the signal would never be able to be aborted later on.
+const abortOnDisconnect = () => {
+	cancelController.abort(getAbortDisconnectError());
+};
+
+const cancelController = new AbortController();
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/terminate/graceful.js
+
+
+
+
+// Validate the `gracefulCancel` option
+const validateGracefulCancel = ({gracefulCancel, cancelSignal, ipc, serialization}) => {
+	if (!gracefulCancel) {
+		return;
+	}
+
+	if (cancelSignal === undefined) {
+		throw new Error('The `cancelSignal` option must be defined when setting the `gracefulCancel` option.');
+	}
+
+	if (!ipc) {
+		throw new Error('The `ipc` option cannot be false when setting the `gracefulCancel` option.');
+	}
+
+	if (serialization === 'json') {
+		throw new Error('The `serialization` option cannot be \'json\' when setting the `gracefulCancel` option.');
+	}
+};
+
+// Send abort reason to the subprocess when aborting the `cancelSignal` option and `gracefulCancel` is `true`
+const throwOnGracefulCancel = ({
+	subprocess,
+	cancelSignal,
+	gracefulCancel,
+	forceKillAfterDelay,
+	context,
+	controller,
+}) => gracefulCancel
+	? [sendOnAbort({
+		subprocess,
+		cancelSignal,
+		forceKillAfterDelay,
+		context,
+		controller,
+	})]
+	: [];
+
+const sendOnAbort = async ({subprocess, cancelSignal, forceKillAfterDelay, context, controller: {signal}}) => {
+	await onAbortedSignal(cancelSignal, signal);
+	const reason = getReason(cancelSignal);
+	await sendAbort(subprocess, reason);
+	killOnTimeout({
+		kill: subprocess.kill,
+		forceKillAfterDelay,
+		context,
+		controllerSignal: signal,
+	});
+	context.terminationReason ??= 'gracefulCancel';
+	throw cancelSignal.reason;
+};
+
+// The default `reason` is a DOMException, which is not serializable with V8
+// See https://github.com/nodejs/node/issues/53225
+const getReason = ({reason}) => {
+	if (!(reason instanceof DOMException)) {
+		return reason;
+	}
+
+	const error = new Error(reason.message);
+	Object.defineProperty(error, 'stack', {
+		value: reason.stack,
+		enumerable: false,
+		configurable: true,
+		writable: true,
+	});
+	return error;
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/terminate/timeout.js
+
+
+
+// Validate `timeout` option
+const validateTimeout = ({timeout}) => {
+	if (timeout !== undefined && (!Number.isFinite(timeout) || timeout < 0)) {
+		throw new TypeError(`Expected the \`timeout\` option to be a non-negative integer, got \`${timeout}\` (${typeof timeout})`);
+	}
+};
+
+// Fails when the `timeout` option is exceeded
+const throwOnTimeout = (subprocess, timeout, context, controller) => timeout === 0 || timeout === undefined
+	? []
+	: [killAfterTimeout(subprocess, timeout, context, controller)];
+
+const killAfterTimeout = async (subprocess, timeout, context, {signal}) => {
+	await (0,promises_namespaceObject.setTimeout)(timeout, undefined, {signal});
+	context.terminationReason ??= 'timeout';
+	subprocess.kill();
+	throw new DiscardedError();
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/methods/node.js
+
+
+
+
+// `execaNode()` is a shortcut for `execa(..., {node: true})`
+const mapNode = ({options}) => {
+	if (options.node === false) {
+		throw new TypeError('The "node" option cannot be false with `execaNode()`.');
+	}
+
+	return {options: {...options, node: true}};
+};
+
+// Applies the `node: true` option, and the related `nodePath`/`nodeOptions` options.
+// Modifies the file commands/arguments to ensure the same Node binary and flags are re-used.
+// Also adds `ipc: true` and `shell: false`.
+const handleNodeOption = (file, commandArguments, {
+	node: shouldHandleNode = false,
+	nodePath = external_node_process_namespaceObject.execPath,
+	nodeOptions = external_node_process_namespaceObject.execArgv.filter(nodeOption => !nodeOption.startsWith('--inspect')),
+	cwd,
+	execPath: formerNodePath,
+	...options
+}) => {
+	if (formerNodePath !== undefined) {
+		throw new TypeError('The "execPath" option has been removed. Please use the "nodePath" option instead.');
+	}
+
+	const normalizedNodePath = safeNormalizeFileUrl(nodePath, 'The "nodePath" option');
+	const resolvedNodePath = (0,external_node_path_namespaceObject.resolve)(cwd, normalizedNodePath);
+	const newOptions = {
+		...options,
+		nodePath: resolvedNodePath,
+		node: shouldHandleNode,
+		cwd,
+	};
+
+	if (!shouldHandleNode) {
+		return [file, commandArguments, newOptions];
+	}
+
+	if ((0,external_node_path_namespaceObject.basename)(file, '.exe') === 'node') {
+		throw new TypeError('When the "node" option is true, the first argument does not need to be "node".');
+	}
+
+	return [
+		resolvedNodePath,
+		[...nodeOptions, file, ...commandArguments],
+		{ipc: true, ...newOptions, shell: false},
+	];
+};
+
+;// CONCATENATED MODULE: external "node:v8"
+const external_node_v8_namespaceObject = require("node:v8");
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/ipc-input.js
+
+
+// Validate the `ipcInput` option
+const validateIpcInputOption = ({ipcInput, ipc, serialization}) => {
+	if (ipcInput === undefined) {
+		return;
+	}
+
+	if (!ipc) {
+		throw new Error('The `ipcInput` option cannot be set unless the `ipc` option is `true`.');
+	}
+
+	validateIpcInput[serialization](ipcInput);
+};
+
+const validateAdvancedInput = ipcInput => {
+	try {
+		(0,external_node_v8_namespaceObject.serialize)(ipcInput);
+	} catch (error) {
+		throw new Error('The `ipcInput` option is not serializable with a structured clone.', {cause: error});
+	}
+};
+
+const validateJsonInput = ipcInput => {
+	try {
+		JSON.stringify(ipcInput);
+	} catch (error) {
+		throw new Error('The `ipcInput` option is not serializable with JSON.', {cause: error});
+	}
+};
+
+const validateIpcInput = {
+	advanced: validateAdvancedInput,
+	json: validateJsonInput,
+};
+
+// When the `ipcInput` option is set, it is sent as an initial IPC message to the subprocess
+const sendIpcInput = async (subprocess, ipcInput) => {
+	if (ipcInput === undefined) {
+		return;
+	}
+
+	await subprocess.sendMessage(ipcInput);
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/encoding-option.js
+// Validate `encoding` option
+const validateEncoding = ({encoding}) => {
+	if (ENCODINGS.has(encoding)) {
+		return;
+	}
+
+	const correctEncoding = getCorrectEncoding(encoding);
+	if (correctEncoding !== undefined) {
+		throw new TypeError(`Invalid option \`encoding: ${serializeEncoding(encoding)}\`.
+Please rename it to ${serializeEncoding(correctEncoding)}.`);
+	}
+
+	const correctEncodings = [...ENCODINGS].map(correctEncoding => serializeEncoding(correctEncoding)).join(', ');
+	throw new TypeError(`Invalid option \`encoding: ${serializeEncoding(encoding)}\`.
+Please rename it to one of: ${correctEncodings}.`);
+};
+
+const TEXT_ENCODINGS = new Set(['utf8', 'utf16le']);
+const BINARY_ENCODINGS = new Set(['buffer', 'hex', 'base64', 'base64url', 'latin1', 'ascii']);
+const ENCODINGS = new Set([...TEXT_ENCODINGS, ...BINARY_ENCODINGS]);
+
+const getCorrectEncoding = encoding => {
+	if (encoding === null) {
+		return 'buffer';
+	}
+
+	if (typeof encoding !== 'string') {
+		return;
+	}
+
+	const lowerEncoding = encoding.toLowerCase();
+	if (lowerEncoding in ENCODING_ALIASES) {
+		return ENCODING_ALIASES[lowerEncoding];
+	}
+
+	if (ENCODINGS.has(lowerEncoding)) {
+		return lowerEncoding;
+	}
+};
+
+const ENCODING_ALIASES = {
+	// eslint-disable-next-line unicorn/text-encoding-identifier-case
+	'utf-8': 'utf8',
+	'utf-16le': 'utf16le',
+	'ucs-2': 'utf16le',
+	ucs2: 'utf16le',
+	binary: 'latin1',
+};
+
+const serializeEncoding = encoding => typeof encoding === 'string' ? `"${encoding}"` : String(encoding);
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/cwd.js
+
+
+
+
+
+// Normalize `cwd` option
+const normalizeCwd = (cwd = getDefaultCwd()) => {
+	const cwdString = safeNormalizeFileUrl(cwd, 'The "cwd" option');
+	return (0,external_node_path_namespaceObject.resolve)(cwdString);
+};
+
+const getDefaultCwd = () => {
+	try {
+		return external_node_process_namespaceObject.cwd();
+	} catch (error) {
+		error.message = `The current directory does not exist.\n${error.message}`;
+		throw error;
+	}
+};
+
+// When `cwd` option has an invalid value, provide with a better error message
+const fixCwdError = (originalMessage, cwd) => {
+	if (cwd === getDefaultCwd()) {
+		return originalMessage;
+	}
+
+	let cwdStat;
+	try {
+		cwdStat = (0,external_node_fs_namespaceObject.statSync)(cwd);
+	} catch (error) {
+		return `The "cwd" option is invalid: ${cwd}.\n${error.message}\n${originalMessage}`;
+	}
+
+	if (!cwdStat.isDirectory()) {
+		return `The "cwd" option is not a directory: ${cwd}.\n${originalMessage}`;
+	}
+
+	return originalMessage;
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/options.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Normalize the options object, and sometimes also the file paths and arguments.
+// Applies default values, validate allowed options, normalize them.
+const normalizeOptions = (filePath, rawArguments, rawOptions) => {
+	rawOptions.cwd = normalizeCwd(rawOptions.cwd);
+	const [processedFile, processedArguments, processedOptions] = handleNodeOption(filePath, rawArguments, rawOptions);
+
+	const {command: file, args: commandArguments, options: initialOptions} = cross_spawn._parse(processedFile, processedArguments, processedOptions);
+
+	const fdOptions = normalizeFdSpecificOptions(initialOptions);
+	const options = addDefaultOptions(fdOptions);
+	validateTimeout(options);
+	validateEncoding(options);
+	validateIpcInputOption(options);
+	validateCancelSignal(options);
+	validateGracefulCancel(options);
+	options.shell = normalizeFileUrl(options.shell);
+	options.env = getEnv(options);
+	options.killSignal = normalizeKillSignal(options.killSignal);
+	options.forceKillAfterDelay = normalizeForceKillAfterDelay(options.forceKillAfterDelay);
+	options.lines = options.lines.map((lines, fdNumber) => lines && !BINARY_ENCODINGS.has(options.encoding) && options.buffer[fdNumber]);
+
+	if (external_node_process_namespaceObject.platform === 'win32' && (0,external_node_path_namespaceObject.basename)(file, '.exe') === 'cmd') {
+		// #116
+		commandArguments.unshift('/q');
+	}
+
+	return {file, commandArguments, options};
+};
+
+const addDefaultOptions = ({
+	extendEnv = true,
+	preferLocal = false,
+	cwd,
+	localDir: localDirectory = cwd,
+	encoding = 'utf8',
+	reject = true,
+	cleanup = true,
+	all = false,
+	windowsHide = true,
+	killSignal = 'SIGTERM',
+	forceKillAfterDelay = true,
+	gracefulCancel = false,
+	ipcInput,
+	ipc = ipcInput !== undefined || gracefulCancel,
+	serialization = 'advanced',
+	...options
+}) => ({
+	...options,
+	extendEnv,
+	preferLocal,
+	cwd,
+	localDirectory,
+	encoding,
+	reject,
+	cleanup,
+	all,
+	windowsHide,
+	killSignal,
+	forceKillAfterDelay,
+	gracefulCancel,
+	ipcInput,
+	ipc,
+	serialization,
+});
+
+const getEnv = ({env: envOption, extendEnv, preferLocal, node, localDirectory, nodePath}) => {
+	const env = extendEnv ? {...external_node_process_namespaceObject.env, ...envOption} : envOption;
+
+	if (preferLocal || node) {
+		return npmRunPathEnv({
+			env,
+			cwd: localDirectory,
+			execPath: nodePath,
+			preferLocal,
+			addExecPath: node,
+		});
+	}
+
+	return env;
+};
+
 ;// CONCATENATED MODULE: ./node_modules/strip-final-newline/index.js
 function strip_final_newline_stripFinalNewline(input) {
 	if (typeof input === 'string') {
@@ -53049,6 +54127,7 @@ class MaxBufferError extends Error {
 
 
 
+
 // When the `maxBuffer` option is hit, a MaxBufferError is thrown.
 // The stream is aborted, then specific information is kept for the error message.
 const handleMaxBuffer = ({error, stream, readableObjectMode, lines, encoding, fdNumber}) => {
@@ -53082,6 +54161,17 @@ const getMaxBufferUnit = (readableObjectMode, lines, encoding) => {
 	return 'characters';
 };
 
+// Check the `maxBuffer` option with `result.ipcOutput`
+const checkIpcMaxBuffer = (subprocess, ipcOutput, maxBuffer) => {
+	if (ipcOutput.length !== maxBuffer) {
+		return;
+	}
+
+	const error = new MaxBufferError();
+	error.maxBufferInfo = {fdNumber: 'ipc'};
+	throw error;
+};
+
 // Error message when `maxBuffer` is hit
 const getMaxBufferMessage = (error, maxBuffer) => {
 	const {streamName, threshold, unit} = getMaxBufferInfo(error, maxBuffer);
@@ -53095,7 +54185,13 @@ const getMaxBufferInfo = (error, maxBuffer) => {
 
 	const {maxBufferInfo: {fdNumber, unit}} = error;
 	delete error.maxBufferInfo;
-	return {streamName: getStreamName(fdNumber), threshold: maxBuffer[fdNumber], unit};
+
+	const threshold = getFdSpecificValue(maxBuffer, fdNumber);
+	if (fdNumber === 'ipc') {
+		return {streamName: 'IPC output', threshold, unit: 'messages'};
+	}
+
+	return {streamName: getStreamName(fdNumber), threshold, unit};
 };
 
 // The only way to apply `maxBuffer` with `spawnSync()` is to use the native `maxBuffer` option Node.js provides.
@@ -53126,10 +54222,13 @@ const getMaxBufferSync = ([, stdoutMaxBuffer]) => stdoutMaxBuffer;
 
 
 
+
+
 // Computes `error.message`, `error.shortMessage` and `error.originalMessage`
 const createMessages = ({
 	stdio,
 	all,
+	ipcOutput,
 	originalError,
 	signal,
 	signalDescription,
@@ -53137,7 +54236,11 @@ const createMessages = ({
 	escapedCommand,
 	timedOut,
 	isCanceled,
+	isGracefullyCanceled,
 	isMaxBuffer,
+	isForcefullyTerminated,
+	forceKillAfterDelay,
+	killSignal,
 	maxBuffer,
 	timeout,
 	cwd,
@@ -53154,33 +54257,73 @@ const createMessages = ({
 		signalDescription,
 		exitCode,
 		isCanceled,
+		isGracefullyCanceled,
+		isForcefullyTerminated,
+		forceKillAfterDelay,
+		killSignal,
 	});
 	const originalMessage = getOriginalMessage(originalError, cwd);
 	const suffix = originalMessage === undefined ? '' : `\n${originalMessage}`;
 	const shortMessage = `${prefix}: ${escapedCommand}${suffix}`;
 	const messageStdio = all === undefined ? [stdio[2], stdio[1]] : [all];
-	const message = [shortMessage, ...messageStdio, ...stdio.slice(3)]
+	const message = [
+		shortMessage,
+		...messageStdio,
+		...stdio.slice(3),
+		ipcOutput.map(ipcMessage => serializeIpcMessage(ipcMessage)).join('\n'),
+	]
 		.map(messagePart => escapeLines(strip_final_newline_stripFinalNewline(serializeMessagePart(messagePart))))
 		.filter(Boolean)
 		.join('\n\n');
 	return {originalMessage, shortMessage, message};
 };
 
-const getErrorPrefix = ({originalError, timedOut, timeout, isMaxBuffer, maxBuffer, errorCode, signal, signalDescription, exitCode, isCanceled}) => {
+const getErrorPrefix = ({
+	originalError,
+	timedOut,
+	timeout,
+	isMaxBuffer,
+	maxBuffer,
+	errorCode,
+	signal,
+	signalDescription,
+	exitCode,
+	isCanceled,
+	isGracefullyCanceled,
+	isForcefullyTerminated,
+	forceKillAfterDelay,
+	killSignal,
+}) => {
+	const forcefulSuffix = getForcefulSuffix(isForcefullyTerminated, forceKillAfterDelay);
+
 	if (timedOut) {
-		return `Command timed out after ${timeout} milliseconds`;
+		return `Command timed out after ${timeout} milliseconds${forcefulSuffix}`;
+	}
+
+	if (isGracefullyCanceled) {
+		if (signal === undefined) {
+			return `Command was gracefully canceled with exit code ${exitCode}`;
+		}
+
+		return isForcefullyTerminated
+			? `Command was gracefully canceled${forcefulSuffix}`
+			: `Command was gracefully canceled with ${signal} (${signalDescription})`;
 	}
 
 	if (isCanceled) {
-		return 'Command was canceled';
+		return `Command was canceled${forcefulSuffix}`;
 	}
 
 	if (isMaxBuffer) {
-		return getMaxBufferMessage(originalError, maxBuffer);
+		return `${getMaxBufferMessage(originalError, maxBuffer)}${forcefulSuffix}`;
 	}
 
 	if (errorCode !== undefined) {
-		return `Command failed with ${errorCode}`;
+		return `Command failed with ${errorCode}${forcefulSuffix}`;
+	}
+
+	if (isForcefullyTerminated) {
+		return `Command was killed with ${killSignal} (${getSignalDescription(killSignal)})${forcefulSuffix}`;
 	}
 
 	if (signal !== undefined) {
@@ -53194,6 +54337,10 @@ const getErrorPrefix = ({originalError, timedOut, timeout, isMaxBuffer, maxBuffe
 	return 'Command failed';
 };
 
+const getForcefulSuffix = (isForcefullyTerminated, forceKillAfterDelay) => isForcefullyTerminated
+	? ` and was forcefully terminated after ${forceKillAfterDelay} milliseconds`
+	: '';
+
 const getOriginalMessage = (originalError, cwd) => {
 	if (originalError instanceof DiscardedError) {
 		return;
@@ -53205,6 +54352,10 @@ const getOriginalMessage = (originalError, cwd) => {
 	const escapedOriginalMessage = escapeLines(fixCwdError(originalMessage, cwd));
 	return escapedOriginalMessage === '' ? undefined : escapedOriginalMessage;
 };
+
+const serializeIpcMessage = ipcMessage => typeof ipcMessage === 'string'
+	? ipcMessage
+	: (0,external_node_util_.inspect)(ipcMessage);
 
 const serializeMessagePart = messagePart => Array.isArray(messagePart)
 	? messagePart.map(messageItem => strip_final_newline_stripFinalNewline(serializeMessageItem(messageItem))).filter(Boolean).join('\n')
@@ -53234,6 +54385,7 @@ const makeSuccessResult = ({
 	escapedCommand,
 	stdio,
 	all,
+	ipcOutput,
 	options: {cwd},
 	startTime,
 }) => omitUndefinedProperties({
@@ -53244,13 +54396,16 @@ const makeSuccessResult = ({
 	failed: false,
 	timedOut: false,
 	isCanceled: false,
+	isGracefullyCanceled: false,
 	isTerminated: false,
 	isMaxBuffer: false,
+	isForcefullyTerminated: false,
 	exitCode: 0,
 	stdout: stdio[1],
 	stderr: stdio[2],
 	all,
 	stdio,
+	ipcOutput,
 	pipedFrom: [],
 });
 
@@ -53270,8 +54425,11 @@ const makeEarlyError = ({
 	startTime,
 	timedOut: false,
 	isCanceled: false,
+	isGracefullyCanceled: false,
 	isMaxBuffer: false,
+	isForcefullyTerminated: false,
 	stdio: Array.from({length: fileDescriptors.length}),
+	ipcOutput: [],
 	options,
 	isSync,
 });
@@ -53284,18 +54442,29 @@ const makeError = ({
 	startTime,
 	timedOut,
 	isCanceled,
+	isGracefullyCanceled,
 	isMaxBuffer,
+	isForcefullyTerminated,
 	exitCode: rawExitCode,
 	signal: rawSignal,
 	stdio,
 	all,
-	options: {timeoutDuration, timeout = timeoutDuration, cwd, maxBuffer},
+	ipcOutput,
+	options: {
+		timeoutDuration,
+		timeout = timeoutDuration,
+		forceKillAfterDelay,
+		killSignal,
+		cwd,
+		maxBuffer,
+	},
 	isSync,
 }) => {
 	const {exitCode, signal, signalDescription} = normalizeExitPayload(rawExitCode, rawSignal);
 	const {originalMessage, shortMessage, message} = createMessages({
 		stdio,
 		all,
+		ipcOutput,
 		originalError,
 		signal,
 		signalDescription,
@@ -53303,7 +54472,11 @@ const makeError = ({
 		escapedCommand,
 		timedOut,
 		isCanceled,
+		isGracefullyCanceled,
 		isMaxBuffer,
+		isForcefullyTerminated,
+		forceKillAfterDelay,
+		killSignal,
 		maxBuffer,
 		timeout,
 		cwd,
@@ -53316,12 +54489,15 @@ const makeError = ({
 		startTime,
 		timedOut,
 		isCanceled,
+		isGracefullyCanceled,
 		isMaxBuffer,
+		isForcefullyTerminated,
 		exitCode,
 		signal,
 		signalDescription,
 		stdio,
 		all,
+		ipcOutput,
 		cwd,
 		originalMessage,
 		shortMessage,
@@ -53336,12 +54512,15 @@ const getErrorProperties = ({
 	startTime,
 	timedOut,
 	isCanceled,
+	isGracefullyCanceled,
 	isMaxBuffer,
+	isForcefullyTerminated,
 	exitCode,
 	signal,
 	signalDescription,
 	stdio,
 	all,
+	ipcOutput,
 	cwd,
 	originalMessage,
 	shortMessage,
@@ -53355,8 +54534,10 @@ const getErrorProperties = ({
 	failed: true,
 	timedOut,
 	isCanceled,
+	isGracefullyCanceled,
 	isTerminated: signal !== undefined,
 	isMaxBuffer,
+	isForcefullyTerminated,
 	exitCode,
 	signal,
 	signalDescription,
@@ -53365,6 +54546,7 @@ const getErrorProperties = ({
 	stderr: stdio[2],
 	all,
 	stdio,
+	ipcOutput,
 	pipedFrom: [],
 });
 
@@ -53375,7 +54557,7 @@ const omitUndefinedProperties = result => Object.fromEntries(Object.entries(resu
 const normalizeExitPayload = (rawExitCode, rawSignal) => {
 	const exitCode = rawExitCode === null ? undefined : rawExitCode;
 	const signal = rawSignal === null ? undefined : rawSignal;
-	const signalDescription = signal === undefined ? undefined : signalsByName[rawSignal].description;
+	const signalDescription = signal === undefined ? undefined : getSignalDescription(rawSignal);
 	return {exitCode, signal, signalDescription};
 };
 
@@ -53443,6 +54625,9 @@ function prettyMilliseconds(milliseconds, options) {
 
 	options = {...options};
 
+	const sign = milliseconds < 0 ? '-' : '';
+	milliseconds = milliseconds < 0 ? -milliseconds : milliseconds; // Cannot use `Math.abs()` because of BigInt support.
+
 	if (options.colonNotation) {
 		options.compact = false;
 		options.formatSubMilliseconds = false;
@@ -53472,7 +54657,7 @@ function prettyMilliseconds(milliseconds, options) {
 			return;
 		}
 
-		valueString = valueString ?? String(value);
+		valueString ??= String(value);
 		if (options.colonNotation) {
 			const wholeDigits = valueString.includes('.') ? valueString.split('.')[0].length : valueString.length;
 			const minLength = result.length > 0 ? 2 : 1;
@@ -53551,7 +54736,7 @@ function prettyMilliseconds(milliseconds, options) {
 	}
 
 	if (result.length === 0) {
-		return '0' + (options.verbose ? ' milliseconds' : 'ms');
+		return sign + '0' + (options.verbose ? ' milliseconds' : 'ms');
 	}
 
 	const separator = options.colonNotation ? ':' : ' ';
@@ -53559,21 +54744,22 @@ function prettyMilliseconds(milliseconds, options) {
 		result = result.slice(0, Math.max(options.unitCount, 1));
 	}
 
-	return result.join(separator);
+	return sign + result.join(separator);
 }
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/error.js
 
 
-
-// When `verbose` is `short|full`, print each command's error when it fails
-const logError = ({message, failed, reject, verboseId, icon}) => {
-	if (!failed) {
-		return;
+// When `verbose` is `short|full|custom`, print each command's error when it fails
+const logError = (result, verboseInfo) => {
+	if (result.failed) {
+		verboseLog({
+			type: 'error',
+			verboseMessage: result.shortMessage,
+			verboseInfo,
+			result,
+		});
 	}
-
-	const color = reject ? redBright : yellowBright;
-	verboseLog(message, verboseId, icon, color);
 };
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/complete.js
@@ -53582,58 +54768,24 @@ const logError = ({message, failed, reject, verboseId, icon}) => {
 
 
 
-
-
-
-// When `verbose` is `short|full`, print each command's completion, duration and error
-const logFinalResult = ({shortMessage, failed, durationMs}, reject, verboseInfo) => {
-	logResult({
-		message: shortMessage,
-		failed,
-		reject,
-		durationMs,
-		verboseInfo,
-	});
-};
-
-// Same but for early validation errors
-const logEarlyResult = (error, startTime, verboseInfo) => {
-	logResult({
-		message: escapeLines(String(error)),
-		failed: true,
-		reject: true,
-		durationMs: getDurationMs(startTime),
-		verboseInfo,
-	});
-};
-
-const logResult = ({message, failed, reject, durationMs, verboseInfo: {verbose, verboseId}}) => {
-	if (!isVerbose(verbose)) {
+// When `verbose` is `short|full|custom`, print each command's completion, duration and error
+const logResult = (result, verboseInfo) => {
+	if (!isVerbose(verboseInfo)) {
 		return;
 	}
 
-	const icon = getIcon(failed, reject);
-	logError({
-		message,
-		failed,
-		reject,
-		verboseId,
-		icon,
+	logError(result, verboseInfo);
+	logDuration(result, verboseInfo);
+};
+
+const logDuration = (result, verboseInfo) => {
+	const verboseMessage = `(done in ${prettyMilliseconds(result.durationMs)})`;
+	verboseLog({
+		type: 'duration',
+		verboseMessage,
+		verboseInfo,
+		result,
 	});
-	logDuration(durationMs, verboseId, icon);
-};
-
-const logDuration = (durationMs, verboseId, icon) => {
-	const durationMessage = `(done in ${prettyMilliseconds(durationMs)})`;
-	verboseLog(durationMessage, verboseId, icon, gray);
-};
-
-const getIcon = (failed, reject) => {
-	if (!failed) {
-		return 'success';
-	}
-
-	return reject ? 'error' : 'warning';
 };
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/return/reject.js
@@ -53642,7 +54794,7 @@ const getIcon = (failed, reject) => {
 // Applies the `reject` option.
 // Also print the final log line with `verbose`.
 const handleResult = (result, verboseInfo, {reject}) => {
-	logFinalResult(result, reject, verboseInfo);
+	logResult(result, verboseInfo);
 
 	if (result.failed && reject) {
 		throw result;
@@ -54054,14 +55206,24 @@ const getStandardStreamDirection = value => {
 // When the ambiguity remains, we default to `output` since it is the most common use case for additional file descriptors.
 const DEFAULT_DIRECTION = 'output';
 
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/array.js
+// The `ipc` option adds an `ipc` item to the `stdio` option
+const normalizeIpcStdioArray = (stdioArray, ipc) => ipc && !stdioArray.includes('ipc')
+	? [...stdioArray, 'ipc']
+	: stdioArray;
+
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/stdio/stdio-option.js
+
+
 
 
 // Add support for `stdin`/`stdout`/`stderr` as an alias for `stdio`.
 // Also normalize the `stdio` option.
-const normalizeStdioOption = ({stdio, ipc, buffer, verbose, ...options}, isSync) => {
+const normalizeStdioOption = ({stdio, ipc, buffer, ...options}, verboseInfo, isSync) => {
 	const stdioArray = getStdioArray(stdio, options).map((stdioOption, fdNumber) => stdio_option_addDefaultValue(stdioOption, fdNumber));
-	return isSync ? normalizeStdioSync(stdioArray, buffer, verbose) : normalizeStdioAsync(stdioArray, ipc);
+	return isSync
+		? normalizeStdioSync(stdioArray, buffer, verboseInfo)
+		: normalizeIpcStdioArray(stdioArray, ipc);
 };
 
 const getStdioArray = (stdio, options) => {
@@ -54101,131 +55263,16 @@ const stdio_option_addDefaultValue = (stdioOption, fdNumber) => {
 
 // Using `buffer: false` with synchronous methods implies `stdout`/`stderr`: `ignore`.
 // Unless the output is needed, e.g. due to `verbose: 'full'` or to redirecting to a file.
-const normalizeStdioSync = (stdioArray, buffer, verbose) => stdioArray.map((stdioOption, fdNumber) =>
+const normalizeStdioSync = (stdioArray, buffer, verboseInfo) => stdioArray.map((stdioOption, fdNumber) =>
 	!buffer[fdNumber]
 	&& fdNumber !== 0
-	&& verbose[fdNumber] !== 'full'
+	&& !isFullVerbose(verboseInfo, fdNumber)
 	&& isOutputPipeOnly(stdioOption)
 		? 'ignore'
 		: stdioOption);
 
 const isOutputPipeOnly = stdioOption => stdioOption === 'pipe'
 	|| (Array.isArray(stdioOption) && stdioOption.every(item => item === 'pipe'));
-
-// The `ipc` option adds an `ipc` item to the `stdio` option
-const normalizeStdioAsync = (stdioArray, ipc) => ipc && !stdioArray.includes('ipc')
-	? [...stdioArray, 'ipc']
-	: stdioArray;
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/arguments/fd-options.js
-
-
-// Retrieve stream targeted by the `to` option
-const getToStream = (destination, to = 'stdin') => {
-	const isWritable = true;
-	const {options, fileDescriptors} = SUBPROCESS_OPTIONS.get(destination);
-	const fdNumber = getFdNumber(fileDescriptors, to, isWritable);
-	const destinationStream = destination.stdio[fdNumber];
-
-	if (destinationStream === null) {
-		throw new TypeError(getInvalidStdioOptionMessage(fdNumber, to, options, isWritable));
-	}
-
-	return destinationStream;
-};
-
-// Retrieve stream targeted by the `from` option
-const getFromStream = (source, from = 'stdout') => {
-	const isWritable = false;
-	const {options, fileDescriptors} = SUBPROCESS_OPTIONS.get(source);
-	const fdNumber = getFdNumber(fileDescriptors, from, isWritable);
-	const sourceStream = fdNumber === 'all' ? source.all : source.stdio[fdNumber];
-
-	if (sourceStream === null || sourceStream === undefined) {
-		throw new TypeError(getInvalidStdioOptionMessage(fdNumber, from, options, isWritable));
-	}
-
-	return sourceStream;
-};
-
-// Keeps track of the options passed to each Execa call
-const SUBPROCESS_OPTIONS = new WeakMap();
-
-const getFdNumber = (fileDescriptors, fdName, isWritable) => {
-	const fdNumber = parseFdNumber(fdName, isWritable);
-	validateFdNumber(fdNumber, fdName, isWritable, fileDescriptors);
-	return fdNumber;
-};
-
-const parseFdNumber = (fdName, isWritable) => {
-	const fdNumber = parseFd(fdName);
-	if (fdNumber !== undefined) {
-		return fdNumber;
-	}
-
-	const {validOptions, defaultValue} = isWritable
-		? {validOptions: '"stdin"', defaultValue: 'stdin'}
-		: {validOptions: '"stdout", "stderr", "all"', defaultValue: 'stdout'};
-	throw new TypeError(`"${getOptionName(isWritable)}" must not be "${fdName}".
-It must be ${validOptions} or "fd3", "fd4" (and so on).
-It is optional and defaults to "${defaultValue}".`);
-};
-
-const validateFdNumber = (fdNumber, fdName, isWritable, fileDescriptors) => {
-	const fileDescriptor = fileDescriptors[getUsedDescriptor(fdNumber)];
-	if (fileDescriptor === undefined) {
-		throw new TypeError(`"${getOptionName(isWritable)}" must not be ${fdName}. That file descriptor does not exist.
-Please set the "stdio" option to ensure that file descriptor exists.`);
-	}
-
-	if (fileDescriptor.direction === 'input' && !isWritable) {
-		throw new TypeError(`"${getOptionName(isWritable)}" must not be ${fdName}. It must be a readable stream, not writable.`);
-	}
-
-	if (fileDescriptor.direction !== 'input' && isWritable) {
-		throw new TypeError(`"${getOptionName(isWritable)}" must not be ${fdName}. It must be a writable stream, not readable.`);
-	}
-};
-
-const getInvalidStdioOptionMessage = (fdNumber, fdName, options, isWritable) => {
-	if (fdNumber === 'all' && !options.all) {
-		return 'The "all" option must be true to use "from: \'all\'".';
-	}
-
-	const {optionName, optionValue} = getInvalidStdioOption(fdNumber, options);
-	return `The "${optionName}: ${serializeOptionValue(optionValue)}" option is incompatible with using "${getOptionName(isWritable)}: ${serializeOptionValue(fdName)}".
-Please set this option with "pipe" instead.`;
-};
-
-const getInvalidStdioOption = (fdNumber, {stdin, stdout, stderr, stdio}) => {
-	const usedDescriptor = getUsedDescriptor(fdNumber);
-
-	if (usedDescriptor === 0 && stdin !== undefined) {
-		return {optionName: 'stdin', optionValue: stdin};
-	}
-
-	if (usedDescriptor === 1 && stdout !== undefined) {
-		return {optionName: 'stdout', optionValue: stdout};
-	}
-
-	if (usedDescriptor === 2 && stderr !== undefined) {
-		return {optionName: 'stderr', optionValue: stderr};
-	}
-
-	return {optionName: `stdio[${usedDescriptor}]`, optionValue: stdio[usedDescriptor]};
-};
-
-const getUsedDescriptor = fdNumber => fdNumber === 'all' ? 1 : fdNumber;
-
-const getOptionName = isWritable => isWritable ? 'to' : 'from';
-
-const serializeOptionValue = value => {
-	if (typeof value === 'string') {
-		return `'${value}'`;
-	}
-
-	return typeof value === 'number' ? `${value}` : 'Stream';
-};
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/stdio/native.js
 
@@ -54475,7 +55522,7 @@ const getDuplicateStreamInstance = ({otherStdioItems, type, value, optionName, d
 
 const hasSameValue = ({type, value}, secondValue) => {
 	if (type === 'filePath') {
-		return value.path === secondValue.path;
+		return value.file === secondValue.file;
 	}
 
 	if (type === 'fileUrl') {
@@ -54515,7 +55562,7 @@ const throwOnDuplicateStream = (stdioItem, optionName, type) => {
 // They are converted into an array of `fileDescriptors`.
 // Each `fileDescriptor` is normalized, validated and contains all information necessary for further handling.
 const handleStdio = (addProperties, options, verboseInfo, isSync) => {
-	const stdio = normalizeStdioOption(options, isSync);
+	const stdio = normalizeStdioOption(options, verboseInfo, isSync);
 	const initialFileDescriptors = stdio.map((stdioOption, fdNumber) => getFileDescriptor({
 		stdioOption,
 		fdNumber,
@@ -55263,14 +56310,13 @@ const validateSerializable = newContents => {
 
 
 
-
 // `ignore` opts-out of `verbose` for a specific stream.
 // `ipc` cannot use piping.
 // `inherit` would result in double printing.
 // They can also lead to double printing when passing file descriptor integers or `process.std*`.
 // This only leaves with `pipe` and `overlapped`.
-const shouldLogOutput = ({stdioItems, encoding, verboseInfo: {verbose}, fdNumber}) => fdNumber !== 'all'
-	&& verbose[fdNumber] === 'full'
+const shouldLogOutput = ({stdioItems, encoding, verboseInfo, fdNumber}) => fdNumber !== 'all'
+	&& isFullVerbose(verboseInfo, fdNumber)
 	&& !BINARY_ENCODINGS.has(encoding)
 	&& fdUsesVerbose(fdNumber)
 	&& (stdioItems.some(({type, value}) => type === 'native' && PIPED_STDIO_VALUES.has(value))
@@ -55284,19 +56330,19 @@ const fdUsesVerbose = fdNumber => fdNumber === 1 || fdNumber === 2;
 
 const PIPED_STDIO_VALUES = new Set(['pipe', 'overlapped']);
 
-// `verbose` printing logic with async methods
-const logLines = async (linesIterable, stream, verboseInfo) => {
+// `verbose: 'full'` printing logic with async methods
+const logLines = async (linesIterable, stream, fdNumber, verboseInfo) => {
 	for await (const line of linesIterable) {
 		if (!isPipingStream(stream)) {
-			logLine(line, verboseInfo);
+			logLine(line, fdNumber, verboseInfo);
 		}
 	}
 };
 
-// `verbose` printing logic with sync methods
-const logLinesSync = (linesArray, verboseInfo) => {
+// `verbose: 'full'` printing logic with sync methods
+const logLinesSync = (linesArray, fdNumber, verboseInfo) => {
 	for (const line of linesArray) {
-		logLine(line, verboseInfo);
+		logLine(line, fdNumber, verboseInfo);
 	}
 };
 
@@ -55310,15 +56356,15 @@ const logLinesSync = (linesArray, verboseInfo) => {
 const isPipingStream = stream => stream._readableState.pipes.length > 0;
 
 // When `verbose` is `full`, print stdout|stderr
-const logLine = (line, {verboseId}) => {
-	const lines = typeof line === 'string' ? line : (0,external_node_util_.inspect)(line);
-	const escapedLines = escapeLines(lines);
-	const spacedLines = escapedLines.replaceAll('\t', ' '.repeat(TAB_SIZE));
-	verboseLog(spacedLines, verboseId, 'output');
+const logLine = (line, fdNumber, verboseInfo) => {
+	const verboseMessage = serializeVerboseMessage(line);
+	verboseLog({
+		type: 'output',
+		verboseMessage,
+		fdNumber,
+		verboseInfo,
+	});
 };
-
-// Same as `util.inspect()`
-const TAB_SIZE = 2;
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/io/output-sync.js
 
@@ -55371,15 +56417,15 @@ const transformOutputResultSync = (
 		fdNumber,
 	});
 
-	if (shouldLogOutput({
-		stdioItems,
-		encoding,
-		verboseInfo,
+	logOutputSync({
+		serializedResult,
 		fdNumber,
-	})) {
-		const linesArray = splitLinesSync(serializedResult, false, objectMode);
-		logLinesSync(linesArray, verboseInfo);
-	}
+		state,
+		verboseInfo,
+		encoding,
+		stdioItems,
+		objectMode,
+	});
 
 	const returnedResult = buffer[fdNumber] ? finalResult : undefined;
 
@@ -55423,6 +56469,25 @@ const serializeChunks = ({chunks, objectMode, encoding, lines, stripFinalNewline
 	}
 
 	return {serializedResult};
+};
+
+const logOutputSync = ({serializedResult, fdNumber, state, verboseInfo, encoding, stdioItems, objectMode}) => {
+	if (!shouldLogOutput({
+		stdioItems,
+		encoding,
+		verboseInfo,
+		fdNumber,
+	})) {
+		return;
+	}
+
+	const linesArray = splitLinesSync(serializedResult, false, objectMode);
+
+	try {
+		logLinesSync(linesArray, fdNumber, verboseInfo);
+	} catch (error) {
+		state.error ??= error;
+	}
 };
 
 // When the `std*` target is a file path/URL or a file descriptor
@@ -55473,20 +56538,24 @@ const getAllSync = ([, stdout, stderr], options) => {
 	return `${stdout}${stderr}`;
 };
 
-// EXTERNAL MODULE: external "node:events"
-var external_node_events_ = __nccwpck_require__(5673);
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/resolve/exit-async.js
 
 
 
 // If `error` is emitted before `spawn`, `exit` will never be emitted.
-// However, `error` might be emitted after `spawn`, e.g. with the `cancelSignal` option.
+// However, `error` might be emitted after `spawn`.
 // In that case, `exit` will still be emitted.
 // Since the `exit` event contains the signal name, we want to make sure we are listening for it.
 // This function also takes into account the following unlikely cases:
 //  - `exit` being emitted in the same microtask as `spawn`
 //  - `error` being emitted multiple times
-const waitForExit = async subprocess => {
+const waitForExit = async (subprocess, context) => {
+	const [exitCode, signal] = await waitForExitOrError(subprocess);
+	context.isForcefullyTerminated ??= false;
+	return [exitCode, signal];
+};
+
+const waitForExitOrError = async subprocess => {
 	const [spawnPayload, exitPayload] = await Promise.allSettled([
 		(0,external_node_events_.once)(subprocess, 'spawn'),
 		(0,external_node_events_.once)(subprocess, 'exit'),
@@ -55566,8 +56635,7 @@ const getResultError = (error, exitCode, signal) => {
 
 
 
-
-// Main shared logic for all sync methods: `execaSync()`, `execaCommandSync()`, `$.sync()`
+// Main shared logic for all sync methods: `execaSync()`, `$.sync()`
 const execaCoreSync = (rawFile, rawArguments, rawOptions) => {
 	const {file, commandArguments, command, escapedCommand, startTime, verboseInfo, options, fileDescriptors} = handleSyncArguments(rawFile, rawArguments, rawOptions);
 	const result = spawnSubprocessSync({
@@ -55586,33 +56654,31 @@ const execaCoreSync = (rawFile, rawArguments, rawOptions) => {
 // Compute arguments to pass to `child_process.spawnSync()`
 const handleSyncArguments = (rawFile, rawArguments, rawOptions) => {
 	const {command, escapedCommand, startTime, verboseInfo} = handleCommand(rawFile, rawArguments, rawOptions);
-
-	try {
-		const syncOptions = normalizeSyncOptions(rawOptions);
-		const {file, commandArguments, options} = normalizeOptions(rawFile, rawArguments, syncOptions);
-		validateSyncOptions(options);
-		const fileDescriptors = handleStdioSync(options, verboseInfo);
-		return {
-			file,
-			commandArguments,
-			command,
-			escapedCommand,
-			startTime,
-			verboseInfo,
-			options,
-			fileDescriptors,
-		};
-	} catch (error) {
-		logEarlyResult(error, startTime, verboseInfo);
-		throw error;
-	}
+	const syncOptions = normalizeSyncOptions(rawOptions);
+	const {file, commandArguments, options} = normalizeOptions(rawFile, rawArguments, syncOptions);
+	validateSyncOptions(options);
+	const fileDescriptors = handleStdioSync(options, verboseInfo);
+	return {
+		file,
+		commandArguments,
+		command,
+		escapedCommand,
+		startTime,
+		verboseInfo,
+		options,
+		fileDescriptors,
+	};
 };
 
 // Options normalization logic specific to sync methods
 const normalizeSyncOptions = options => options.node && !options.ipc ? {...options, ipc: false} : options;
 
 // Options validation logic specific to sync methods
-const validateSyncOptions = ({ipc, detached, cancelSignal}) => {
+const validateSyncOptions = ({ipc, ipcInput, detached, cancelSignal}) => {
+	if (ipcInput) {
+		throwInvalidSyncOption('ipcInput');
+	}
+
 	if (ipc) {
 		throwInvalidSyncOption('ipc: true');
 	}
@@ -55696,6 +56762,7 @@ const getSyncResult = ({error, exitCode, signal, timedOut, isMaxBuffer, stdio, a
 		escapedCommand,
 		stdio,
 		all,
+		ipcOutput: [],
 		options,
 		startTime,
 	})
@@ -55705,15 +56772,226 @@ const getSyncResult = ({error, exitCode, signal, timedOut, isMaxBuffer, stdio, a
 		escapedCommand,
 		timedOut,
 		isCanceled: false,
+		isGracefullyCanceled: false,
 		isMaxBuffer,
+		isForcefullyTerminated: false,
 		exitCode,
 		signal,
 		stdio,
 		all,
+		ipcOutput: [],
 		options,
 		startTime,
 		isSync: true,
 	});
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/get-one.js
+
+
+
+
+
+// Like `[sub]process.once('message')` but promise-based
+const getOneMessage = ({anyProcess, channel, isSubprocess, ipc}, {reference = true, filter} = {}) => {
+	validateIpcMethod({
+		methodName: 'getOneMessage',
+		isSubprocess,
+		ipc,
+		isConnected: isConnected(anyProcess),
+	});
+
+	return getOneMessageAsync({
+		anyProcess,
+		channel,
+		isSubprocess,
+		filter,
+		reference,
+	});
+};
+
+const getOneMessageAsync = async ({anyProcess, channel, isSubprocess, filter, reference}) => {
+	addReference(channel, reference);
+	const ipcEmitter = getIpcEmitter(anyProcess, channel, isSubprocess);
+	const controller = new AbortController();
+	try {
+		return await Promise.race([
+			getMessage(ipcEmitter, filter, controller),
+			get_one_throwOnDisconnect(ipcEmitter, isSubprocess, controller),
+			throwOnStrictError(ipcEmitter, isSubprocess, controller),
+		]);
+	} catch (error) {
+		disconnect(anyProcess);
+		throw error;
+	} finally {
+		controller.abort();
+		removeReference(channel, reference);
+	}
+};
+
+const getMessage = async (ipcEmitter, filter, {signal}) => {
+	if (filter === undefined) {
+		const [message] = await (0,external_node_events_.once)(ipcEmitter, 'message', {signal});
+		return message;
+	}
+
+	for await (const [message] of (0,external_node_events_.on)(ipcEmitter, 'message', {signal})) {
+		if (filter(message)) {
+			return message;
+		}
+	}
+};
+
+const get_one_throwOnDisconnect = async (ipcEmitter, isSubprocess, {signal}) => {
+	await (0,external_node_events_.once)(ipcEmitter, 'disconnect', {signal});
+	throwOnEarlyDisconnect(isSubprocess);
+};
+
+const throwOnStrictError = async (ipcEmitter, isSubprocess, {signal}) => {
+	const [error] = await (0,external_node_events_.once)(ipcEmitter, 'strict:error', {signal});
+	throw getStrictResponseError(error, isSubprocess);
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/get-each.js
+
+
+
+
+
+// Like `[sub]process.on('message')` but promise-based
+const getEachMessage = ({anyProcess, channel, isSubprocess, ipc}, {reference = true} = {}) => loopOnMessages({
+	anyProcess,
+	channel,
+	isSubprocess,
+	ipc,
+	shouldAwait: !isSubprocess,
+	reference,
+});
+
+// Same but used internally
+const loopOnMessages = ({anyProcess, channel, isSubprocess, ipc, shouldAwait, reference}) => {
+	validateIpcMethod({
+		methodName: 'getEachMessage',
+		isSubprocess,
+		ipc,
+		isConnected: isConnected(anyProcess),
+	});
+
+	addReference(channel, reference);
+	const ipcEmitter = getIpcEmitter(anyProcess, channel, isSubprocess);
+	const controller = new AbortController();
+	const state = {};
+	stopOnDisconnect(anyProcess, ipcEmitter, controller);
+	abortOnStrictError({
+		ipcEmitter,
+		isSubprocess,
+		controller,
+		state,
+	});
+	return iterateOnMessages({
+		anyProcess,
+		channel,
+		ipcEmitter,
+		isSubprocess,
+		shouldAwait,
+		controller,
+		state,
+		reference,
+	});
+};
+
+const stopOnDisconnect = async (anyProcess, ipcEmitter, controller) => {
+	try {
+		await (0,external_node_events_.once)(ipcEmitter, 'disconnect', {signal: controller.signal});
+		controller.abort();
+	} catch {}
+};
+
+const abortOnStrictError = async ({ipcEmitter, isSubprocess, controller, state}) => {
+	try {
+		const [error] = await (0,external_node_events_.once)(ipcEmitter, 'strict:error', {signal: controller.signal});
+		state.error = getStrictResponseError(error, isSubprocess);
+		controller.abort();
+	} catch {}
+};
+
+const iterateOnMessages = async function * ({anyProcess, channel, ipcEmitter, isSubprocess, shouldAwait, controller, state, reference}) {
+	try {
+		for await (const [message] of (0,external_node_events_.on)(ipcEmitter, 'message', {signal: controller.signal})) {
+			throwIfStrictError(state);
+			yield message;
+		}
+	} catch {
+		throwIfStrictError(state);
+	} finally {
+		controller.abort();
+		removeReference(channel, reference);
+
+		if (!isSubprocess) {
+			disconnect(anyProcess);
+		}
+
+		if (shouldAwait) {
+			await anyProcess;
+		}
+	}
+};
+
+const throwIfStrictError = ({error}) => {
+	if (error) {
+		throw error;
+	}
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/methods.js
+
+
+
+
+
+
+// Add promise-based IPC methods in current process
+const addIpcMethods = (subprocess, {ipc}) => {
+	Object.assign(subprocess, getIpcMethods(subprocess, false, ipc));
+};
+
+// Get promise-based IPC in the subprocess
+const getIpcExport = () => {
+	const anyProcess = external_node_process_namespaceObject;
+	const isSubprocess = true;
+	const ipc = external_node_process_namespaceObject.channel !== undefined;
+
+	return {
+		...getIpcMethods(anyProcess, isSubprocess, ipc),
+		getCancelSignal: getCancelSignal.bind(undefined, {
+			anyProcess,
+			channel: anyProcess.channel,
+			isSubprocess,
+			ipc,
+		}),
+	};
+};
+
+// Retrieve the `ipc` shared by both the current process and the subprocess
+const getIpcMethods = (anyProcess, isSubprocess, ipc) => ({
+	sendMessage: sendMessage.bind(undefined, {
+		anyProcess,
+		channel: anyProcess.channel,
+		isSubprocess,
+		ipc,
+	}),
+	getOneMessage: getOneMessage.bind(undefined, {
+		anyProcess,
+		channel: anyProcess.channel,
+		isSubprocess,
+		ipc,
+	}),
+	getEachMessage: getEachMessage.bind(undefined, {
+		anyProcess,
+		channel: anyProcess.channel,
+		isSubprocess,
+		ipc,
+	}),
+});
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/return/early-error.js
 
@@ -56095,22 +57373,6 @@ const PASSTHROUGH_LISTENERS_COUNT = 2;
 //  - once due to `stream.pipe(passThroughStream)`
 const PASSTHROUGH_LISTENERS_PER_STREAM = 1;
 
-;// CONCATENATED MODULE: ./node_modules/execa/lib/utils/max-listeners.js
-
-
-// Temporarily increase the maximum number of listeners on an eventEmitter
-const incrementMaxListeners = (eventEmitter, maxListenersIncrement, signal) => {
-	const maxListeners = eventEmitter.getMaxListeners();
-	if (maxListeners === 0 || maxListeners === Number.POSITIVE_INFINITY) {
-		return;
-	}
-
-	eventEmitter.setMaxListeners(maxListeners + maxListenersIncrement);
-	(0,external_node_events_.addAbortListener)(signal, () => {
-		eventEmitter.setMaxListeners(eventEmitter.getMaxListeners() - maxListenersIncrement);
-	});
-};
-
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/io/pipeline.js
 
 
@@ -56243,7 +57505,7 @@ const setStandardStreamMaxListeners = (stream, {signal}) => {
 // That library also listens for `source` end, which adds 1 more listener.
 const MAX_LISTENERS_INCREMENT = 2;
 
-;// CONCATENATED MODULE: ./node_modules/signal-exit/dist/mjs/signals.js
+;// CONCATENATED MODULE: ./node_modules/execa/node_modules/signal-exit/dist/mjs/signals.js
 /**
  * This is not the set of all possible signals.
  *
@@ -56283,7 +57545,7 @@ if (process.platform === 'linux') {
     signals.push('SIGIO', 'SIGPOLL', 'SIGPWR', 'SIGSTKFLT');
 }
 //# sourceMappingURL=signals.js.map
-;// CONCATENATED MODULE: ./node_modules/signal-exit/dist/mjs/index.js
+;// CONCATENATED MODULE: ./node_modules/execa/node_modules/signal-exit/dist/mjs/index.js
 // Note: since nyc uses this module to output coverage, any lines
 // that are in the direct sync flow of nyc's outputCoverage are
 // ignored, since we can never get coverage for them.
@@ -57197,26 +58459,19 @@ const getGenerators = ({binary, shouldEncode, encoding, shouldSplit, preserveNew
 
 
 // Retrieve `result.stdout|stderr|all|stdio[*]`
-const getStreamOutput = async ({stream, onStreamEnd, fdNumber, encoding, buffer, maxBuffer, lines, allMixed, stripFinalNewline, verboseInfo, streamInfo: {fileDescriptors}}) => {
-	if (shouldLogOutput({
-		stdioItems: fileDescriptors[fdNumber]?.stdioItems,
-		encoding,
-		verboseInfo,
+const getStreamOutput = async ({stream, onStreamEnd, fdNumber, encoding, buffer, maxBuffer, lines, allMixed, stripFinalNewline, verboseInfo, streamInfo}) => {
+	const logPromise = logOutputAsync({
+		stream,
+		onStreamEnd,
 		fdNumber,
-	})) {
-		const linesIterable = iterateForResult({
-			stream,
-			onStreamEnd,
-			lines: true,
-			encoding,
-			stripFinalNewline: true,
-			allMixed,
-		});
-		logLines(linesIterable, stream, verboseInfo);
-	}
+		encoding,
+		allMixed,
+		verboseInfo,
+		streamInfo,
+	});
 
 	if (!buffer) {
-		await resumeStream(stream);
+		await Promise.all([resumeStream(stream), logPromise]);
 		return;
 	}
 
@@ -57229,14 +58484,39 @@ const getStreamOutput = async ({stream, onStreamEnd, fdNumber, encoding, buffer,
 		stripFinalNewline: stripFinalNewlineValue,
 		allMixed,
 	});
-	return contents_getStreamContents({
-		stream,
-		iterable,
-		fdNumber,
+	const [output] = await Promise.all([
+		contents_getStreamContents({
+			stream,
+			iterable,
+			fdNumber,
+			encoding,
+			maxBuffer,
+			lines,
+		}),
+		logPromise,
+	]);
+	return output;
+};
+
+const logOutputAsync = async ({stream, onStreamEnd, fdNumber, encoding, allMixed, verboseInfo, streamInfo: {fileDescriptors}}) => {
+	if (!shouldLogOutput({
+		stdioItems: fileDescriptors[fdNumber]?.stdioItems,
 		encoding,
-		maxBuffer,
-		lines,
+		verboseInfo,
+		fdNumber,
+	})) {
+		return;
+	}
+
+	const linesIterable = iterateForResult({
+		stream,
+		onStreamEnd,
+		lines: true,
+		encoding,
+		stripFinalNewline: true,
+		allMixed,
 	});
+	await logLines(linesIterable, stream, fdNumber, verboseInfo);
 };
 
 // When using `buffer: false`, users need to read `subprocess.stdout|stderr|all` right away
@@ -57482,7 +58762,77 @@ const getAllMixed = ({all, stdout, stderr}) => all
 	&& stderr
 	&& stdout.readableObjectMode !== stderr.readableObjectMode;
 
+;// CONCATENATED MODULE: ./node_modules/execa/lib/verbose/ipc.js
+
+
+
+// When `verbose` is `'full'`, print IPC messages from the subprocess
+const shouldLogIpc = verboseInfo => isFullVerbose(verboseInfo, 'ipc');
+
+const logIpcOutput = (message, verboseInfo) => {
+	const verboseMessage = serializeVerboseMessage(message);
+	verboseLog({
+		type: 'ipc',
+		verboseMessage,
+		fdNumber: 'ipc',
+		verboseInfo,
+	});
+};
+
+;// CONCATENATED MODULE: ./node_modules/execa/lib/ipc/buffer-messages.js
+
+
+
+
+
+// Iterate through IPC messages sent by the subprocess
+const waitForIpcOutput = async ({
+	subprocess,
+	buffer: bufferArray,
+	maxBuffer: maxBufferArray,
+	ipc,
+	ipcOutput,
+	verboseInfo,
+}) => {
+	if (!ipc) {
+		return ipcOutput;
+	}
+
+	const isVerbose = shouldLogIpc(verboseInfo);
+	const buffer = getFdSpecificValue(bufferArray, 'ipc');
+	const maxBuffer = getFdSpecificValue(maxBufferArray, 'ipc');
+
+	for await (const message of loopOnMessages({
+		anyProcess: subprocess,
+		channel: subprocess.channel,
+		isSubprocess: false,
+		ipc,
+		shouldAwait: false,
+		reference: true,
+	})) {
+		if (buffer) {
+			checkIpcMaxBuffer(subprocess, ipcOutput, maxBuffer);
+			ipcOutput.push(message);
+		}
+
+		if (isVerbose) {
+			logIpcOutput(message, verboseInfo);
+		}
+	}
+
+	return ipcOutput;
+};
+
+const getBufferedIpcOutput = async (ipcOutputPromise, ipcOutput) => {
+	await Promise.allSettled([ipcOutputPromise]);
+	return ipcOutput;
+};
+
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/resolve/wait-subprocess.js
+
+
+
+
 
 
 
@@ -57497,7 +58847,19 @@ const getAllMixed = ({all, stdout, stderr}) => all
 // Retrieve result of subprocess: exit code, signal, error, streams (stdout/stderr/all)
 const waitForSubprocessResult = async ({
 	subprocess,
-	options: {encoding, buffer, maxBuffer, lines, timeoutDuration: timeout, stripFinalNewline},
+	options: {
+		encoding,
+		buffer,
+		maxBuffer,
+		lines,
+		timeoutDuration: timeout,
+		cancelSignal,
+		gracefulCancel,
+		forceKillAfterDelay,
+		stripFinalNewline,
+		ipc,
+		ipcInput,
+	},
 	context,
 	verboseInfo,
 	fileDescriptors,
@@ -57505,7 +58867,7 @@ const waitForSubprocessResult = async ({
 	onInternalError,
 	controller,
 }) => {
-	const exitPromise = waitForExit(subprocess);
+	const exitPromise = waitForExit(subprocess, context);
 	const streamInfo = {
 		originalStreams,
 		fileDescriptors,
@@ -57534,6 +58896,15 @@ const waitForSubprocessResult = async ({
 		verboseInfo,
 		streamInfo,
 	});
+	const ipcOutput = [];
+	const ipcOutputPromise = waitForIpcOutput({
+		subprocess,
+		buffer,
+		maxBuffer,
+		ipc,
+		ipcOutput,
+		verboseInfo,
+	});
 	const originalPromises = waitForOriginalStreams(originalStreams, subprocess, streamInfo);
 	const customStreamsEndPromises = waitForCustomStreamsEnd(fileDescriptors, streamInfo);
 
@@ -57544,19 +58915,38 @@ const waitForSubprocessResult = async ({
 				waitForSuccessfulExit(exitPromise),
 				Promise.all(stdioPromises),
 				allPromise,
+				ipcOutputPromise,
+				sendIpcInput(subprocess, ipcInput),
 				...originalPromises,
 				...customStreamsEndPromises,
 			]),
 			onInternalError,
 			throwOnSubprocessError(subprocess, controller),
 			...throwOnTimeout(subprocess, timeout, context, controller),
+			...throwOnCancel({
+				subprocess,
+				cancelSignal,
+				gracefulCancel,
+				context,
+				controller,
+			}),
+			...throwOnGracefulCancel({
+				subprocess,
+				cancelSignal,
+				gracefulCancel,
+				forceKillAfterDelay,
+				context,
+				controller,
+			}),
 		]);
 	} catch (error) {
+		context.terminationReason ??= 'other';
 		return Promise.all([
 			{error},
 			exitPromise,
 			Promise.all(stdioPromises.map(stdioPromise => getBufferedData(stdioPromise))),
 			getBufferedData(allPromise),
+			getBufferedIpcOutput(ipcOutputPromise, ipcOutput),
 			Promise.allSettled(originalPromises),
 			Promise.allSettled(customStreamsEndPromises),
 		]);
@@ -57584,15 +58974,6 @@ const waitForCustomStreamsEnd = (fileDescriptors, streamInfo) => fileDescriptors
 const throwOnSubprocessError = async (subprocess, {signal}) => {
 	const [error] = await (0,external_node_events_.once)(subprocess, 'error', {signal});
 	throw error;
-};
-
-;// CONCATENATED MODULE: ./node_modules/execa/lib/utils/deferred.js
-const createDeferred = () => {
-	const methods = {};
-	const promise = new Promise((resolve, reject) => {
-		Object.assign(methods, {resolve, reject});
-	});
-	return Object.assign(promise, methods);
 };
 
 ;// CONCATENATED MODULE: ./node_modules/execa/lib/convert/concurrent.js
@@ -58028,7 +59409,7 @@ const descriptors = ['then', 'catch', 'finally'].map(property => [
 
 
 
-// Main shared logic for all async methods: `execa()`, `execaCommand()`, `$`, `execaNode()`
+// Main shared logic for all async methods: `execa()`, `$`, `execaNode()`
 const execaCoreAsync = (rawFile, rawArguments, rawOptions, createNested) => {
 	const {file, commandArguments, command, escapedCommand, startTime, verboseInfo, options, fileDescriptors} = handleAsyncArguments(rawFile, rawArguments, rawOptions);
 	const {subprocess, promise} = spawnSubprocessAsync({
@@ -58055,35 +59436,29 @@ const execaCoreAsync = (rawFile, rawArguments, rawOptions, createNested) => {
 // Compute arguments to pass to `child_process.spawn()`
 const handleAsyncArguments = (rawFile, rawArguments, rawOptions) => {
 	const {command, escapedCommand, startTime, verboseInfo} = handleCommand(rawFile, rawArguments, rawOptions);
-
-	try {
-		const {file, commandArguments, options: normalizedOptions} = normalizeOptions(rawFile, rawArguments, rawOptions);
-		const options = handleAsyncOptions(normalizedOptions);
-		const fileDescriptors = handleStdioAsync(options, verboseInfo);
-		return {
-			file,
-			commandArguments,
-			command,
-			escapedCommand,
-			startTime,
-			verboseInfo,
-			options,
-			fileDescriptors,
-		};
-	} catch (error) {
-		logEarlyResult(error, startTime, verboseInfo);
-		throw error;
-	}
+	const {file, commandArguments, options: normalizedOptions} = normalizeOptions(rawFile, rawArguments, rawOptions);
+	const options = handleAsyncOptions(normalizedOptions);
+	const fileDescriptors = handleStdioAsync(options, verboseInfo);
+	return {
+		file,
+		commandArguments,
+		command,
+		escapedCommand,
+		startTime,
+		verboseInfo,
+		options,
+		fileDescriptors,
+	};
 };
 
 // Options normalization logic specific to async methods.
 // Prevent passing the `timeout` option directly to `child_process.spawn()`.
-const handleAsyncOptions = ({timeout, signal, cancelSignal, ...options}) => {
+const handleAsyncOptions = ({timeout, signal, ...options}) => {
 	if (signal !== undefined) {
 		throw new TypeError('The "signal" option has been renamed to "cancelSignal" instead.');
 	}
 
-	return {...options, timeoutDuration: timeout, signal: cancelSignal};
+	return {...options, timeoutDuration: timeout};
 };
 
 const spawnSubprocessAsync = ({file, commandArguments, options, startTime, verboseInfo, command, escapedCommand, fileDescriptors}) => {
@@ -58109,15 +59484,18 @@ const spawnSubprocessAsync = ({file, commandArguments, options, startTime, verbo
 	pipeOutputAsync(subprocess, fileDescriptors, controller);
 	cleanupOnExit(subprocess, options, controller);
 
+	const context = {};
 	const onInternalError = createDeferred();
 	subprocess.kill = subprocessKill.bind(undefined, {
 		kill: subprocess.kill.bind(subprocess),
 		options,
 		onInternalError,
+		context,
 		controller,
 	});
 	subprocess.all = makeAllStream(subprocess, options);
 	addConvertedStreams(subprocess, options);
+	addIpcMethods(subprocess, options);
 
 	const promise = handlePromise({
 		subprocess,
@@ -58128,6 +59506,7 @@ const spawnSubprocessAsync = ({file, commandArguments, options, startTime, verbo
 		originalStreams,
 		command,
 		escapedCommand,
+		context,
 		onInternalError,
 		controller,
 	});
@@ -58135,10 +59514,14 @@ const spawnSubprocessAsync = ({file, commandArguments, options, startTime, verbo
 };
 
 // Asynchronous logic, as opposed to the previous logic which can be run synchronously, i.e. can be returned to user right away
-const handlePromise = async ({subprocess, options, startTime, verboseInfo, fileDescriptors, originalStreams, command, escapedCommand, onInternalError, controller}) => {
-	const context = {timedOut: false};
-
-	const [errorInfo, [exitCode, signal], stdioResults, allResult] = await waitForSubprocessResult({
+const handlePromise = async ({subprocess, options, startTime, verboseInfo, fileDescriptors, originalStreams, command, escapedCommand, context, onInternalError, controller}) => {
+	const [
+		errorInfo,
+		[exitCode, signal],
+		stdioResults,
+		allResult,
+		ipcOutput,
+	] = await waitForSubprocessResult({
 		subprocess,
 		options,
 		context,
@@ -58159,6 +59542,7 @@ const handlePromise = async ({subprocess, options, startTime, verboseInfo, fileD
 		signal,
 		stdio,
 		all,
+		ipcOutput,
 		context,
 		options,
 		command,
@@ -58168,18 +59552,21 @@ const handlePromise = async ({subprocess, options, startTime, verboseInfo, fileD
 	return handleResult(result, verboseInfo, options);
 };
 
-const getAsyncResult = ({errorInfo, exitCode, signal, stdio, all, context, options, command, escapedCommand, startTime}) => 'error' in errorInfo
+const getAsyncResult = ({errorInfo, exitCode, signal, stdio, all, ipcOutput, context, options, command, escapedCommand, startTime}) => 'error' in errorInfo
 	? makeError({
 		error: errorInfo.error,
 		command,
 		escapedCommand,
-		timedOut: context.timedOut,
-		isCanceled: options.signal?.aborted === true,
+		timedOut: context.terminationReason === 'timeout',
+		isCanceled: context.terminationReason === 'cancel' || context.terminationReason === 'gracefulCancel',
+		isGracefullyCanceled: context.terminationReason === 'gracefulCancel',
 		isMaxBuffer: errorInfo.error instanceof MaxBufferError,
+		isForcefullyTerminated: context.isForcefullyTerminated,
 		exitCode,
 		signal,
 		stdio,
 		all,
+		ipcOutput,
 		options,
 		startTime,
 		isSync: false,
@@ -58189,6 +59576,7 @@ const getAsyncResult = ({errorInfo, exitCode, signal, stdio, all, context, optio
 		escapedCommand,
 		stdio,
 		all,
+		ipcOutput,
 		options,
 		startTime,
 	});
@@ -58298,8 +59686,23 @@ const parseCommand = (command, unusedArguments) => {
 		throw new TypeError(`The command and its arguments must be passed as a single string: ${command} ${unusedArguments}.`);
 	}
 
+	const [file, ...commandArguments] = parseCommandString(command);
+	return {file, commandArguments};
+};
+
+// Convert `command` string into an array of file or arguments to pass to $`${...fileOrCommandArguments}`
+const parseCommandString = command => {
+	if (typeof command !== 'string') {
+		throw new TypeError(`The command must be a string: ${String(command)}.`);
+	}
+
+	const trimmedCommand = command.trim();
+	if (trimmedCommand === '') {
+		return [];
+	}
+
 	const tokens = [];
-	for (const token of command.trim().split(SPACES_REGEXP)) {
+	for (const token of trimmedCommand.split(SPACES_REGEXP)) {
 		// Allow spaces to be escaped by a backslash if not meant as a delimiter
 		const previousToken = tokens.at(-1);
 		if (previousToken && previousToken.endsWith('\\')) {
@@ -58310,8 +59713,7 @@ const parseCommand = (command, unusedArguments) => {
 		}
 	}
 
-	const [file, ...commandArguments] = tokens;
-	return {file, commandArguments};
+	return tokens;
 };
 
 const SPACES_REGEXP = / +/g;
@@ -58348,12 +59750,22 @@ const deepScriptOptions = {preferLocal: true};
 
 
 
+
+
 const execa = createExeca(() => ({}));
 const execaSync = createExeca(() => ({isSync: true}));
 const execaCommand = createExeca(mapCommandAsync);
 const execaCommandSync = createExeca(mapCommandSync);
 const execaNode = createExeca(mapNode);
 const $ = createExeca(mapScriptAsync, {}, deepScriptOptions, setScriptSync);
+
+const {
+	sendMessage: execa_sendMessage,
+	getOneMessage: execa_getOneMessage,
+	getEachMessage: execa_getEachMessage,
+	getCancelSignal: execa_getCancelSignal,
+} = getIpcExport();
+
 
 
 /***/ })

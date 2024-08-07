@@ -59,7 +59,8 @@ describe('parseInput', () => {
       scanDelay: '100',
       skipErrors: false,
       stealthMode: false,
-      disableFerryman: false
+      disableFerryman: false,
+      viewport: '800x600'
     }
 
     const inputs = parseInputs()
