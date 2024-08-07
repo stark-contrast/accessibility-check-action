@@ -51,80 +51,85 @@ jobs:
         id: stark
         uses: stark-contrast/accessibility-check-action@beta
         with:
-            # [Optional; only required when used with Stark Projects]
-            # The token used by the action to send an audit report back to Stark.
-            token: ${{ github.event.inputs.token }}
+          # [Optional; only required when used with Stark Projects]
+          # The token used by the action to send an audit report back to Stark.
+          token: ${{ github.event.inputs.token }}
 
-            # [Optional] Shell commands for setting up the container.
-            # You can use this to install tools, export variables, etc.
-            # Example: 'nvm install 16 && nvm use 16'
-            setup: ''
-            
-            # [Optional] Shell comamnds to run before the app is built.
-            # Run any prebuild steps, cd into subdirectories, etc.
-            prebuild: ''
+          # [Optional] Shell commands for setting up the container.
+          # You can use this to install tools, export variables, etc.
+          # Example: 'nvm install 16 && nvm use 16'
+          setup: ''
 
-            # [Optional] Shell commands for building your app.
-            # Example: 'npm run build'
-            build: ''
+          # [Optional] Shell comamnds to run before the app is built.
+          # Run any prebuild steps, cd into subdirectories, etc.
+          prebuild: ''
 
-            # [Optional] Shell commands for serving your app.
-            # This command is slightly different from the others: it runs in a long-lived,
-            # detached process that is only terminated when the scan finishes and our action stops.
-            # Example: 'SERVER_PORT=3000 && npm run serve'
-            serve: ''
+          # [Optional] Shell commands for building your app.
+          # Example: 'npm run build'
+          build: ''
 
-            # [Optional] The number of milliseconds to wait before your app is ready.
-            # Defaults to 5000 milliseconds.
-            wait_time: 5000
+          # [Optional] Shell commands for serving your app.
+          # This command is slightly different from the others: it runs in a long-lived,
+          # detached process that is only terminated when the scan finishes and our action stops.
+          # Example: 'SERVER_PORT=3000 && npm run serve'
+          serve: ''
 
-            # [Required] A list of URLs to be scanned, with each URL belonging to its own line. This value follows YAML conventions for multiline strings.
-            # Example: 
-            #     urls:|-
-            #          http://localhost:3000
-            #          http://localhost:3000/about
-            #          http://localhost:3000/help
-            # OR
-            #     urls:'
-            #          http://localhost:3000
-            #
-            #          http://localhost:3000/about
-            #
-            #          http://localhost:3000/help
-            #          '
-            urls: ''
+          # [Optional] The number of milliseconds to wait before your app is ready.
+          # Defaults to 5000 milliseconds.
+          wait_time: 5000
 
-            # [Optional] Navigation timeout for puppeteer in ms. How long should puppeteer wait till it checks page load (wait until event) is complete.
-            # Note: This timeout applies to all pages in your url list individually
-            # Defaults to 30000 ms
-            puppeteer_timeout: 30000
+          # [Required] A list of URLs to be scanned, with each URL belonging to its own line. This value follows YAML conventions for multiline strings.
+          # Example:
+          #     urls:|-
+          #          http://localhost:3000
+          #          http://localhost:3000/about
+          #          http://localhost:3000/help
+          # OR
+          #     urls:'
+          #          http://localhost:3000
+          #
+          #          http://localhost:3000/about
+          #
+          #          http://localhost:3000/help
+          #          '
+          urls: ''
 
-            # [Optional] Event that puppeteer looks out for to assume completed navigation to a given page. In case of multiple values, navigation is considered to be successful after all events have been fired
-            # This can be multiple values from [load, domcontentloaded, networkidle0, networkidle2], with each value belonging to its own line. 
-            # This value follows YAML conventions for multiline strings.
-            # Example:
-            #   puppeteer_wait_until: |-
-            #                         load
-            #                         domcontentloaded
-            # Defaults to load
-            puppeteer_wait_until: 'load'
+          # [Optional] Navigation timeout for puppeteer in ms. How long should puppeteer wait till it checks page load (wait until event) is complete.
+          # Note: This timeout applies to all pages in your url list individually
+          # Defaults to 30000 ms
+          puppeteer_timeout: 30000
 
-            # [Optional] Run puppeteer in stealth mode. Attempts to hide puppeteer from your server. Won't be necessary for localhost
-            # Note: Uses puppeteer-extra stealth-mode. This is not a guaranteed way to hide usage of automated software to control browsers.
-            # Defaults to false (use if you have bot checks in your server code)
-            stealth_mode: false
+          # [Optional] Event that puppeteer looks out for to assume completed navigation to a given page. In case of multiple values, navigation is considered to be successful after all events have been fired
+          # This can be multiple values from [load, domcontentloaded, networkidle0, networkidle2], with each value belonging to its own line.
+          # This value follows YAML conventions for multiline strings.
+          # Example:
+          #   puppeteer_wait_until: |-
+          #                         load
+          #                         domcontentloaded
+          # Defaults to load
+          puppeteer_wait_until: 'load'
 
-            # [Optional] If a url scan failed, scans the next one without failing the action. 
-            # Defaults to false
-            skip_errors: false
+          # [Optional] Run puppeteer in stealth mode. Attempts to hide puppeteer from your server. Won't be necessary for localhost
+          # Note: Uses puppeteer-extra stealth-mode. This is not a guaranteed way to hide usage of automated software to control browsers.
+          # Defaults to false (use if you have bot checks in your server code)
+          stealth_mode: false
 
-            # [Optional] Adds a delay before running the scan. This is different from the timeout and delay in the sense that this delay occurs after the page is navigated to.
-            # Defaults to 100
-            scan_delay: 500
+          # [Optional] If a url scan failed, scans the next one without failing the action.
+          # Defaults to false
+          skip_errors: false
 
-            # [Optional] Shell commands to run after the action finishes a scan.
-            # Use this to run any cleanup commands.
-            cleanup: ''
+          # [Optional] Adds a delay before running the scan. This is different from the timeout and delay in the sense that this delay occurs after the page is navigated to.
+          # Defaults to 100
+          scan_delay: 500
+
+          # [Optional] Shell commands to run after the action finishes a scan.
+          # Use this to run any cleanup commands.
+          cleanup: ''
+
+          # [Optional] Puppeteer browser viewport [width]x[height].
+          # Use this to specify a browser window size for your scan.
+          # Defaults to 800x600
+          viewport: '800x600'
 ```
 
 The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `urls`. At a minimum, you’ll want to configure `urls` and `wait_time`.

@@ -17,6 +17,7 @@ export type InputParams = {
   stealthMode: boolean
   skipErrors: boolean
   scanDelay: string
+  viewport: string
 }
 /**
  * Function to parse inputs from github action. Replaces empty values with sensible defaults
@@ -62,6 +63,7 @@ export function parseInputs(): InputParams {
   const sleepTime = getCoreInputWithFallback('wait_time', '5000')
   const token = getCoreInputWithFallback('token', '')
   const disableFerryman = !!core.getBooleanInput('disable_ferryman')
+  const viewport = getCoreInputWithFallback('viewport', '800x600')
 
   const parsedInputs = {
     setupScript,
@@ -78,7 +80,8 @@ export function parseInputs(): InputParams {
     stealthMode,
     skipErrors,
     scanDelay,
-    disableFerryman
+    disableFerryman,
+    viewport
   }
   core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`)
   return parsedInputs

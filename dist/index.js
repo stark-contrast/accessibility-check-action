@@ -48,7 +48,7 @@ const wait_1 = __nccwpck_require__(5817);
 const metadata_1 = __nccwpck_require__(5708);
 const parse_inputs_1 = __nccwpck_require__(2639);
 const write_summary_1 = __nccwpck_require__(242);
-const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token, puppeteerTimeout, puppeteerWaitUntil, stealthMode, skipErrors, scanDelay, disableFerryman } = (0, parse_inputs_1.parseInputs)();
+const { setupScript, preBuildScript, buildScript, serveScript, cleanupScript, urls, minScore, sleepTime, token, puppeteerTimeout, puppeteerWaitUntil, stealthMode, skipErrors, scanDelay, disableFerryman, viewport } = (0, parse_inputs_1.parseInputs)();
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.startGroup('Stark Accessibility Checker: Setup');
@@ -95,6 +95,9 @@ function run() {
         }
         params.push(...['--puppeteer-timeout', puppeteerTimeout]);
         params.push(...['--scan-delay', scanDelay]);
+        if (viewport) {
+            params.push('--viewport', viewport);
+        }
         try {
             const metadataDir = yield (0, metadata_1.dumpMetadata)(github, 'github');
             if (metadataDir)
@@ -281,6 +284,7 @@ function parseInputs() {
     const sleepTime = getCoreInputWithFallback('wait_time', '5000');
     const token = getCoreInputWithFallback('token', '');
     const disableFerryman = !!core.getBooleanInput('disable_ferryman');
+    const viewport = getCoreInputWithFallback('viewport', '800x600');
     const parsedInputs = {
         setupScript,
         preBuildScript,
@@ -296,7 +300,8 @@ function parseInputs() {
         stealthMode,
         skipErrors,
         scanDelay,
-        disableFerryman
+        disableFerryman,
+        viewport
     };
     core.debug(`Provided inputs: ${JSON.stringify(parsedInputs)}`);
     return parsedInputs;
