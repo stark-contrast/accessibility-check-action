@@ -79,4 +79,4 @@ runs:
     - ${{ inputs.token }}
     - ${{ inputs.viewport }}
   env:
-    - GITHUB_TOKEN: ${{ secrets.ORG_GH_PKG_TOKEN}}
+    GITHUB_TOKEN: ${{ secrets.ORG_GH_PKG_TOKEN}}
