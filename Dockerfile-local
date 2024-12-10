@@ -17,8 +17,11 @@ RUN apt-get update \
 
 COPY entrypoint.sh package.json yarn.lock .npmrc tsconfig.json /stark_ga/
 
+ARG github_token_arg
+ENV GITHUB_TOKEN=$github_token_arg
+
 RUN cd /stark_ga && \
-  yarn install --production --frozen-lockfile && \
+  yarn install --frozen-lockfile && \
   yarn cache clean --all \
   && cd -
 

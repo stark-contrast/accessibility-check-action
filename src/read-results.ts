@@ -1,13 +1,13 @@
-import * as fs from 'fs'
-import path from 'path'
-import * as core from '@actions/core'
+import * as fs from 'fs';
+import path from 'path';
+import * as core from '@actions/core';
 
 export interface ResultData {
-  url: string
+  url: string;
   data: {
-    name: string
-    value: string
-  }[]
+    name: string;
+    value: string;
+  }[];
 }
 
 /**
@@ -16,28 +16,26 @@ export interface ResultData {
  * @param cliOutDir
  * @returns [summary, results[]] Tuple where the first value is the summary and the second is an array of individual scans
  */
-export async function readResults(
-  cliOutDir: string
-): Promise<[ResultData, ResultData[]]> {
-  const files = await fs.promises.readdir(cliOutDir)
-  let summary = undefined
-  const results = []
+export async function readResults(cliOutDir: string): Promise<[ResultData, ResultData[]]> {
+  const files = await fs.promises.readdir(cliOutDir);
+  let summary = undefined;
+  const results = [];
   for (const file of files) {
-    core.debug(`Parsing ${file}`)
+    core.debug(`Parsing ${file}`);
     try {
-      const filePath = path.resolve(cliOutDir, file)
-      const json = JSON.parse(await fs.promises.readFile(filePath, 'utf8'))
-      core.debug(json)
+      const filePath = path.resolve(cliOutDir, file);
+      const json = JSON.parse(await fs.promises.readFile(filePath, 'utf8'));
+      core.debug(json);
       if (json.data && Array.isArray(json.data)) {
         if (path.basename(file) === 'summary.json') {
-          summary = json
+          summary = json;
         } else {
-          results.push(json)
+          results.push(json);
         }
       }
     } catch (error) {
-      core.error(error as Error | string)
+      core.error(error as Error | string);
     }
   }
-  return [summary, results]
+  return [summary, results];
 }

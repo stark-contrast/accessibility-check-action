@@ -1,2 +1,2 @@
 #!/bin/sh -l
-node /stark_ga/dist/index.js
+node /stark_ga/lib/main.js
