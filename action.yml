@@ -78,3 +78,4 @@ runs:
     - ${{ inputs.wait_time }}
     - ${{ inputs.token }}
     - ${{ inputs.viewport }}
+    - --build-arg --secret id=github-token-id,env=GITHUB_TOKEN

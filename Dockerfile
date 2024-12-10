@@ -1,3 +1,6 @@
+# syntax=docker/dockerfile:1
+# The above line is there to allow the secret to be mounted properly.
+
 FROM node:20-slim
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
@@ -17,7 +20,8 @@ RUN apt-get update \
 
 COPY entrypoint.sh package.json yarn.lock .npmrc tsconfig.json /stark_ga/
 
-RUN cd /stark_ga && \
+RUN --mount=type=secret,id=github-token-id,env=GITHUB_TOKEN \
+  cd /stark_ga && \
   yarn install --production --frozen-lockfile && \
   yarn cache clean --all \
   && cd -
