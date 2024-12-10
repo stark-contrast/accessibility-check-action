@@ -78,5 +78,3 @@ runs:
     - ${{ inputs.wait_time }}
     - ${{ inputs.token }}
     - ${{ inputs.viewport }}
-  env:
-    GITHUB_TOKEN: ${{ secrets.ORG_GH_PKG_TOKEN}}
