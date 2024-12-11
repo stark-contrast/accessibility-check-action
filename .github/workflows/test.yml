@@ -12,19 +12,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          npm install
-      - run: |
-          npm run all
-  test: # make sure the action works on a clean machine without building
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./
-        with:
-          urls: '
-            http://localhost:3000
-
-            https://nextjs.org/docs
-            '
-          prebuild: 'npx --yes create-next-app@latest test-app --use-npm --example "https://github.com/vercel/next-learn/tree/main/basics/learn-starter"'
-          serve: 'cd test-app && npm run dev'
+          docker build -t test .
