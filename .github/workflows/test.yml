@@ -13,8 +13,6 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           npm install
-        env:
-          GITHUB_TOKEN: ${{ secrets.ORG_GH_PKG_TOKEN }}
       - run: |
           npm run all
   test: # make sure the action works on a clean machine without building

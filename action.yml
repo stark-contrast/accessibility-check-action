@@ -1,6 +1,6 @@
 # action.yml
 name: 'Stark Accessibility Checker'
-description: "Run your server on github's infra and scan for accessibility issues with Stark's tooling"
+description: "Run your server on GitHub's infra and scan for accessibility issues with Stark's tooling"
 branding:
   icon: 'code'
   color: 'purple'
@@ -78,4 +78,3 @@ runs:
     - ${{ inputs.wait_time }}
     - ${{ inputs.token }}
     - ${{ inputs.viewport }}
-    - --build-arg --secret id=github-token-id,env=GITHUB_TOKEN
