@@ -49,7 +49,7 @@ jobs:
 
       - name: Audit
         id: stark
-        uses: stark-contrast/accessibility-check-action@1.2.0
+        uses: stark-contrast/accessibility-check-action@1.2.1
         with:
           # [Optional; only required when used with Stark Projects]
           # The token used by the action to send an audit report back to Stark.
