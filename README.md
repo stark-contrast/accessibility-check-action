@@ -49,7 +49,7 @@ jobs:
 
       - name: Audit
         id: stark
-        uses: stark-contrast/accessibility-check-action@1.2.3
+        uses: stark-contrast/accessibility-check-action@1.3.0
         with:
           # [Optional; only required when used with Stark Projects]
           # The token used by the action to send an audit report back to Stark.
@@ -130,6 +130,32 @@ jobs:
           # Use this to specify a browser window size for your scan.
           # Defaults to 800x600
           viewport: '800x600'
+
+          # [Optional] Set to `true` if your URL uses basic HTTP authentication. When true, you must also provide values for "username" and "password".
+          # Defaults to false
+          requires_basic_auth: false
+
+          # [Optional] Set to `true` if your URL requires authentication. When true, you must also provide values for "username", "password", "login-page-url", "username-selector", "password-selector", and "submit-button-selector".
+          # Defaults to false
+          requires_page_auth: false
+
+          # [Optional] Username for basic or page authentication.
+          username: ''
+
+          # [Optional] Password for basic or page authentication.
+          password: ''
+
+          # [Optional] URL for your login page (usually different than the URL you want to scan). Used with page authentication.
+          login_page_url: ''
+
+          # [Optional] CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the username input on the login page. Used with page authentication.
+          username_selector: ''
+
+          # [Optional] CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the password input on the login page. Used with page authentication.
+          password_selector: ''
+
+          # [Optional] CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the submit button on the login page. Used with page authentication.
+          submit_button_selector: ''
 ```
 
 The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `urls`. At a minimum, you’ll want to configure `urls` and `wait_time`.
