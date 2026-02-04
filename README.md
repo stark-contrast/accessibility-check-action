@@ -94,26 +94,6 @@ jobs:
           #          '
           urls: ''
 
-          # [Optional] Navigation timeout for puppeteer in ms. How long should puppeteer wait till it checks page load (wait until event) is complete.
-          # Note: This timeout applies to all pages in your url list individually
-          # Defaults to 30000 ms
-          puppeteer_timeout: 30000
-
-          # [Optional] Event that puppeteer looks out for to assume completed navigation to a given page. In case of multiple values, navigation is considered to be successful after all events have been fired
-          # This can be multiple values from [load, domcontentloaded, networkidle0, networkidle2], with each value belonging to its own line.
-          # This value follows YAML conventions for multiline strings.
-          # Example:
-          #   puppeteer_wait_until: |-
-          #                         load
-          #                         domcontentloaded
-          # Defaults to load
-          puppeteer_wait_until: 'load'
-
-          # [Optional] Run puppeteer in stealth mode. Attempts to hide puppeteer from your server. Won't be necessary for localhost
-          # Note: Uses puppeteer-extra stealth-mode. This is not a guaranteed way to hide usage of automated software to control browsers.
-          # Defaults to false (use if you have bot checks in your server code)
-          stealth_mode: false
-
           # [Optional] If a url scan failed, scans the next one without failing the action.
           # Defaults to false
           skip_errors: false
@@ -126,7 +106,7 @@ jobs:
           # Use this to run any cleanup commands.
           cleanup: ''
 
-          # [Optional] Puppeteer browser viewport [width]x[height].
+          # [Optional] Browser viewport [width]x[height].
           # Use this to specify a browser window size for your scan.
           # Defaults to 800x600
           viewport: '800x600'
@@ -148,13 +128,13 @@ jobs:
           # [Optional] URL for your login page (usually different than the URL you want to scan). Used with page authentication.
           login_page_url: ''
 
-          # [Optional] CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the username input on the login page. Used with page authentication.
+          # [Optional] Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the username input on the login page. Used with page authentication.
           username_selector: ''
 
-          # [Optional] CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the password input on the login page. Used with page authentication.
+          # [Optional] Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the password input on the login page. Used with page authentication.
           password_selector: ''
 
-          # [Optional] CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the submit button on the login page. Used with page authentication.
+          # [Optional] Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the submit button on the login page. Used with page authentication.
           submit_button_selector: ''
 ```
 
@@ -174,4 +154,4 @@ We have several repositories available that demonstrate how you can configure yo
 
 ## Technical Details
 
-Internally, the Stark Github action runs its code inside a `node-18` process. The process passes everything written within the `setup`, `prebuild`, `build`, `serve`, and `cleanup` parameters to the default shell on the image. That gives you the ability to run any kind of script you would like within these commands. The `serve` argument is slightly different: it starts a detached process that is killed automatically when our step ends. If you would like to explicitly kill the process (for instance, to safely close some database connections), use the `cleanup` script.
+Internally, the Stark Github action runs its code inside a `mcr.microsoft.com/playwright:v1.54.0-noble` process. The process passes everything written within the `setup`, `prebuild`, `build`, `serve`, and `cleanup` parameters to the default shell on the image. That gives you the ability to run any kind of script you would like within these commands. The `serve` argument is slightly different: it starts a detached process that is killed automatically when our step ends. If you would like to explicitly kill the process (for instance, to safely close some database connections), use the `cleanup` script.

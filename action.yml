@@ -40,18 +40,6 @@ inputs:
   token:
     description: "Stark token required to send data back to stark web. The cli doesn't post data if token is not provided"
     required: false
-  puppeteer_timeout:
-    description: 'Navigation timeout for puppeteer in ms'
-    required: false
-    default: 30000
-  puppeteer_wait_until:
-    description: 'Wait until params for puppeteer from [load, domcontentloaded, networkidle0, networkidle2]. Each value belongs to a new line. Follows YAML conventions.'
-    required: false
-    default: 'load'
-  stealth_mode:
-    description: "Run puppeteer in stealth mode. Attempts to hide puppeteer from your server. Won't be necessary for localhost"
-    required: false
-    default: false
   skip_errors:
     description: 'Continue to scanning the next url if an error occurs while scanning a url'
     required: false
@@ -61,7 +49,7 @@ inputs:
     required: false
     default: 100
   viewport:
-    description: 'Puppeteer browser viewport [width]x[height]'
+    description: 'Browser viewport [width]x[height]'
     required: false
     default: '800x600'
   requires_basic_auth:
@@ -82,13 +70,13 @@ inputs:
     description: 'URL for your login page (usually different than the URL you want to scan). Used with page authentication.'
     required: false
   username_selector:
-    description: 'CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the username input on the login page. Used with page authentication.'
+    description: 'Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the username input on the login page. Used with page authentication.'
     required: false
   password_selector:
-    description: 'CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the password input on the login page. Used with page authentication.'
+    description: 'Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the password input on the login page. Used with page authentication.'
     required: false
   submit_button_selector:
-    description: 'CSS selector or Puppeteer selector (https://pptr.dev/guides/page-interactions#selectors) for the submit button on the login page. Used with page authentication.'
+    description: 'Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the submit button on the login page. Used with page authentication.'
     required: false
   
 runs:
@@ -105,9 +93,6 @@ runs:
     - ${{ inputs.wait_time }}
     - ${{ inputs.token }}
     - ${{ inputs.viewport }}
-    - ${{ inputs.puppeteer_timeout }}
-    - ${{ inputs.puppeteer_wait_until }}
-    - ${{ inputs.stealth_mode }}
     - ${{ inputs.skip_errors }}
     - ${{ inputs.scan_delay }}
     - ${{ inputs.requires_basic_auth }}
