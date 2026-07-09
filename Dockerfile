@@ -1,3 +1,3 @@
-FROM starklabinc/accessibility-audit:2.0.0
+FROM starklabinc/accessibility-audit:3.0.1
 
 ENTRYPOINT ["/stark_audit/github-entrypoint.sh"]
