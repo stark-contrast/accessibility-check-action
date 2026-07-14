@@ -30,11 +30,11 @@ on:
     inputs:
       # Used to send this scan's results back to Stark.
       token:
-        description: 'Stark token'
+        description: "Stark token"
         required: true
       # Allows Stark to identify this scan.
       display-title:
-        description: 'Display title'
+        description: "Display title"
         required: true
 
 jobs:
@@ -49,7 +49,7 @@ jobs:
 
       - name: Audit
         id: stark
-        uses: stark-contrast/accessibility-check-action@1.3.0
+        uses: stark-contrast/accessibility-check-action@2.0.0
         with:
           # [Optional; only required when used with Stark Projects]
           # The token used by the action to send an audit report back to Stark.
@@ -58,21 +58,21 @@ jobs:
           # [Optional] Shell commands for setting up the container.
           # You can use this to install tools, export variables, etc.
           # Example: 'nvm install 16 && nvm use 16'
-          setup: ''
+          setup: ""
 
           # [Optional] Shell comamnds to run before the app is built.
           # Run any prebuild steps, cd into subdirectories, etc.
-          prebuild: ''
+          prebuild: ""
 
           # [Optional] Shell commands for building your app.
           # Example: 'npm run build'
-          build: ''
+          build: ""
 
           # [Optional] Shell commands for serving your app.
           # This command is slightly different from the others: it runs in a long-lived,
           # detached process that is only terminated when the scan finishes and our action stops.
           # Example: 'SERVER_PORT=3000 && npm run serve'
-          serve: ''
+          serve: ""
 
           # [Optional] The number of milliseconds to wait before your app is ready.
           # Defaults to 5000 milliseconds.
@@ -92,7 +92,7 @@ jobs:
           #
           #          http://localhost:3000/help
           #          '
-          urls: ''
+          urls: ""
 
           # [Optional] If a url scan failed, scans the next one without failing the action.
           # Defaults to false
@@ -104,12 +104,12 @@ jobs:
 
           # [Optional] Shell commands to run after the action finishes a scan.
           # Use this to run any cleanup commands.
-          cleanup: ''
+          cleanup: ""
 
           # [Optional] Browser viewport [width]x[height].
           # Use this to specify a browser window size for your scan.
           # Defaults to 800x600
-          viewport: '800x600'
+          viewport: "800x600"
 
           # [Optional] Set to `true` if your URL uses basic HTTP authentication. When true, you must also provide values for "username" and "password".
           # Defaults to false
@@ -120,22 +120,22 @@ jobs:
           requires_page_auth: false
 
           # [Optional] Username for basic or page authentication.
-          username: ''
+          username: ""
 
           # [Optional] Password for basic or page authentication.
-          password: ''
+          password: ""
 
           # [Optional] URL for your login page (usually different than the URL you want to scan). Used with page authentication.
-          login_page_url: ''
+          login_page_url: ""
 
           # [Optional] Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the username input on the login page. Used with page authentication.
-          username_selector: ''
+          username_selector: ""
 
           # [Optional] Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the password input on the login page. Used with page authentication.
-          password_selector: ''
+          password_selector: ""
 
           # [Optional] Selector (https://playwright.dev/docs/locators#locate-by-css-or-xpath) for the submit button on the login page. Used with page authentication.
-          submit_button_selector: ''
+          submit_button_selector: ""
 ```
 
 The Stark action offers convenient arguments for building and serving your repository. For most builds, the key arguments you’ll need to configure are `build`, `serve`, and `urls`. At a minimum, you’ll want to configure `urls` and `wait_time`.
