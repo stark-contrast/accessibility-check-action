@@ -34,7 +34,7 @@ inputs:
     required: false
     default: 5000
   min_score:
-    description: 'Minimum score for the action to pass. A number from 0 to 100'
+    description: 'Minimum Stark Score for this run. A number from 0 to 100. Scoring below it logs a warning; it does not fail the action'
     required: false
     default: 0
   token:
